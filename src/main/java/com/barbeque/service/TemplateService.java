@@ -8,7 +8,7 @@ import com.barbeque.request.template.AssignQuestionRequest;
 import com.barbeque.request.template.TemplateRequest;
 import com.barbeque.request.template.UpdateTemplateRequest;
 import com.barbeque.requesthandler.TemplateRequestHandler;
-import com.barbeque.response.util.SuccessResponse;
+import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.template.*;
 import com.barbeque.response.util.ResponseGenerator;
 
@@ -24,26 +24,26 @@ public class TemplateService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/create")
-    public Response createTemplate(TemplateRequest templateRequest) throws Exception
+    public Response createTemplate(TemplateRequest templateRequest)
     {
             TemplateRequestBO templateRequestBO = new TemplateRequestBO();
             templateRequestBO.setTemplateDesc(templateRequest.getTemplateDesc());
             templateRequestBO.setStatus(templateRequest.getStatus());
 
-            SuccessResponse successResponse = new SuccessResponse();
+            MessageResponse messageResponse = new MessageResponse();
             TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
             try
             {
                 int templateId = templateRequestHandler.createTemplate(templateRequestBO);
                 if (templateId > 0)
                 {
-                    return ResponseGenerator.generateSuccessResponse(successResponse, String.valueOf(templateId));
+                    return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(templateId));
                 } else
                 {
-                    return ResponseGenerator.generateFailureResponse(successResponse, "Template Creation Failed");
+                    return ResponseGenerator.generateFailureResponse(messageResponse, "Template Creation Failed");
                 }
             } catch (SQLException sqlException) {
-                return ResponseGenerator.generateFailureResponse(successResponse, "Template Creation Failed");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Template Creation Failed");
             }
     }
 
@@ -59,12 +59,12 @@ public class TemplateService {
             updateTemplateRequestBO.setStatus(updateTemplateRequest.getStatus());
 
             TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
-            SuccessResponse successResponse = new SuccessResponse();
+            MessageResponse messageResponse = new MessageResponse();
 
             if (templateRequestHandler.updateTemplate(updateTemplateRequestBO)) {
-                return ResponseGenerator.generateSuccessResponse(successResponse, "Template updated successfully");
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Template updated successfully");
             } else {
-                return ResponseGenerator.generateFailureResponse(successResponse, "Unable to update the template.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the template.");
             }
     }
 
@@ -102,8 +102,8 @@ public class TemplateService {
                 return ResponseGenerator.generateSuccessResponse(response, "list of questions.");
 
             } catch (TemplateNotFoundException e) {
-                SuccessResponse successResponse = new SuccessResponse();
-                return ResponseGenerator.generateFailureResponse(successResponse, "Invalid template id");
+                MessageResponse messageResponse = new MessageResponse();
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template id");
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -117,16 +117,16 @@ public class TemplateService {
     @Path("/deleteAssignQuestion/{template_id}/{question_id}")
     public Response removeBatchDetails(@PathParam("template_id") int templateId, @PathParam("question_id") int queId) throws Exception {
             TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
-            SuccessResponse successResponse = new SuccessResponse();
+            MessageResponse messageResponse = new MessageResponse();
             try {
                 templateRequestHandler.removeQuestionDetails(templateId, queId);
-                return ResponseGenerator.generateSuccessResponse(successResponse, "Question has been removed.");
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Question has been removed.");
 
             } catch (SQLException e) {
-                return ResponseGenerator.generateFailureResponse(successResponse, "Please first remove the details assigned to question.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Please first remove the details assigned to question.");
 
             } catch (TemplateNotFoundException e) {
-                return ResponseGenerator.generateFailureResponse(successResponse, "Invalid template.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template.");
             }
     }
 }

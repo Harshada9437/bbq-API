@@ -13,11 +13,11 @@ import java.util.List;
 public class QuestionRequestHandler {
     public Integer addQuestion(QuestionRequestBO questionRequestBO) throws SQLException {
         QuestionDAO questionDAO = new QuestionDAO();
-        int id = questionDAO.addQuestion(buildSubjectRequestDTOFromBO(questionRequestBO));
+        int id = questionDAO.addQuestion(buildRequestDTOFromBO(questionRequestBO));
         return id;
     }
 
-    private QuestionRequestDTO buildSubjectRequestDTOFromBO(QuestionRequestBO questionRequestBO) {
+    private QuestionRequestDTO buildRequestDTOFromBO(QuestionRequestBO questionRequestBO) {
         QuestionRequestDTO questionRequestDTO = new QuestionRequestDTO();
 
         questionRequestDTO.setQuestionDesc(questionRequestBO.getQuestionDesc());

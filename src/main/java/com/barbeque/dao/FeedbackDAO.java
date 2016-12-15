@@ -4,6 +4,8 @@ import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by System-2 on 12/13/2016.
@@ -80,5 +82,104 @@ public class FeedbackDAO {
             }
         }
         return id;
+    }
+
+    public Boolean updateQuestion(FeedbackRequestDTO feedbackRequestDTO)throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE feedback SET date=?, customer_id=?, question_id=?," +
+                            " answer_id=? ,answer_text=?, rating=?, table_no=?, bill_no=?, modified_on=? WHERE feedback_id =?");
+
+            preparedStatement.setString(parameterIndex++, String.valueOf(feedbackRequestDTO.getDate()));
+
+            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getCustomerId());
+
+            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getQuestionId());
+
+            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getAnswerId());
+
+            preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getAnswerText());
+
+            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getRating());
+
+            preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getTableNo());
+
+            preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getBillNo());
+
+            java.util.Date date1 = new java.util.Date();
+            Timestamp t1 = new Timestamp(date1.getTime());
+            String updated_date = DateUtil.getDateStringFromTimeStamp(t1);
+            preparedStatement.setString(parameterIndex++, updated_date);
+
+            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getId());
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
+
+    public List<FeedbackRequestDTO> getfeedbackList() throws SQLException {
+        List<FeedbackRequestDTO> feedbackList = new ArrayList<FeedbackRequestDTO>();
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            String query = "SELECT * FROM feedback";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
+                feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
+                String date = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("date"));
+                feedbackRequestDTO.setDate(date);
+                feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
+                feedbackRequestDTO.setCustomerId(resultSet.getInt("customer_id"));
+                feedbackRequestDTO.setQuestionId(resultSet.getInt("question_id"));
+                feedbackRequestDTO.setAnswerId(resultSet.getInt("answer_id"));
+                feedbackRequestDTO.setAnswerText(resultSet.getString("answer_text"));
+                feedbackRequestDTO.setRating(resultSet.getInt("rating"));
+                feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
+                feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));
+                String createDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on"));
+                feedbackRequestDTO.setCreatedOn(createDate);
+                String modifyDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("modified_on"));
+                feedbackRequestDTO.setModifiedOn(modifyDate);
+                feedbackList.add(feedbackRequestDTO);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return feedbackList;
     }
 }

@@ -5,7 +5,7 @@ import com.barbeque.response.util.GenericResponse;
 /**
  * Created by System1 on 9/29/2016.
  */
-public class SuccessResponse implements GenericResponse{
+public class MessageResponse implements GenericResponse{
     private String message;
     private String messageType;
 
@@ -27,7 +27,7 @@ public class SuccessResponse implements GenericResponse{
 
     @Override
     public String toString() {
-        return "SuccessResponse{" +
+        return "MessageResponse{" +
                 "message='" + message + '\'' +
                 ", messageType='" + messageType + '\'' +
                 '}';

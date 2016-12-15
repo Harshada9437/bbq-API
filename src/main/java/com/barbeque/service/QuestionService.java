@@ -5,7 +5,7 @@ import com.barbeque.request.question.QuestionRequest;
 import com.barbeque.request.bo.QuestionRequestBO;
 import com.barbeque.request.question.UpdateQueRequest;
 import com.barbeque.requesthandler.QuestionRequestHandler;
-import com.barbeque.response.util.SuccessResponse;
+import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.question.QuestionResponseList;
 import com.barbeque.response.util.ResponseGenerator;
 
@@ -28,18 +28,18 @@ public class QuestionService {
         questionRequestBO.setParentAnswerId(questionRequest.getParentAnswerId());
         questionRequestBO.setAnswerSymbol(questionRequest.getAnswerSymbol());
 
-        SuccessResponse successResponse = new SuccessResponse();
+        MessageResponse messageResponse = new MessageResponse();
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
         try {
             int questionId = questionRequestHandler.addQuestion(questionRequestBO);
             if (questionId > 0) {
-                return ResponseGenerator.generateSuccessResponse(successResponse, String.valueOf(questionId));
+                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(questionId));
             } else {
-                return ResponseGenerator.generateSuccessResponse(successResponse, "Question creation failed.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Question creation failed.");
             }
         } catch (SQLException sqlException) {
-            SuccessResponse SuccessResponse = new SuccessResponse();
-            return ResponseGenerator.generateFailureResponse(SuccessResponse, "Question creation failed.");
+            MessageResponse MessageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(MessageResponse, "Question creation failed.");
         }
     }
 
@@ -70,11 +70,11 @@ public class QuestionService {
         updateQueRequestBO.setAnswerSymbol(updateQueRequest.getAnswerSymbol());
 
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
-        SuccessResponse successResponse = new SuccessResponse();
+        MessageResponse messageResponse = new MessageResponse();
         if (questionRequestHandler.updateQuestion(updateQueRequestBO)) {
-            return ResponseGenerator.generateSuccessResponse(successResponse, "Question updated successfully");
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Question updated successfully");
         } else {
-            return ResponseGenerator.generateFailureResponse(successResponse, "Unable to update the question.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the question.");
         }
     }
 }

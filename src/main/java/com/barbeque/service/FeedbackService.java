@@ -1,9 +1,12 @@
 package com.barbeque.service;
 
 import com.barbeque.request.bo.FeedbackRequestBO;
+import com.barbeque.request.bo.UpdateFeedbackRequestBO;
 import com.barbeque.request.feedback.FeedbackRequest;
+import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
-import com.barbeque.response.util.SuccessResponse;
+import com.barbeque.response.feedback.FeedbackResponseList;
+import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
 
 import javax.ws.rs.*;
@@ -31,42 +34,56 @@ public class FeedbackService {
         feedbackRequestBO.setRating(feedbackRequest.getRating());
         feedbackRequestBO.setDate(feedbackRequest.getDate());
 
-        SuccessResponse successResponse = new SuccessResponse();
+        MessageResponse messageResponse = new MessageResponse();
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         try {
             int feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO, customerId);
             if (feedbackId > 0) {
-                return ResponseGenerator.generateSuccessResponse(successResponse, String.valueOf(feedbackId));
+                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(feedbackId));
             } else {
-                return ResponseGenerator.generateSuccessResponse(successResponse, "feedback creation failed.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "feedback creation failed.");
 
             }
         } catch (SQLException sqlException) {
-            SuccessResponse SuccessResponse = new SuccessResponse();
-            return ResponseGenerator.generateSuccessResponse(SuccessResponse, "feedback creation failed.");
+            MessageResponse MessageResponse = new MessageResponse();
+            return ResponseGenerator.generateSuccessResponse(MessageResponse, "feedback creation failed.");
         }
     }
 
-    /*@POST
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/update")
-    public Response updateQuestion(UpdateQueRequest updateQueRequest) throws SQLException {
+    public Response updateQuestion(UpdateFeedbackRequest updateFeedbackRequest) throws SQLException {
 
-        UpdateQueRequestBO updateQueRequestBO = new UpdateQueRequestBO();
-        updateQueRequestBO.setId(updateQueRequest.getId());
-        updateQueRequestBO.setQuestionDesc(updateQueRequest.getQuestionDesc());
-        updateQueRequestBO.setQuestionType(updateQueRequest.getQuestionType());
-        updateQueRequestBO.setParentQuestionId(updateQueRequest.getParentQuestionId());
-        updateQueRequestBO.setParentAnswerId(updateQueRequest.getParentAnswerId());
-        updateQueRequestBO.setAnswerSymbol(updateQueRequest.getAnswerSymbol());
+        UpdateFeedbackRequestBO updateFeedbackRequestBO = new UpdateFeedbackRequestBO();
+        updateFeedbackRequestBO.setId(updateFeedbackRequest.getId());
+        updateFeedbackRequestBO.setQuestionId(updateFeedbackRequest.getQuestionId());
+        updateFeedbackRequestBO.setAnswerId(updateFeedbackRequest.getAnswerId());
+        updateFeedbackRequestBO.setAnswerText(updateFeedbackRequest.getAnswerText());
+        updateFeedbackRequestBO.setDate(updateFeedbackRequest.getDate());
+        updateFeedbackRequestBO.setTableNo(updateFeedbackRequest.getTableNo());
+        updateFeedbackRequestBO.setRating(updateFeedbackRequest.getRating());
+        updateFeedbackRequestBO.setBillNo(updateFeedbackRequest.getBillNo());
+        updateFeedbackRequestBO.setModifiedOn(updateFeedbackRequest.getAnswerText());
 
-        QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
-        SuccessResponse successResponse = new SuccessResponse();
-        if (questionRequestHandler.updateQuestion(updateQueRequestBO)) {
-            return ResponseGenerator.generateSuccessResponse(successResponse, "Question updated successfully");
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        if (feedbackRequestHandler.updateFeedback(updateFeedbackRequestBO)) {
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Feedback updated successfully");
         } else {
-            return ResponseGenerator.generateFailureResponse(successResponse, "Unable to update the question.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the feedback.");
         }
-    }*/
+    }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/list")
+    public Response getfeedbackList() throws Exception {
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+        FeedbackResponseList feedbackResponseList = new FeedbackResponseList();
+        feedbackResponseList.setFeedbacks(feedbackRequestHandler.getfeedbackList());
+        return ResponseGenerator.generateSuccessResponse(feedbackResponseList, "List of feedbacks.");
+    }
 }
