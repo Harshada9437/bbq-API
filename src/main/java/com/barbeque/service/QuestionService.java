@@ -1,10 +1,15 @@
 package com.barbeque.service;
 
+import com.barbeque.exceptions.AnswerNotFoundException;
+import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.bo.UpdateQueRequestBO;
 import com.barbeque.request.question.QuestionRequest;
 import com.barbeque.request.bo.QuestionRequestBO;
 import com.barbeque.request.question.UpdateQueRequest;
 import com.barbeque.requesthandler.QuestionRequestHandler;
+import com.barbeque.response.FailureResponse;
+import com.barbeque.response.question.GetQuestionResponse;
+import com.barbeque.response.question.QuestionResponse;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.question.QuestionResponseList;
 import com.barbeque.response.util.ResponseGenerator;
@@ -77,4 +82,27 @@ public class QuestionService {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the question.");
         }
     }
+
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/questionInfo/{id}")
+    public Response getQuestionList(@PathParam("id")int id)throws Exception
+    {
+        QuestionRequestHandler questionRequestHandler=new QuestionRequestHandler();
+        Object response = null;
+        try{
+            GetQuestionResponse questionResponse=questionRequestHandler.getQuestionById(id);
+            return ResponseGenerator.generateSuccessResponse(questionResponse, "SUCCESS");
+        }catch (QuestionNotFoundException e) {
+            FailureResponse failureResponse = new FailureResponse();
+            return ResponseGenerator.generateFailureResponse(failureResponse, "INVALID QuestionId ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ResponseGenerator.generateResponse(response);
+    }
+
 }

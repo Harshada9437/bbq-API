@@ -2,6 +2,7 @@ package com.barbeque.dao.question;
 
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.QuestionRequestDTO;
+import com.barbeque.exceptions.QuestionNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -137,5 +138,44 @@ public class QuestionDAO {
             }
         }
         return isCreated;
+    }
+
+    public QuestionRequestDTO getQuestionById(int id) throws SQLException, QuestionNotFoundException {
+        Connection connection = null;
+        Statement statement = null;
+        QuestionRequestDTO questionRequestDTO = new QuestionRequestDTO();
+        try {
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT * FROM question_bank where id = ")
+                    .append(id);
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            int rowCount = 0;
+            while (resultSet.next()) {
+                questionRequestDTO.setId(resultSet.getInt("id"));
+                questionRequestDTO.setQuestionDesc(resultSet.getString("question_desc"));
+                questionRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
+                questionRequestDTO.setParentAnswerId(resultSet.getInt("parent_answer_id"));
+                questionRequestDTO.setParentQuestionId(resultSet.getInt("parent_question_id"));
+                questionRequestDTO.setAnswerSymbol(resultSet.getInt("answer_symbol"));
+                rowCount++;
+            }
+            if (rowCount == 0) {
+                throw new QuestionNotFoundException("Question id invalid");
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return questionRequestDTO;
     }
 }

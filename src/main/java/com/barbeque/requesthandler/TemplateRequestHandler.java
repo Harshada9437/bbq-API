@@ -9,6 +9,7 @@ import com.barbeque.request.bo.AssignQuestionRequestBO;
 import com.barbeque.request.bo.TemplateRequestBO;
 import com.barbeque.request.bo.UpdateTemplateRequestBO;
 import com.barbeque.response.template.TempQueLResponse;
+import com.barbeque.response.template.TemplateResponseList;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -91,6 +92,36 @@ public class TemplateRequestHandler {
         templateDTO.setStatus(updateTemplateRequestBO.getStatus());
         return templateDTO;
     }
+
+    public List<TemplateResponseList>getTemplate()throws  SQLException,TemplateNotFoundException
+    {
+        TemplateDAO templateDAO=new TemplateDAO();
+        List<TemplateResponseList> templateResponseLists=new ArrayList<TemplateResponseList>();
+        try
+        {
+            templateResponseLists=getTemplateListDTOsFromBO(templateDAO.getTemplate());
+        }catch (SQLException s) {
+            s.printStackTrace();
+        }
+        return templateResponseLists;
+    }
+
+    public List<TemplateResponseList>getTemplateListDTOsFromBO(List<TemplateDTO>templateDTOs)throws SQLException
+    {
+        List<TemplateResponseList> templateResponseList=new ArrayList<TemplateResponseList>();
+        Iterator<TemplateDTO>templateDTOIterator=templateDTOs.iterator();
+        while (templateDTOIterator.hasNext())
+        {
+            TemplateDTO templateDTO=templateDTOIterator.next();
+            TemplateResponseList templateResponseList1=new TemplateResponseList(templateDTO.getId(),templateDTO.getOutletId(),
+                    templateDTO.getTemplateDesc(),
+                    templateDTO.getStatus(),templateDTO.getOutletDesc(),templateDTO.getShortDesc());
+            templateResponseList.add(templateResponseList1);
+        }
+        return templateResponseList;
+    }
+
+
 /*
     public List<CourseResonse> getCoursesList() throws SQLException {
         TemplateDAO courseDAO = new TemplateDAO();

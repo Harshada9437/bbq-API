@@ -7,6 +7,7 @@ public class AnswerDTO {
     private int id;
     private int questionId;
     private String answerDesc;
+    private String description;
     private int rating;
 
     public int getId() {return id;}
@@ -25,6 +26,14 @@ public class AnswerDTO {
 
     public void setRating(int rating) {this.rating = rating;}
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -35,7 +44,8 @@ public class AnswerDTO {
         if (id != answerDTO.id) return false;
         if (questionId != answerDTO.questionId) return false;
         if (rating != answerDTO.rating) return false;
-        return answerDesc != null ? answerDesc.equals(answerDTO.answerDesc) : answerDTO.answerDesc == null;
+        if (answerDesc != null ? !answerDesc.equals(answerDTO.answerDesc) : answerDTO.answerDesc != null) return false;
+        return description != null ? description.equals(answerDTO.description) : answerDTO.description == null;
 
     }
 
@@ -44,6 +54,7 @@ public class AnswerDTO {
         int result = id;
         result = 31 * result + questionId;
         result = 31 * result + (answerDesc != null ? answerDesc.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + rating;
         return result;
     }
@@ -54,6 +65,7 @@ public class AnswerDTO {
                 "id=" + id +
                 ", questionId=" + questionId +
                 ", answerDesc='" + answerDesc + '\'' +
+                ", description='" + description + '\'' +
                 ", rating=" + rating +
                 '}';
     }

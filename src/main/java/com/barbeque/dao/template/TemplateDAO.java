@@ -1,10 +1,14 @@
 package com.barbeque.dao.template;
 
 import com.barbeque.dao.ConnectionHandler;
+import com.barbeque.dto.request.QuestionRequestDTO;
 import com.barbeque.dto.request.TemplateDTO;
+import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by System1 on 9/9/2016.
@@ -129,4 +133,50 @@ public class TemplateDAO {
         }
         return isCreated;
     }
+
+    public List<TemplateDTO> getTemplate() throws SQLException, TemplateNotFoundException {
+        Connection connection = null;
+        Statement statement = null;
+        List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT t.template_id,ol.outlet_id,t.template_desc,t.status,o.outlet_desc, o.short_desc\n" +
+                    "from template t\n" +
+                    "left JOIN outlet_template_link ol ON\n" +
+                    "t.template_id=ol.outlet_id\n" +
+                    "left join outlet o\n" +
+                    "on ol.outlet_id=o.id; ");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            int index = 1;
+            while (resultSet.next()) {
+                TemplateDTO templateDTO = new TemplateDTO();
+                templateDTO.setId(resultSet.getInt("template_id"));
+                templateDTO.setOutletId(resultSet.getInt("outlet_id"));
+                templateDTO.setTemplateDesc(resultSet.getString("template_desc"));
+                templateDTO.setStatus(resultSet.getString("status"));
+                templateDTO.setOutletDesc(resultSet.getString("outlet_desc"));
+                templateDTO.setShortDesc(resultSet.getString("short_desc"));
+                index++;
+                templateDTOs.add(templateDTO);
+
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return templateDTOs;
+    }
+
+
 }

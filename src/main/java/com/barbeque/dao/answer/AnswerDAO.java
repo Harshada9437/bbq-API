@@ -2,11 +2,11 @@ package com.barbeque.dao.answer;
 
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.AnswerDTO;
+import com.barbeque.exceptions.AnswerNotFoundException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by System-2 on 12/15/2016.
@@ -64,5 +64,48 @@ public class AnswerDAO {
             }
         }
         return id;
+    }
+
+    public List<AnswerDTO> getAnswer(int questionId) throws SQLException, AnswerNotFoundException {
+        Connection connection = null;
+        Statement statement = null;
+        List<AnswerDTO> answerDTOs = new ArrayList<AnswerDTO>();
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT qa.question_id,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
+                    " FROM question_answer_link qa\n" +
+                    " INNER JOIN question_bank qb\n" +
+                    " ON\n" +
+                    " qa.question_id=qb.id\n" +
+                    " where question_id="+questionId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            int index = 1;
+            while (resultSet.next()) {
+                AnswerDTO answerDTO = new AnswerDTO();
+                answerDTO.setQuestionId(resultSet.getInt("question_id"));
+                answerDTO.setDescription(resultSet.getString("description"));
+                answerDTO.setId(resultSet.getInt("answer_id"));
+                answerDTO.setAnswerDesc(resultSet.getString("answer_desc"));
+                answerDTO.setRating(resultSet.getInt("rating"));
+                index++;
+                answerDTOs.add(answerDTO);
+
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return answerDTOs;
     }
 }

@@ -1,12 +1,21 @@
-package com.barbeque.dto.request;
+package com.barbeque.response.question;
 
-public class QuestionRequestDTO {
+import com.barbeque.response.util.GenericResponse;
+
+/**
+ * Created by System-2 on 12/20/2016.
+ */
+public class GetQuestionResponse implements GenericResponse
+{
     private int id;
     private String questionDesc;
     private char questionType;
     private int parentAnswerId;
     private int parentQuestionId;
     private int answerSymbol;
+    private String messageType;
+    private Object message;
+
 
     public int getId() {
         return id;
@@ -56,42 +65,39 @@ public class QuestionRequestDTO {
         this.answerSymbol = answerSymbol;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public String getMessageType() {
+        return messageType;
+    }
 
-        QuestionRequestDTO that = (QuestionRequestDTO) o;
+    public Object getMessage() {
+        return message;
+    }
 
-        if (id != that.id) return false;
-        if (questionType != that.questionType) return false;
-        if (parentAnswerId != that.parentAnswerId) return false;
-        if (parentQuestionId != that.parentQuestionId) return false;
-        if (answerSymbol != that.answerSymbol) return false;
-        return questionDesc != null ? questionDesc.equals(that.questionDesc) : that.questionDesc == null;
-
+    public void setMessage(Object message) {
+        this.message = message;
     }
 
     @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
-        result = 31 * result + (int) questionType;
-        result = 31 * result + parentAnswerId;
-        result = 31 * result + parentQuestionId;
-        result = 31 * result + answerSymbol;
-        return result;
+    public void setMessageType(String messageType) {
+        this.messageType=messageType;
+    }
+
+    @Override
+    public void setMessage(String message) {
+        this.message=message;
     }
 
     @Override
     public String toString() {
-        return "QuestionRequestDTO{" +
+        return "GetQuestionResponse{" +
                 "id=" + id +
                 ", questionDesc='" + questionDesc + '\'' +
                 ", questionType=" + questionType +
                 ", parentAnswerId=" + parentAnswerId +
                 ", parentQuestionId=" + parentQuestionId +
                 ", answerSymbol=" + answerSymbol +
+                ", messageType='" + messageType + '\'' +
+                ", message=" + message +
                 '}';
     }
 }

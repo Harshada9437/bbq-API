@@ -1,9 +1,12 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.dao.question.QuestionDAO;
+import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.dto.request.QuestionRequestDTO;
+import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.bo.QuestionRequestBO;
 import com.barbeque.request.bo.UpdateQueRequestBO;
+import com.barbeque.response.question.GetQuestionResponse;
 import com.barbeque.response.question.QuestionResponse;
 
 import java.sql.SQLException;
@@ -73,5 +76,33 @@ public class QuestionRequestHandler {
         questionRequestDTO.setAnswerSymbol(updateQueRequestBO.getAnswerSymbol());
         return questionRequestDTO;
     }
+
+    public GetQuestionResponse getQuestionById(int id) throws SQLException, QuestionNotFoundException
+    {
+        QuestionDAO questionDAO=new QuestionDAO();
+        GetQuestionResponse getQuestionResponse=new GetQuestionResponse();
+         try
+         {
+             getQuestionResponse=buildQuestionInfoDTOFromBO(questionDAO.getQuestionById(id));
+         }catch (SQLException e){
+             e.printStackTrace();
+         }
+         return getQuestionResponse;
+    }
+
+    public GetQuestionResponse buildQuestionInfoDTOFromBO (QuestionRequestDTO questionRequestDTO)
+    {
+        GetQuestionResponse getQuestionResponse=new GetQuestionResponse();
+        getQuestionResponse.setId(questionRequestDTO.getId());
+        getQuestionResponse.setAnswerSymbol(questionRequestDTO.getAnswerSymbol());
+        getQuestionResponse.setParentAnswerId(questionRequestDTO.getParentAnswerId());
+        getQuestionResponse.setParentQuestionId(questionRequestDTO.getParentQuestionId());
+        getQuestionResponse.setQuestionDesc(questionRequestDTO.getQuestionDesc());
+        getQuestionResponse.setQuestionType(questionRequestDTO.getQuestionType());
+
+        return getQuestionResponse;
+
+    }
+
 
 }

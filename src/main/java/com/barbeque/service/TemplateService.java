@@ -1,5 +1,7 @@
 package com.barbeque.service;
 
+import com.barbeque.exceptions.AnswerNotFoundException;
+import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.request.bo.AssignQuestionRequestBO;
 import com.barbeque.request.bo.TemplateRequestBO;
@@ -8,6 +10,7 @@ import com.barbeque.request.template.AssignQuestionRequest;
 import com.barbeque.request.template.TemplateRequest;
 import com.barbeque.request.template.UpdateTemplateRequest;
 import com.barbeque.requesthandler.TemplateRequestHandler;
+import com.barbeque.response.FailureResponse;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.template.*;
 import com.barbeque.response.util.ResponseGenerator;
@@ -129,4 +132,31 @@ public class TemplateService {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template.");
             }
     }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/list")
+    public Response getTemplateList()throws Exception
+    {
+             TemplateRequestHandler templateRequestHandler=new TemplateRequestHandler();
+              TemplateResponse templateResponse=new TemplateResponse();
+        try
+        {
+            templateResponse.setTemplateResponseList(templateRequestHandler.getTemplate());
+            return ResponseGenerator.generateSuccessResponse(templateResponse, "Template are available");
+        } catch (TemplateNotFoundException e)
+        {
+            FailureResponse failureResponse = new FailureResponse();
+            return ResponseGenerator.generateFailureResponse(failureResponse, "Template State ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ResponseGenerator.generateResponse(templateResponse);
+
+    }
+
+
+
 }
