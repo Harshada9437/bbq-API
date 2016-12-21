@@ -69,17 +69,23 @@ public class QuestionDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            String query = "SELECT * FROM question_bank";
+            String query = "SELECT q.id,q.question_desc,q.question_type,q.parent_answer_id, a.answer_desc as parent_answer_desc, \n" +
+                    "q.parent_question_id,(select question_desc from question_bank where id = q.parent_question_id) as parent_question_desc, q.answer_symbol FROM question_bank q\n" +
+                    "inner join question_answer_link a\n" +
+                    "on q.parent_answer_id = a.answer_id";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
-                QuestionRequestDTO sujectDTO = new QuestionRequestDTO();
-                sujectDTO.setId(resultSet.getInt("id"));
-                sujectDTO.setQuestionDesc(resultSet.getString("question_desc"));
-                sujectDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
-                sujectDTO.setParentQuestionId(resultSet.getInt("parent_question_id"));
-                sujectDTO.setParentAnswerId(resultSet.getInt("parent_answer_id"));
-                sujectDTO.setAnswerSymbol(resultSet.getInt("answer_symbol"));
-                allQuestions.add(sujectDTO);
+                QuestionRequestDTO questionRequestDTO = new QuestionRequestDTO();
+                questionRequestDTO.setId(resultSet.getInt("id"));
+                questionRequestDTO.setQuestionDesc(resultSet.getString("question_desc"));
+                questionRequestDTO.setQuestionDesc(resultSet.getString("parent_question_desc"));
+                questionRequestDTO.setQuestionDesc(resultSet.getString("parent_answer_desc"));
+                questionRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
+                questionRequestDTO.setParentQuestionId(resultSet.getInt("parent_question_id"));
+                questionRequestDTO.setParentAnswerId(resultSet.getInt("parent_answer_id"));
+                questionRequestDTO.setAnswerSymbol(resultSet.getInt("answer_symbol"));
+
+                allQuestions.add(questionRequestDTO);
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -148,13 +154,19 @@ public class QuestionDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT * FROM question_bank where id = ")
+                    "SELECT q.id,q.question_desc,q.question_type,q.parent_answer_id, a.answer_desc as parent_answer_desc, \n" +
+                            "q.parent_question_id,(select question_desc from question_bank where id = q.parent_question_id) as parent_question_desc, q.answer_symbol FROM question_bank q\n" +
+                            "inner join question_answer_link a\n" +
+                            "on q.parent_answer_id = a.answer_id\n" +
+                            "where id = ")
                     .append(id);
             ResultSet resultSet = statement.executeQuery(query.toString());
             int rowCount = 0;
             while (resultSet.next()) {
                 questionRequestDTO.setId(resultSet.getInt("id"));
                 questionRequestDTO.setQuestionDesc(resultSet.getString("question_desc"));
+                questionRequestDTO.setParentAnswerDesc(resultSet.getString("parent_answer_desc"));
+                questionRequestDTO.setParentQuestionDesc(resultSet.getString("parent_question_desc"));
                 questionRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
                 questionRequestDTO.setParentAnswerId(resultSet.getInt("parent_answer_id"));
                 questionRequestDTO.setParentQuestionId(resultSet.getInt("parent_question_id"));

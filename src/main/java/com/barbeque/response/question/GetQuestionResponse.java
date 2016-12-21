@@ -8,6 +8,8 @@ import com.barbeque.response.util.GenericResponse;
 public class GetQuestionResponse implements GenericResponse
 {
     private int id;
+    private String parentAnswerDesc;
+    private String parentQuestionDesc;
     private String questionDesc;
     private char questionType;
     private int parentAnswerId;
@@ -16,6 +18,14 @@ public class GetQuestionResponse implements GenericResponse
     private String messageType;
     private Object message;
 
+
+    public String getParentAnswerDesc() {return parentAnswerDesc;}
+
+    public void setParentAnswerDesc(String parentAnswerDesc) {this.parentAnswerDesc = parentAnswerDesc;}
+
+    public String getParentQuestionDesc() {return parentQuestionDesc;}
+
+    public void setParentQuestionDesc(String parentQuestionDesc) {this.parentQuestionDesc = parentQuestionDesc;}
 
     public int getId() {
         return id;
@@ -91,6 +101,8 @@ public class GetQuestionResponse implements GenericResponse
     public String toString() {
         return "GetQuestionResponse{" +
                 "id=" + id +
+                ", parentAnswerDesc='" + parentAnswerDesc + '\'' +
+                ", parentQuestionDesc='" + parentQuestionDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
                 ", questionType=" + questionType +
                 ", parentAnswerId=" + parentAnswerId +

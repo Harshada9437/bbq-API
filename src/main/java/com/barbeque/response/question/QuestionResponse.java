@@ -5,11 +5,21 @@ package com.barbeque.response.question;
  */
 public class QuestionResponse {
     private int id;
+    private String parentAnswerDesc;
+    private String parentQuestionDesc;
     private String questionDesc;
     private char questionType;
     private int parentAnswerId;
     private int parentQuestionId;
     private int answerSymbol;
+
+    public String getParentAnswerDesc() {return parentAnswerDesc;}
+
+    public void setParentAnswerDesc(String parentAnswerDesc) {this.parentAnswerDesc = parentAnswerDesc;}
+
+    public String getParentQuestionDesc() {return parentQuestionDesc;}
+
+    public void setParentQuestionDesc(String parentQuestionDesc) {this.parentQuestionDesc = parentQuestionDesc;}
 
     public int getId() {
         return id;
@@ -63,6 +73,8 @@ public class QuestionResponse {
     public String toString() {
         return "QuestionResponse{" +
                 "id=" + id +
+                ", parentAnswerDesc='" + parentAnswerDesc + '\'' +
+                ", parentQuestionDesc='" + parentQuestionDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
                 ", questionType=" + questionType +
                 ", parentAnswerId=" + parentAnswerId +

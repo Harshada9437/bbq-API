@@ -1,7 +1,6 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.dao.question.QuestionDAO;
-import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.dto.request.QuestionRequestDTO;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.bo.QuestionRequestBO;
@@ -43,6 +42,8 @@ public class QuestionRequestHandler {
                 QuestionResponse questionResponse = new QuestionResponse();
                 questionResponse.setId(questionRequestDTO.getId());
                 questionResponse.setQuestionDesc(questionRequestDTO.getQuestionDesc());
+                questionResponse.setParentAnswerDesc(questionRequestDTO.getParentAnswerDesc());
+                questionResponse.setParentQuestionDesc(questionRequestDTO.getParentQuestionDesc());
                 questionResponse.setQuestionType(questionRequestDTO.getQuestionType());
                 questionResponse.setParentQuestionId(questionRequestDTO.getParentQuestionId());
                 questionResponse.setParentAnswerId(questionRequestDTO.getParentAnswerId());
@@ -98,6 +99,8 @@ public class QuestionRequestHandler {
         getQuestionResponse.setParentAnswerId(questionRequestDTO.getParentAnswerId());
         getQuestionResponse.setParentQuestionId(questionRequestDTO.getParentQuestionId());
         getQuestionResponse.setQuestionDesc(questionRequestDTO.getQuestionDesc());
+        getQuestionResponse.setParentQuestionDesc(questionRequestDTO.getParentQuestionDesc());
+        getQuestionResponse.setParentAnswerDesc(questionRequestDTO.getParentAnswerDesc());
         getQuestionResponse.setQuestionType(questionRequestDTO.getQuestionType());
 
         return getQuestionResponse;
