@@ -12,7 +12,7 @@ import java.util.List;
  * Created by System-2 on 12/15/2016.
  */
 public class AnswerDAO {
-    public Integer createAnswer(AnswerDTO answerDTO) throws SQLException {
+    public Integer createAnswer(int queId,String ans, int rating) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO question_answer_link(question_id , answer_desc, rating) values (?,?,?)");
@@ -24,11 +24,11 @@ public class AnswerDAO {
             preparedStatement = connection
                     .prepareStatement(query.toString());
             preparedStatement.setInt(parameterIndex++,
-                    answerDTO.getQuestionId());
+                    queId);
             preparedStatement.setString(parameterIndex++,
-                    answerDTO.getAnswerDesc());
+                    ans);
             preparedStatement.setInt(parameterIndex++,
-                    answerDTO.getRating());
+                    rating);
 
 
             int i = preparedStatement.executeUpdate();

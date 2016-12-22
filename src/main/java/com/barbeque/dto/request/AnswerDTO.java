@@ -1,5 +1,7 @@
 package com.barbeque.dto.request;
 
+import java.util.List;
+
 /**
  * Created by System-2 on 12/15/2016.
  */
@@ -34,6 +36,7 @@ public class AnswerDTO {
         this.description = description;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -46,7 +49,6 @@ public class AnswerDTO {
         if (rating != answerDTO.rating) return false;
         if (answerDesc != null ? !answerDesc.equals(answerDTO.answerDesc) : answerDTO.answerDesc != null) return false;
         return description != null ? description.equals(answerDTO.description) : answerDTO.description == null;
-
     }
 
     @Override

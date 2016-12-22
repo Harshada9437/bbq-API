@@ -1,7 +1,6 @@
 package com.barbeque.service;
 
 import com.barbeque.exceptions.AnswerNotFoundException;
-import com.barbeque.request.answer.AnswerRequest;
 import com.barbeque.request.bo.AnswerRequestBO;
 import com.barbeque.requesthandler.AnswerRequestHandler;
 import com.barbeque.response.Answer.AnswerResponse;
@@ -19,33 +18,6 @@ import java.sql.SQLException;
  */
 @Path("/answer")
 public class AnswerService {
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/create")
-    public Response createAnswer(AnswerRequest answerRequest)
-    {
-        AnswerRequestBO answerRequestBO = new AnswerRequestBO();
-        answerRequestBO.setQuestionId(answerRequest.getQuestionId());
-        answerRequestBO.setAnswerDesc(answerRequest.getAnswerDesc());
-        answerRequestBO.setRating(answerRequest.getRating());
-
-        MessageResponse messageResponse = new MessageResponse();
-        AnswerRequestHandler answerRequestHandler = new AnswerRequestHandler();
-        try
-        {
-            int answer = answerRequestHandler.createAnswer(answerRequestBO);
-            if (answer > 0)
-            {
-                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(answer));
-            } else
-            {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Answer Creation Failed");
-            }
-        } catch (SQLException sqlException) {
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Answer Creation Failed");
-        }
-    }
 
     @GET
     @Consumes(MediaType.APPLICATION_JSON)

@@ -1,6 +1,5 @@
 package com.barbeque.service;
 
-import com.barbeque.exceptions.AnswerNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.bo.UpdateQueRequestBO;
 import com.barbeque.request.question.QuestionRequest;
@@ -9,7 +8,6 @@ import com.barbeque.request.question.UpdateQueRequest;
 import com.barbeque.requesthandler.QuestionRequestHandler;
 import com.barbeque.response.FailureResponse;
 import com.barbeque.response.question.GetQuestionResponse;
-import com.barbeque.response.question.QuestionResponse;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.question.QuestionResponseList;
 import com.barbeque.response.util.ResponseGenerator;
@@ -32,12 +30,16 @@ public class QuestionService {
         questionRequestBO.setParentQuestionId(questionRequest.getParentQuestionId());
         questionRequestBO.setParentAnswerId(questionRequest.getParentAnswerId());
         questionRequestBO.setAnswerSymbol(questionRequest.getAnswerSymbol());
+        questionRequestBO.setAsnwerLists(questionRequest.getAsnwerLists());
+        questionRequestBO.setRating(questionRequest.getRating());
+
 
         MessageResponse messageResponse = new MessageResponse();
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
         try {
             int questionId = questionRequestHandler.addQuestion(questionRequestBO);
             if (questionId > 0) {
+
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(questionId));
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Question creation failed.");
@@ -104,5 +106,7 @@ public class QuestionService {
         }
         return ResponseGenerator.generateResponse(response);
     }
+
+
 
 }
