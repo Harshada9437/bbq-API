@@ -6,6 +6,7 @@ import com.barbeque.dto.request.QuestionRequestDTO;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.bo.QuestionRequestBO;
 import com.barbeque.request.bo.UpdateQueRequestBO;
+import com.barbeque.request.question.OptionsList;
 import com.barbeque.response.question.GetQuestionResponse;
 import com.barbeque.response.question.QuestionResponse;
 
@@ -18,7 +19,7 @@ public class QuestionRequestHandler {
     public Integer addQuestion(QuestionRequestBO questionRequestBO) throws SQLException {
         QuestionDAO questionDAO = new QuestionDAO();
         int id = questionDAO.addQuestion(buildRequestDTOFromBO(questionRequestBO));
-        getAssignAnswer(id,questionRequestBO.getAsnwerLists(),questionRequestBO.getRating());
+        getAssignAnswer(id,questionRequestBO.getAnswerOption());
 
         return id;
     }
@@ -108,17 +109,18 @@ public class QuestionRequestHandler {
 
     }
 
-    public Boolean getAssignAnswer(int id, List<String> asnwerList,List<Integer>rating) throws SQLException {
+    public Boolean getAssignAnswer(int id, List<OptionsList>answerOption) throws SQLException {
 
         Boolean isCreated = Boolean.FALSE;
-        Iterator<String> asnwerListIterator = asnwerList.iterator();
-        Iterator<Integer>integerIterator=rating.iterator();
-        AnswerDAO answerDAO=new AnswerDAO();
-        while (asnwerListIterator.hasNext()&&integerIterator.hasNext()) {
+        Iterator<OptionsList> asnwerListIterator = answerOption.iterator();
 
-            String ans = asnwerListIterator.next();
-            int rate=integerIterator.next();
-            answerDAO.createAnswer(id,ans,rate);
+        AnswerDAO answerDAO=new AnswerDAO();
+        while (asnwerListIterator.hasNext())
+        {
+            OptionsList optionsList=new OptionsList();
+            optionsList=asnwerListIterator.next();
+
+            answerDAO.createAnswer(id,optionsList.getLabel(),optionsList.getRating());
             isCreated=true;
         }
 

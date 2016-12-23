@@ -30,8 +30,8 @@ public class QuestionService {
         questionRequestBO.setParentQuestionId(questionRequest.getParentQuestionId());
         questionRequestBO.setParentAnswerId(questionRequest.getParentAnswerId());
         questionRequestBO.setAnswerSymbol(questionRequest.getAnswerSymbol());
-        questionRequestBO.setAsnwerLists(questionRequest.getAsnwerLists());
-        questionRequestBO.setRating(questionRequest.getRating());
+        questionRequestBO.setAnswerOption(questionRequest.getAnswerOption());
+
 
 
         MessageResponse messageResponse = new MessageResponse();
