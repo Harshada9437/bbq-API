@@ -1,5 +1,7 @@
 package com.barbeque.request.question;
 
+import java.util.List;
+
 /**
  * Created by System1 on 9/30/2016.
  */
@@ -10,6 +12,15 @@ public class UpdateQueRequest {
     private int parentAnswerId;
     private int parentQuestionId;
     private int answerSymbol;
+    public List<UpdateOptionsList> answerOption;
+
+    public List<UpdateOptionsList> getAnswerOption() {
+        return answerOption;
+    }
+
+    public void setAnswerOption(List<UpdateOptionsList> answerOption) {
+        this.answerOption = answerOption;
+    }
 
     public String getQuestionDesc() {return questionDesc;}
 
@@ -51,7 +62,8 @@ public class UpdateQueRequest {
         if (parentAnswerId != that.parentAnswerId) return false;
         if (parentQuestionId != that.parentQuestionId) return false;
         if (answerSymbol != that.answerSymbol) return false;
-        return questionDesc != null ? questionDesc.equals(that.questionDesc) : that.questionDesc == null;
+        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
+        return answerOption != null ? answerOption.equals(that.answerOption) : that.answerOption == null;
 
     }
 
@@ -63,6 +75,7 @@ public class UpdateQueRequest {
         result = 31 * result + parentAnswerId;
         result = 31 * result + parentQuestionId;
         result = 31 * result + answerSymbol;
+        result = 31 * result + (answerOption != null ? answerOption.hashCode() : 0);
         return result;
     }
 
@@ -75,6 +88,7 @@ public class UpdateQueRequest {
                 ", parentAnswerId=" + parentAnswerId +
                 ", parentQuestionId=" + parentQuestionId +
                 ", answerSymbol=" + answerSymbol +
+                ", answerOption=" + answerOption +
                 '}';
     }
 }

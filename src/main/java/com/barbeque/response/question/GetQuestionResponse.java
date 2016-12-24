@@ -1,6 +1,9 @@
 package com.barbeque.response.question;
 
+import com.barbeque.response.Answer.AnswerResponseList;
 import com.barbeque.response.util.GenericResponse;
+
+import java.util.List;
 
 /**
  * Created by System-2 on 12/20/2016.
@@ -15,9 +18,17 @@ public class GetQuestionResponse implements GenericResponse
     private int parentAnswerId;
     private int parentQuestionId;
     private int answerSymbol;
+    private List<AnswerResponseList> options;
     private String messageType;
     private Object message;
 
+    public List<AnswerResponseList> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<AnswerResponseList> options) {
+        this.options = options;
+    }
 
     public String getParentAnswerDesc() {return parentAnswerDesc;}
 
@@ -108,6 +119,7 @@ public class GetQuestionResponse implements GenericResponse
                 ", parentAnswerId=" + parentAnswerId +
                 ", parentQuestionId=" + parentQuestionId +
                 ", answerSymbol=" + answerSymbol +
+                ", options=" + options +
                 ", messageType='" + messageType + '\'' +
                 ", message=" + message +
                 '}';

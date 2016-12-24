@@ -108,4 +108,42 @@ public class AnswerDAO {
         }
         return answerDTOs;
     }
+
+    public Boolean updateAnswer(int id, String label, int rating) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE question_answer_link SET answer_desc =?, rating =? WHERE answer_id =?");
+
+            preparedStatement.setString(parameterIndex++, label);
+
+            preparedStatement.setInt(parameterIndex++, rating);
+
+            preparedStatement.setInt(parameterIndex++, id);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
 }

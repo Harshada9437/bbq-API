@@ -75,6 +75,8 @@ public class QuestionService {
         updateQueRequestBO.setParentQuestionId(updateQueRequest.getParentQuestionId());
         updateQueRequestBO.setParentAnswerId(updateQueRequest.getParentAnswerId());
         updateQueRequestBO.setAnswerSymbol(updateQueRequest.getAnswerSymbol());
+        updateQueRequestBO.setAnswerOption(updateQueRequest.getAnswerOption());
+
 
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
         MessageResponse messageResponse = new MessageResponse();

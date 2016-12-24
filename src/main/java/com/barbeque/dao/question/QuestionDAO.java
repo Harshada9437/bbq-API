@@ -71,15 +71,15 @@ public class QuestionDAO {
             statement = connection.createStatement();
             String query = "SELECT q.id,q.question_desc,q.question_type,q.parent_answer_id, a.answer_desc as parent_answer_desc, \n" +
                     "q.parent_question_id,(select question_desc from question_bank where id = q.parent_question_id) as parent_question_desc, q.answer_symbol FROM question_bank q\n" +
-                    "inner join question_answer_link a\n" +
+                    "left join question_answer_link a\n" +
                     "on q.parent_answer_id = a.answer_id";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 QuestionRequestDTO questionRequestDTO = new QuestionRequestDTO();
                 questionRequestDTO.setId(resultSet.getInt("id"));
                 questionRequestDTO.setQuestionDesc(resultSet.getString("question_desc"));
-                questionRequestDTO.setQuestionDesc(resultSet.getString("parent_question_desc"));
-                questionRequestDTO.setQuestionDesc(resultSet.getString("parent_answer_desc"));
+                questionRequestDTO.setParentQuestionDesc(resultSet.getString("parent_question_desc"));
+                questionRequestDTO.setParentAnswerDesc(resultSet.getString("parent_answer_desc"));
                 questionRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
                 questionRequestDTO.setParentQuestionId(resultSet.getInt("parent_question_id"));
                 questionRequestDTO.setParentAnswerId(resultSet.getInt("parent_answer_id"));

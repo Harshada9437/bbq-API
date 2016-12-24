@@ -2,11 +2,15 @@ package com.barbeque.requesthandler;
 
 import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.question.QuestionDAO;
+import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.QuestionRequestDTO;
+import com.barbeque.exceptions.AnswerNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.bo.QuestionRequestBO;
 import com.barbeque.request.bo.UpdateQueRequestBO;
 import com.barbeque.request.question.OptionsList;
+import com.barbeque.request.question.UpdateOptionsList;
+import com.barbeque.response.Answer.AnswerResponseList;
 import com.barbeque.response.question.GetQuestionResponse;
 import com.barbeque.response.question.QuestionResponse;
 
@@ -19,7 +23,7 @@ public class QuestionRequestHandler {
     public Integer addQuestion(QuestionRequestBO questionRequestBO) throws SQLException {
         QuestionDAO questionDAO = new QuestionDAO();
         int id = questionDAO.addQuestion(buildRequestDTOFromBO(questionRequestBO));
-        getAssignAnswer(id,questionRequestBO.getAnswerOption());
+        List<Integer> ansIds = getAssignAnswer(id,questionRequestBO.getAnswerOption());
 
         return id;
     }
@@ -66,10 +70,28 @@ public class QuestionRequestHandler {
         QuestionDAO questionDAO = new QuestionDAO();
         try {
             isProcessed = questionDAO.updateQuestion(buildDTOFromBO(updateQueRequestBO));
+            updateAnswer(updateQueRequestBO.getAnswerOption());
         } catch (SQLException sq) {
             isProcessed = false;
         }
         return isProcessed;
+    }
+
+    private Boolean updateAnswer(List<UpdateOptionsList> answerOption) throws SQLException {
+        Boolean isCreated = Boolean.FALSE;
+        Iterator<UpdateOptionsList> asnwerListIterator = answerOption.iterator();
+
+        AnswerDAO answerDAO=new AnswerDAO();
+        while (asnwerListIterator.hasNext())
+        {
+            UpdateOptionsList optionsList=new UpdateOptionsList();
+            optionsList=asnwerListIterator.next();
+
+            answerDAO.updateAnswer(optionsList.getId(),optionsList.getLabel(),optionsList.getRating());
+            isCreated=true;
+        }
+
+        return isCreated;
     }
 
     private QuestionRequestDTO buildDTOFromBO(UpdateQueRequestBO updateQueRequestBO) {
@@ -83,7 +105,7 @@ public class QuestionRequestHandler {
         return questionRequestDTO;
     }
 
-    public GetQuestionResponse getQuestionById(int id) throws SQLException, QuestionNotFoundException {
+    public GetQuestionResponse getQuestionById(int id) throws SQLException, QuestionNotFoundException, AnswerNotFoundException {
         QuestionDAO questionDAO = new QuestionDAO();
         GetQuestionResponse getQuestionResponse = new GetQuestionResponse();
         try {
@@ -94,7 +116,7 @@ public class QuestionRequestHandler {
         return getQuestionResponse;
     }
 
-    public GetQuestionResponse buildQuestionInfoDTOFromBO(QuestionRequestDTO questionRequestDTO) {
+    public GetQuestionResponse buildQuestionInfoDTOFromBO(QuestionRequestDTO questionRequestDTO) throws SQLException, AnswerNotFoundException {
         GetQuestionResponse getQuestionResponse = new GetQuestionResponse();
         getQuestionResponse.setId(questionRequestDTO.getId());
         getQuestionResponse.setAnswerSymbol(questionRequestDTO.getAnswerSymbol());
@@ -104,15 +126,17 @@ public class QuestionRequestHandler {
         getQuestionResponse.setParentQuestionDesc(questionRequestDTO.getParentQuestionDesc());
         getQuestionResponse.setParentAnswerDesc(questionRequestDTO.getParentAnswerDesc());
         getQuestionResponse.setQuestionType(questionRequestDTO.getQuestionType());
+        getQuestionResponse.setOptions(getAnswer(questionRequestDTO.getId()));
 
         return getQuestionResponse;
 
     }
 
-    public Boolean getAssignAnswer(int id, List<OptionsList>answerOption) throws SQLException {
+    public List<Integer> getAssignAnswer(int id, List<OptionsList>answerOption) throws SQLException {
 
-        Boolean isCreated = Boolean.FALSE;
+        int ansId = 0;
         Iterator<OptionsList> asnwerListIterator = answerOption.iterator();
+        List<Integer> ansIds = new ArrayList<Integer>();
 
         AnswerDAO answerDAO=new AnswerDAO();
         while (asnwerListIterator.hasNext())
@@ -120,10 +144,35 @@ public class QuestionRequestHandler {
             OptionsList optionsList=new OptionsList();
             optionsList=asnwerListIterator.next();
 
-            answerDAO.createAnswer(id,optionsList.getLabel(),optionsList.getRating());
-            isCreated=true;
+            ansId = answerDAO.createAnswer(id,optionsList.getLabel(),optionsList.getRating());
+            ansIds.add(ansId);
         }
 
-        return isCreated;
+        return ansIds;
+    }
+
+    public List<AnswerResponseList>getAnswer(int questionId)throws SQLException,AnswerNotFoundException
+    {
+        AnswerDAO answerDAO=new AnswerDAO();
+        List<AnswerResponseList>answerResponseLists=new ArrayList<AnswerResponseList>();
+        try{
+            answerResponseLists=getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
+        }catch (SQLException s) {
+            s.printStackTrace();
+        }
+        return answerResponseLists;
+    }
+    public List<AnswerResponseList>getAnswerListDTOFromBO(List<AnswerDTO>answerDTOs)throws SQLException
+    {
+        List<AnswerResponseList> answerResponseLists=new ArrayList<AnswerResponseList>();
+        Iterator<AnswerDTO>answerDTOIterator=answerDTOs.iterator();
+        while (answerDTOIterator.hasNext())
+        {
+            AnswerDTO answerDTO=answerDTOIterator.next();
+            AnswerResponseList answerResponseList=new AnswerResponseList(answerDTO.getQuestionId(),answerDTO.getAnswerDesc(),
+                    answerDTO.getRating(),answerDTO.getDescription(),answerDTO.getId());
+            answerResponseLists.add(answerResponseList);
+        }
+        return answerResponseLists;
     }
 }
