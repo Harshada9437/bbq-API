@@ -156,7 +156,7 @@ public class QuestionDAO {
             StringBuilder query = new StringBuilder(
                     "SELECT q.id,q.question_desc,q.question_type,q.parent_answer_id, a.answer_desc as parent_answer_desc, \n" +
                             "q.parent_question_id,(select question_desc from question_bank where id = q.parent_question_id) as parent_question_desc, q.answer_symbol FROM question_bank q\n" +
-                            "inner join question_answer_link a\n" +
+                            "left join question_answer_link a\n" +
                             "on q.parent_answer_id = a.answer_id\n" +
                             "where id = ")
                     .append(id);

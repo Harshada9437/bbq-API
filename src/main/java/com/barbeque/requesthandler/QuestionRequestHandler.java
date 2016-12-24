@@ -87,7 +87,7 @@ public class QuestionRequestHandler {
             UpdateOptionsList optionsList=new UpdateOptionsList();
             optionsList=asnwerListIterator.next();
 
-            answerDAO.updateAnswer(optionsList.getId(),optionsList.getLabel(),optionsList.getRating());
+            answerDAO.updateAnswer(optionsList.getAnswer_id(),optionsList.getAnswerDesc(),optionsList.getRating());
             isCreated=true;
         }
 

@@ -4,24 +4,24 @@ package com.barbeque.request.question;
  * Created by System-2 on 12/24/2016.
  */
 public class UpdateOptionsList {
-    private int id;
-    private String label;
+    private int answer_id;
+    private String answerDesc;
     private int rating;
 
-    public int getId() {
-        return id;
+    public int getAnswer_id() {
+        return answer_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setAnswer_id(int answer_id) {
+        this.answer_id = answer_id;
     }
 
-    public String getLabel() {
-        return label;
+    public String getAnswerDesc() {
+        return answerDesc;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setAnswerDesc(String answerDesc) {
+        this.answerDesc = answerDesc;
     }
 
     public int getRating() {
@@ -35,8 +35,8 @@ public class UpdateOptionsList {
     @Override
     public String toString() {
         return "UpdateOptionsList{" +
-                "id=" + id +
-                ", label='" + label + '\'' +
+                "answer_id=" + answer_id +
+                ", answerDesc='" + answerDesc + '\'' +
                 ", rating=" + rating +
                 '}';
     }
