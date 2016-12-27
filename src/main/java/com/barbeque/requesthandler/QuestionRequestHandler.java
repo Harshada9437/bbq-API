@@ -105,7 +105,7 @@ public class QuestionRequestHandler {
         return questionRequestDTO;
     }
 
-    public GetQuestionResponse getQuestionById(int id) throws SQLException, QuestionNotFoundException, AnswerNotFoundException {
+    public GetQuestionResponse getQuestionById(int id) throws SQLException, QuestionNotFoundException {
         QuestionDAO questionDAO = new QuestionDAO();
         GetQuestionResponse getQuestionResponse = new GetQuestionResponse();
         try {
@@ -116,7 +116,7 @@ public class QuestionRequestHandler {
         return getQuestionResponse;
     }
 
-    public GetQuestionResponse buildQuestionInfoDTOFromBO(QuestionRequestDTO questionRequestDTO) throws SQLException, AnswerNotFoundException {
+    public GetQuestionResponse buildQuestionInfoDTOFromBO(QuestionRequestDTO questionRequestDTO) throws SQLException, QuestionNotFoundException {
         GetQuestionResponse getQuestionResponse = new GetQuestionResponse();
         getQuestionResponse.setId(questionRequestDTO.getId());
         getQuestionResponse.setAnswerSymbol(questionRequestDTO.getAnswerSymbol());
@@ -151,7 +151,7 @@ public class QuestionRequestHandler {
         return ansIds;
     }
 
-    public List<AnswerResponseList>getAnswer(int questionId)throws SQLException,AnswerNotFoundException
+    public List<AnswerResponseList>getAnswer(int questionId)throws SQLException,QuestionNotFoundException
     {
         AnswerDAO answerDAO=new AnswerDAO();
         List<AnswerResponseList>answerResponseLists=new ArrayList<AnswerResponseList>();
@@ -170,7 +170,7 @@ public class QuestionRequestHandler {
         {
             AnswerDTO answerDTO=answerDTOIterator.next();
             AnswerResponseList answerResponseList=new AnswerResponseList(answerDTO.getQuestionId(),answerDTO.getAnswerDesc(),
-                    answerDTO.getRating(),answerDTO.getDescription(),answerDTO.getId());
+                    answerDTO.getRating(),answerDTO.getId());
             answerResponseLists.add(answerResponseList);
         }
         return answerResponseLists;

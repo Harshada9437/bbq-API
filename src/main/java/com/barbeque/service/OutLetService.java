@@ -5,7 +5,7 @@ import com.barbeque.request.bo.AssignOutletRequestBO;
 import com.barbeque.request.outlet.AssignOutletRequest;
 import com.barbeque.request.outlet.AssignoutletResponse;
 import com.barbeque.requesthandler.AssignOutletRequesthandler;
-import com.barbeque.response.FailureResponse;
+import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.outlet.OutletResponse;
 import com.barbeque.response.util.ResponseGenerator;
 
@@ -64,8 +64,8 @@ public class OutLetService
             return ResponseGenerator.generateSuccessResponse(outletResponse, "Template are available");
         } catch (TemplateNotFoundException e)
         {
-            FailureResponse failureResponse = new FailureResponse();
-            return ResponseGenerator.generateFailureResponse(failureResponse, "Template State ");
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Template State ");
 
         } catch (SQLException e) {
             e.printStackTrace();

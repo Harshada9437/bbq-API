@@ -1,12 +1,10 @@
-package com.barbeque.response;
+package com.barbeque.response.user;
+
 
 
 import com.barbeque.response.util.GenericResponse;
 
-/**
- * Created by System1 on 9/1/2016.
- */
-public class FailureResponse implements GenericResponse {
+public class LoginResponse implements GenericResponse {
     private String messageType;
     private String message;
 
@@ -14,23 +12,26 @@ public class FailureResponse implements GenericResponse {
         return messageType;
     }
 
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
-    }
-
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     @Override
     public String toString() {
-        return "FailureResponse{" +
+        return "LoginResponse{" +
                 "messageType='" + messageType + '\'' +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+
+    @Override
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    @Override
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

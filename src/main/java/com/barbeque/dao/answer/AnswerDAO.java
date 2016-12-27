@@ -3,6 +3,7 @@ package com.barbeque.dao.answer;
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.exceptions.AnswerNotFoundException;
+import com.barbeque.exceptions.QuestionNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class AnswerDAO {
         return id;
     }
 
-    public List<AnswerDTO> getAnswer(int questionId) throws SQLException, AnswerNotFoundException {
+    public List<AnswerDTO> getAnswer(int questionId) throws SQLException, QuestionNotFoundException {
         Connection connection = null;
         Statement statement = null;
         List<AnswerDTO> answerDTOs = new ArrayList<AnswerDTO>();
@@ -86,7 +87,6 @@ public class AnswerDAO {
             while (resultSet.next()) {
                 AnswerDTO answerDTO = new AnswerDTO();
                 answerDTO.setQuestionId(resultSet.getInt("question_id"));
-                answerDTO.setDescription(resultSet.getString("description"));
                 answerDTO.setId(resultSet.getInt("answer_id"));
                 answerDTO.setAnswerDesc(resultSet.getString("answer_desc"));
                 answerDTO.setRating(resultSet.getInt("rating"));

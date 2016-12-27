@@ -9,7 +9,7 @@ public class AnswerResponseList
     private int rating;
     private int answer_id;
 
-    public AnswerResponseList(int questionId, String answerDesc, int rating, String description, int answer_id) {
+    public AnswerResponseList(String answerDesc, int rating, int answer_id) {
         this.answerDesc = answerDesc;
         this.rating = rating;
         this.answer_id = answer_id;

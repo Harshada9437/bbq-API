@@ -6,9 +6,8 @@ import com.barbeque.request.question.QuestionRequest;
 import com.barbeque.request.bo.QuestionRequestBO;
 import com.barbeque.request.question.UpdateQueRequest;
 import com.barbeque.requesthandler.QuestionRequestHandler;
-import com.barbeque.response.FailureResponse;
-import com.barbeque.response.question.GetQuestionResponse;
 import com.barbeque.response.util.MessageResponse;
+import com.barbeque.response.question.GetQuestionResponse;
 import com.barbeque.response.question.QuestionResponseList;
 import com.barbeque.response.util.ResponseGenerator;
 
@@ -100,8 +99,8 @@ public class QuestionService {
             GetQuestionResponse questionResponse=questionRequestHandler.getQuestionById(id);
             return ResponseGenerator.generateSuccessResponse(questionResponse, "SUCCESS");
         }catch (QuestionNotFoundException e) {
-            FailureResponse failureResponse = new FailureResponse();
-            return ResponseGenerator.generateFailureResponse(failureResponse, "INVALID QuestionId ");
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID QuestionId ");
 
         } catch (SQLException e) {
             e.printStackTrace();
