@@ -2,8 +2,8 @@ package com.barbeque.requesthandler;
 
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dto.request.CustomerDTO;
-import com.barbeque.request.bo.CustomerRequestBO;
-import com.barbeque.request.bo.UpdateCustomerRequestBO;
+import com.barbeque.bo.CustomerRequestBO;
+import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.response.customer.CustomerResponse;
 
 import java.sql.SQLException;

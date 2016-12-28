@@ -1,7 +1,7 @@
 package com.barbeque.service;
 
-import com.barbeque.request.bo.CustomerRequestBO;
-import com.barbeque.request.bo.UpdateCustomerRequestBO;
+import com.barbeque.bo.CustomerRequestBO;
+import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.request.customer.CustomerRequest;
 import com.barbeque.request.customer.UpdateCustomerRequest;
 import com.barbeque.requesthandler.CustomerRequestHandler;

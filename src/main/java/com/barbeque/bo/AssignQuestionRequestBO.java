@@ -1,4 +1,4 @@
-package com.barbeque.request.bo;
+package com.barbeque.bo;
 
 /**
  * Created by System1 on 9/27/2016.

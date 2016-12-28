@@ -1,10 +1,9 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.dao.FeedbackDAO;
-import com.barbeque.dao.question.QuestionDAO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
-import com.barbeque.request.bo.FeedbackRequestBO;
-import com.barbeque.request.bo.UpdateFeedbackRequestBO;
+import com.barbeque.bo.FeedbackRequestBO;
+import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.response.feedback.FeedbackResponse;
 
 import java.sql.SQLException;

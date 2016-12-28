@@ -1,9 +1,9 @@
 package com.barbeque.service;
 
 import com.barbeque.exceptions.QuestionNotFoundException;
-import com.barbeque.request.bo.UpdateQueRequestBO;
+import com.barbeque.bo.UpdateQueRequestBO;
 import com.barbeque.request.question.QuestionRequest;
-import com.barbeque.request.bo.QuestionRequestBO;
+import com.barbeque.bo.QuestionRequestBO;
 import com.barbeque.request.question.UpdateQueRequest;
 import com.barbeque.requesthandler.QuestionRequestHandler;
 import com.barbeque.response.util.MessageResponse;

@@ -1,7 +1,7 @@
 package com.barbeque.service;
 
 import com.barbeque.exceptions.UserNotFoundException;
-import com.barbeque.request.bo.LoginRequestBO;
+import com.barbeque.bo.LoginRequestBO;
 import com.barbeque.request.user.LoginRequest;
 import com.barbeque.requesthandler.UserRequestHandler;
 import com.barbeque.response.user.LoginResponse;

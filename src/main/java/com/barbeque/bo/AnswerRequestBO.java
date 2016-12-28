@@ -1,4 +1,4 @@
-package com.barbeque.request.bo;
+package com.barbeque.bo;
 
 import com.barbeque.request.answer.AsnwerList;
 

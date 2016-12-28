@@ -4,10 +4,9 @@ import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.question.QuestionDAO;
 import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.QuestionRequestDTO;
-import com.barbeque.exceptions.AnswerNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
-import com.barbeque.request.bo.QuestionRequestBO;
-import com.barbeque.request.bo.UpdateQueRequestBO;
+import com.barbeque.bo.QuestionRequestBO;
+import com.barbeque.bo.UpdateQueRequestBO;
 import com.barbeque.request.question.OptionsList;
 import com.barbeque.request.question.UpdateOptionsList;
 import com.barbeque.response.Answer.AnswerResponseList;
@@ -169,7 +168,7 @@ public class QuestionRequestHandler {
         while (answerDTOIterator.hasNext())
         {
             AnswerDTO answerDTO=answerDTOIterator.next();
-            AnswerResponseList answerResponseList=new AnswerResponseList(answerDTO.getQuestionId(),answerDTO.getAnswerDesc(),
+            AnswerResponseList answerResponseList=new AnswerResponseList(answerDTO.getAnswerDesc(),
                     answerDTO.getRating(),answerDTO.getId());
             answerResponseLists.add(answerResponseList);
         }

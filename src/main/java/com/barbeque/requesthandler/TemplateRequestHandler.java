@@ -5,9 +5,9 @@ import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.request.QueTempDTO;
 import com.barbeque.dto.request.TemplateDTO;
 import com.barbeque.exceptions.TemplateNotFoundException;
-import com.barbeque.request.bo.AssignQuestionRequestBO;
-import com.barbeque.request.bo.TemplateRequestBO;
-import com.barbeque.request.bo.UpdateTemplateRequestBO;
+import com.barbeque.bo.AssignQuestionRequestBO;
+import com.barbeque.bo.TemplateRequestBO;
+import com.barbeque.bo.UpdateTemplateRequestBO;
 import com.barbeque.response.template.TempQueLResponse;
 import com.barbeque.response.template.TemplateResponseList;
 

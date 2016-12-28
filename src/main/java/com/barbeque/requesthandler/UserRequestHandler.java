@@ -3,7 +3,7 @@ package com.barbeque.requesthandler;
 import com.barbeque.dao.user.UsersDAO;
 import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.UserNotFoundException;
-import com.barbeque.request.bo.LoginRequestBO;
+import com.barbeque.bo.LoginRequestBO;
 import com.barbeque.response.user.LoginResponseBO;
 
 import java.sql.SQLException;

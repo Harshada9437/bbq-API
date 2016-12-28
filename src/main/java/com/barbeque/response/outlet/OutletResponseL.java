@@ -1,19 +1,35 @@
-package com.barbeque.dto.request;
+package com.barbeque.response.outlet;
 
 /**
- * Created by System-2 on 12/20/2016.
+ * Created by System-2 on 12/27/2016.
  */
-public class OutletListDTO
-{
-
+public class OutletResponseL {
     private int id;
     private String outletDesc;
     private String shortDesc;
     private int clusterId;
+    private String clusterName;
     private int regionId;
+    private String regionName;
     private int companyId;
+    private String companyName;
     private int  groupId;
+    private String  groupName;
+    private String  templateName;
     private int posStoreId;
+    private int templateId;
+
+    public String getTemplateName() {
+        return templateName;
+    }
+
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
+    public void setTemplateId(int templateId) {this.templateId = templateId;}
+
+    public int getTemplateId() {return templateId;}
 
     public int getId() {
         return id;
@@ -79,49 +95,39 @@ public class OutletListDTO
         this.posStoreId = posStoreId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public String getClusterName() {return clusterName;}
 
-        OutletListDTO that = (OutletListDTO) o;
+    public void setClusterName(String clusterName) {this.clusterName = clusterName;}
 
-        if (id != that.id) return false;
-        if (clusterId != that.clusterId) return false;
-        if (regionId != that.regionId) return false;
-        if (companyId != that.companyId) return false;
-        if (groupId != that.groupId) return false;
-        if (posStoreId != that.posStoreId) return false;
-        if (outletDesc != null ? !outletDesc.equals(that.outletDesc) : that.outletDesc != null) return false;
-        return shortDesc != null ? shortDesc.equals(that.shortDesc) : that.shortDesc == null;
+    public String getRegionName() {return regionName;}
 
-    }
+    public void setRegionName(String regionName) {this.regionName = regionName;}
 
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (outletDesc != null ? outletDesc.hashCode() : 0);
-        result = 31 * result + (shortDesc != null ? shortDesc.hashCode() : 0);
-        result = 31 * result + clusterId;
-        result = 31 * result + regionId;
-        result = 31 * result + companyId;
-        result = 31 * result + groupId;
-        result = 31 * result + posStoreId;
-        return result;
-    }
+    public String getCompanyName() {return companyName;}
+
+    public void setCompanyName(String companyName) {this.companyName = companyName;}
+
+    public String getGroupName() {return groupName;}
+
+    public void setGroupName(String groupName) {this.groupName = groupName;}
 
     @Override
     public String toString() {
-        return "OutletListDTO{" +
+        return "OutletResponseL{" +
                 "id=" + id +
                 ", outletDesc='" + outletDesc + '\'' +
                 ", shortDesc='" + shortDesc + '\'' +
                 ", clusterId=" + clusterId +
+                ", clusterName='" + clusterName + '\'' +
                 ", regionId=" + regionId +
+                ", regionName='" + regionName + '\'' +
                 ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
                 ", groupId=" + groupId +
+                ", groupName='" + groupName + '\'' +
+                ", templateName='" + templateName + '\'' +
                 ", posStoreId=" + posStoreId +
+                ", templateId=" + templateId +
                 '}';
     }
 }
-

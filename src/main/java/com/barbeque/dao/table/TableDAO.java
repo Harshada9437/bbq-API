@@ -13,7 +13,7 @@ import java.util.List;
  * Created by System-3 on 12/10/2016.
  */
 public class TableDAO {
-    public List<TableDTO> getTables() throws SQLException {
+    public List<TableDTO> getTables()  {
         Connection connection = null;
         Statement statement = null;
         List<TableDTO> tableDTOs = new ArrayList<TableDTO>();
@@ -35,7 +35,6 @@ public class TableDAO {
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
-            throw sqlException;
         } finally {
             try {
                 statement.close();

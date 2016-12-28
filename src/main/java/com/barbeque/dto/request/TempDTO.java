@@ -1,9 +1,9 @@
-package com.barbeque.request.bo;
+package com.barbeque.dto.request;
 
 /**
  * Created by System-2 on 12/20/2016.
  */
-public class AssignOutletRequestBO
+public class TempDTO
 {
 
     private int templateId;
@@ -39,11 +39,11 @@ public class AssignOutletRequestBO
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AssignOutletRequestBO that = (AssignOutletRequestBO) o;
+        TempDTO tempDTO = (TempDTO) o;
 
-        if (templateId != that.templateId) return false;
-        if (fromDate != null ? !fromDate.equals(that.fromDate) : that.fromDate != null) return false;
-        return toDate != null ? toDate.equals(that.toDate) : that.toDate == null;
+        if (templateId != tempDTO.templateId) return false;
+        if (fromDate != null ? !fromDate.equals(tempDTO.fromDate) : tempDTO.fromDate != null) return false;
+        return toDate != null ? toDate.equals(tempDTO.toDate) : tempDTO.toDate == null;
 
     }
 
@@ -57,7 +57,7 @@ public class AssignOutletRequestBO
 
     @Override
     public String toString() {
-        return "AssignOutletRequestBO{" +
+        return "TempDTO{" +
                 "templateId=" + templateId +
                 ", fromDate='" + fromDate + '\'' +
                 ", toDate='" + toDate + '\'' +

@@ -1,11 +1,9 @@
 package com.barbeque.request.outlet;
 
-import java.sql.Timestamp;
-
 /**
  * Created by System-2 on 12/20/2016.
  */
-public class AssignOutletRequest
+public class AssignTemplateRequest
 {
     private int templateId;
     private String fromDate;
@@ -40,7 +38,7 @@ public class AssignOutletRequest
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AssignOutletRequest that = (AssignOutletRequest) o;
+        AssignTemplateRequest that = (AssignTemplateRequest) o;
 
         if (templateId != that.templateId) return false;
         if (fromDate != null ? !fromDate.equals(that.fromDate) : that.fromDate != null) return false;
@@ -58,7 +56,7 @@ public class AssignOutletRequest
 
     @Override
     public String toString() {
-        return "AssignOutletRequest{" +
+        return "AssignTemplateRequest{" +
                 "templateId=" + templateId +
                 ", fromDate='" + fromDate + '\'' +
                 ", toDate='" + toDate + '\'' +

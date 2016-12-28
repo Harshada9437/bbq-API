@@ -1,9 +1,9 @@
 package com.barbeque.service;
 
 import com.barbeque.exceptions.TemplateNotFoundException;
-import com.barbeque.request.bo.AssignQuestionRequestBO;
-import com.barbeque.request.bo.TemplateRequestBO;
-import com.barbeque.request.bo.UpdateTemplateRequestBO;
+import com.barbeque.bo.AssignQuestionRequestBO;
+import com.barbeque.bo.TemplateRequestBO;
+import com.barbeque.bo.UpdateTemplateRequestBO;
 import com.barbeque.request.template.AssignQuestionRequest;
 import com.barbeque.request.template.TemplateRequest;
 import com.barbeque.request.template.UpdateTemplateRequest;
@@ -66,7 +66,7 @@ public class TemplateService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/assignQuestion/{template_id}")
+    @Path("/assignTemplate/{template_id}")
     public Response assignQuestion(AssignQuestionRequest assignQuestionRequest, @PathParam("template_id") int templateId) throws Exception {
         AssignQuestionRequestBO assignQuestionRequestBO = new AssignQuestionRequestBO();
         assignQuestionRequestBO.setQuestionId(assignQuestionRequest.getQuestionId());

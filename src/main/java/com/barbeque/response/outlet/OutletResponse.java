@@ -9,15 +9,15 @@ import java.util.List;
  */
 public class OutletResponse implements GenericResponse
 {
-    List<OutletResponseList> outletResponseList;
+    List<OutletResponseL> outletResponseList;
     private String message;
     private String messageType;
 
-    public List<OutletResponseList> getOutletResponseList() {
+    public List<OutletResponseL> getOutletResponseList() {
         return outletResponseList;
     }
 
-    public void setOutletResponseList(List<OutletResponseList> outletResponseList) {
+    public void setOutletResponseList(List<OutletResponseL> outletResponseList) {
         this.outletResponseList = outletResponseList;
     }
 

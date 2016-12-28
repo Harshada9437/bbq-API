@@ -1,7 +1,7 @@
 package com.barbeque.service;
 
-import com.barbeque.request.bo.FeedbackRequestBO;
-import com.barbeque.request.bo.UpdateFeedbackRequestBO;
+import com.barbeque.bo.FeedbackRequestBO;
+import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.request.feedback.FeedbackRequest;
 import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;

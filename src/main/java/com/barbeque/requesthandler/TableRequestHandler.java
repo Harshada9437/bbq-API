@@ -13,18 +13,13 @@ import java.util.List;
  * Created by System-2 on 12/26/2016.
  */
 public class TableRequestHandler {
-    public List<TableResponse> getStatus()throws SQLException
-    {
-        TableDAO statusDAO=new TableDAO();
+    public List<TableResponse> getTables() throws SQLException {
+        TableDAO tableDAO=new TableDAO();
         List<TableResponse> statusList = new ArrayList<TableResponse>();
-        try {
-            statusList = getStatusResponseListFromDTOs(statusDAO.getTables());
-        } catch (SQLException s) {
-            s.printStackTrace();
-        }
+        statusList = getResponseListFromDTOs(tableDAO.getTables());
         return statusList;
     }
-    private List<TableResponse> getStatusResponseListFromDTOs(List<TableDTO> tableDTOs) throws SQLException {
+    private List<TableResponse> getResponseListFromDTOs(List<TableDTO> tableDTOs) throws SQLException {
         List<TableResponse> tableResponseListResponse = new ArrayList<TableResponse>();
         Iterator<TableDTO> iterator = tableDTOs.iterator();
         while (iterator.hasNext()) {
