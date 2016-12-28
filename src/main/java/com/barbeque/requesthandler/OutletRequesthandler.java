@@ -102,6 +102,7 @@ public class OutletRequesthandler
         outletResponse.setRegionName(outletDTO.getRegionName());
         outletResponse.setCompanyName(outletDTO.getCompanyName());
         outletResponse.setTemplateName(outletDTO.getTemplateName());
+        outletResponse.setTableNoRange(outletDTO.getTableNoRange());
 
         return outletResponse;
     }
