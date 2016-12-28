@@ -128,6 +128,7 @@ public class OutletRequesthandler
         UpdateSettingsDTO updateSettingsDTO = new  UpdateSettingsDTO();
         updateSettingsDTO.setBannerUrl(updateSettingsRequestBO.getBannerUrl());
         updateSettingsDTO.setMobileNoLength(updateSettingsRequestBO.getMobileNoLength());
+        updateSettingsDTO.setTableNoRange(updateSettingsRequestBO.getTableNoRange());
         return updateSettingsDTO;
     }
 }

@@ -77,7 +77,7 @@ public class AnswerDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("SELECT qa.question_id,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
                     " FROM question_answer_link qa\n" +
-                    " INNER JOIN question_bank qb\n" +
+                    " left join question_bank qb\n" +
                     " ON\n" +
                     " qa.question_id=qb.id\n" +
                     " where question_id="+questionId);
@@ -125,6 +125,38 @@ public class AnswerDAO {
             preparedStatement.setInt(parameterIndex++, rating);
 
             preparedStatement.setInt(parameterIndex++, id);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
+
+
+    public Boolean deleteAnswer(int id) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("delete from question_answer_link WHERE answer_id = " + id);
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {

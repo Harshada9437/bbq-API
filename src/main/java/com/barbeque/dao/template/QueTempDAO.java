@@ -64,7 +64,7 @@ public class QueTempDAO {
             TemplateDAO.getTemplateById(templateId);
             StringBuilder query = new StringBuilder("SELECT m.id,m.question_id,q.question_desc,m.priority\n" +
                     "FROM template_question_link m\n" +
-                    "inner join question_bank q\n" +
+                    "left join question_bank q\n" +
                     "on q.id=m.question_id\n" +
                     "where m.template_id=" + templateId + "\n" +
                     "order by m.priority");

@@ -79,10 +79,14 @@ public class QuestionService {
 
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
-        if (questionRequestHandler.updateQuestion(updateQueRequestBO)) {
-            return ResponseGenerator.generateSuccessResponse(messageResponse, "Question updated successfully");
-        } else {
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the question.");
+        try {
+            if (questionRequestHandler.updateQuestion(updateQueRequestBO)) {
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Question updated successfully");
+            } else {
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the question.");
+            }
+        } catch (QuestionNotFoundException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid question id");
         }
     }
 

@@ -64,32 +64,40 @@ public class QuestionRequestHandler {
         return questionList;
     }
 
-    public boolean updateQuestion(UpdateQueRequestBO updateQueRequestBO) throws SQLException {
+    public boolean updateQuestion(UpdateQueRequestBO updateQueRequestBO) throws SQLException, QuestionNotFoundException {
         Boolean isProcessed = Boolean.FALSE;
         QuestionDAO questionDAO = new QuestionDAO();
         try {
             isProcessed = questionDAO.updateQuestion(buildDTOFromBO(updateQueRequestBO));
-            updateAnswer(updateQueRequestBO.getAnswerOption());
+            updateAnswer(updateQueRequestBO.getAnswerOption(),updateQueRequestBO.getId());
         } catch (SQLException sq) {
             isProcessed = false;
         }
         return isProcessed;
     }
 
-    private Boolean updateAnswer(List<UpdateOptionsList> answerOption) throws SQLException {
+    private Boolean updateAnswer(List<UpdateOptionsList> answerOption,int queId) throws SQLException, QuestionNotFoundException {
         Boolean isCreated = Boolean.FALSE;
-        Iterator<UpdateOptionsList> asnwerListIterator = answerOption.iterator();
+        Iterator<AnswerResponseList> storedAnsList = getAnswer(queId).iterator();
 
         AnswerDAO answerDAO=new AnswerDAO();
-        while (asnwerListIterator.hasNext())
-        {
-            UpdateOptionsList optionsList=new UpdateOptionsList();
-            optionsList=asnwerListIterator.next();
 
-            answerDAO.updateAnswer(optionsList.getAnswer_id(),optionsList.getAnswerDesc(),optionsList.getRating());
+        while(storedAnsList.hasNext()){
+            boolean isExist = false;
+            AnswerResponseList prevPptionList = storedAnsList.next();
+            for(int i = 0; i<answerOption.size();i++){
+                UpdateOptionsList optionsList = answerOption.get(i);
+                if(prevPptionList.getAnswer_id() == optionsList.getAnswer_id()){
+                    isExist = true;
+                    answerDAO.updateAnswer(optionsList.getAnswer_id(),optionsList.getAnswerDesc(),optionsList.getRating());
+                    break;
+                }
+            }
+            if(!isExist){
+                answerDAO.deleteAnswer(prevPptionList.getAnswer_id());
+            }
             isCreated=true;
         }
-
         return isCreated;
     }
 

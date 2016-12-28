@@ -66,13 +66,13 @@ public class TemplateService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/assignTemplate/{template_id}")
+    @Path("/assignQuestion/{template_id}")
     public Response assignQuestion(AssignQuestionRequest assignQuestionRequest, @PathParam("template_id") int templateId) throws Exception {
         AssignQuestionRequestBO assignQuestionRequestBO = new AssignQuestionRequestBO();
         assignQuestionRequestBO.setQuestionId(assignQuestionRequest.getQuestionId());
         assignQuestionRequestBO.setPriority(assignQuestionRequest.getPriority());
 
-        TempQueResponse tempQueResponse = new TempQueResponse();
+        MessageResponse tempQueResponse = new MessageResponse();
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         try {
             if (templateRequestHandler.assignQuestion(assignQuestionRequestBO, templateId)) {

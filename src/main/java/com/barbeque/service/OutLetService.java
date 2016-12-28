@@ -54,6 +54,7 @@ public class OutLetService {
         UpdateSettingsRequestBO updateSettingsRequestBO = new UpdateSettingsRequestBO();
         updateSettingsRequestBO.setMobileNoLength(updateSettingsRequest.getMobileNoLength());
         updateSettingsRequestBO.setBannerUrl(updateSettingsRequest.getBannerUrl());
+        updateSettingsRequestBO.setTableNoRange(updateSettingsRequest.getTableNoRange());
         MessageResponse assignoutletResponse = new MessageResponse();
         OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
         try {
