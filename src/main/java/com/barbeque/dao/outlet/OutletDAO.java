@@ -1,6 +1,7 @@
 package com.barbeque.dao.outlet;
 
 import com.barbeque.dao.ConnectionHandler;
+import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.UpdateSettingsDTO;
 import com.barbeque.dto.request.OutletDTO;
 import com.barbeque.dto.request.TempDTO;
@@ -25,35 +26,38 @@ public class OutletDAO {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement(query.toString());
-            preparedStatement.setInt(parameterIndex++,
-                    outletId);
-            preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());
-            preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
-            preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                isCreated = Boolean.TRUE;
-                connection.commit();
+            Boolean isExist = TemplateDAO.getTemplateByOutletId(outletId, connection);
+            if (isExist) {
+                updateOutletTemplateMap(tempDTO,outletId,connection);
             } else {
+                preparedStatement = connection
+                        .prepareStatement(query.toString());
+                preparedStatement.setInt(parameterIndex++,
+                        outletId);
+                preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());
+                preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
+                preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
+                int i = preparedStatement.executeUpdate();
+                if (i > 0) {
+                    isCreated = Boolean.TRUE;
+                    connection.commit();
+                } else {
+                    connection.rollback();
+                }
+            }
+            } catch(SQLException sqlException){
                 connection.rollback();
+                sqlException.printStackTrace();
+                throw sqlException;
+        }finally{
+                try {
+                    connection.close();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (SQLException sqlException) {
-            connection.rollback();
-            sqlException.printStackTrace();
-            throw sqlException;
-        } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
         return isCreated;
-
-
     }
 
     public List<OutletDTO> getOutlate() throws SQLException, TemplateNotFoundException {
@@ -278,6 +282,38 @@ public class OutletDAO {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+        return isCreated;
+    }
+
+    public Boolean updateOutletTemplateMap(TempDTO tempDTO, int outletId,Connection connection) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE outlet_template_link SET template_id=?,to_date =?, from_date =? WHERE outlet_id =?");
+
+            preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());
+
+            preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
+
+            preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
+
+            preparedStatement.setInt(parameterIndex++, outletId);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
         }
         return isCreated;
     }

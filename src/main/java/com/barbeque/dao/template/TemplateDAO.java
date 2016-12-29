@@ -178,5 +178,23 @@ public class TemplateDAO {
         return templateDTOs;
     }
 
+    public static Boolean getTemplateByOutletId(int outletId,Connection connection) throws SQLException {
+        Statement statement = null;
+        Boolean isExist = Boolean.FALSE;
+        try {
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT template_id FROM outlet_template_link where outlet_id = ").append(outletId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+                isExist = Boolean.TRUE;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return isExist;
+    }
 
 }
