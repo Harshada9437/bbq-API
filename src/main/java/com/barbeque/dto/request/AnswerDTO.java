@@ -10,6 +10,15 @@ public class AnswerDTO {
     private int questionId;
     private String answerDesc;
     private int rating;
+    private int weightage;
+
+    public int getWeightage() {
+        return weightage;
+    }
+
+    public void setWeightage(int weightage) {
+        this.weightage = weightage;
+    }
 
     public int getId() {
         return id;
@@ -53,6 +62,7 @@ public class AnswerDTO {
         if (id != answerDTO.id) return false;
         if (questionId != answerDTO.questionId) return false;
         if (rating != answerDTO.rating) return false;
+        if (weightage != answerDTO.weightage) return false;
         return answerDesc != null ? answerDesc.equals(answerDTO.answerDesc) : answerDTO.answerDesc == null;
 
     }
@@ -63,6 +73,7 @@ public class AnswerDTO {
         result = 31 * result + questionId;
         result = 31 * result + (answerDesc != null ? answerDesc.hashCode() : 0);
         result = 31 * result + rating;
+        result = 31 * result + weightage;
         return result;
     }
 
@@ -73,6 +84,7 @@ public class AnswerDTO {
                 ", questionId=" + questionId +
                 ", answerDesc='" + answerDesc + '\'' +
                 ", rating=" + rating +
+                ", weightage=" + weightage +
                 '}';
     }
 }

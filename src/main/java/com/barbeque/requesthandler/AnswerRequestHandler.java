@@ -31,7 +31,7 @@ public class AnswerRequestHandler {
         while (answerDTOIterator.hasNext()) {
             AnswerDTO answerDTO = answerDTOIterator.next();
             AnswerResponseList answerResponseList = new AnswerResponseList(answerDTO.getAnswerDesc(),
-                    answerDTO.getRating(), answerDTO.getId());
+                    answerDTO.getRating(), answerDTO.getId(),answerDTO.getWeightage());
             answerResponseLists.add(answerResponseList);
         }
         return answerResponseLists;

@@ -13,10 +13,10 @@ import java.util.List;
  * Created by System-2 on 12/15/2016.
  */
 public class AnswerDAO {
-    public Integer createAnswer(int queId,String ans, int rating) throws SQLException {
+    public Integer createAnswer(int queId,String ans, int rating, int weightage) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO question_answer_link(question_id , answer_desc, rating) values (?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO question_answer_link(question_id , answer_desc, rating, weightage) values (?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -30,7 +30,8 @@ public class AnswerDAO {
                     ans);
             preparedStatement.setInt(parameterIndex++,
                     rating);
-
+            preparedStatement.setInt(parameterIndex++,
+                    weightage);
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -75,7 +76,7 @@ public class AnswerDAO {
 
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT qa.question_id,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
+            StringBuilder query = new StringBuilder("SELECT qa.question_id,qa.weightage,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
                     " FROM question_answer_link qa\n" +
                     " left join question_bank qb\n" +
                     " ON\n" +
@@ -88,6 +89,7 @@ public class AnswerDAO {
                 AnswerDTO answerDTO = new AnswerDTO();
                 answerDTO.setQuestionId(resultSet.getInt("question_id"));
                 answerDTO.setId(resultSet.getInt("answer_id"));
+                answerDTO.setWeightage(resultSet.getInt("weightage"));
                 answerDTO.setAnswerDesc(resultSet.getString("answer_desc"));
                 answerDTO.setRating(resultSet.getInt("rating"));
                 index++;
@@ -109,7 +111,7 @@ public class AnswerDAO {
         return answerDTOs;
     }
 
-    public Boolean updateAnswer(int id, String label, int rating) throws SQLException {
+    public Boolean updateAnswer(int id, String label, int rating,int weightage) throws SQLException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -118,7 +120,9 @@ public class AnswerDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE question_answer_link SET answer_desc =?, rating =? WHERE answer_id =?");
+                    .prepareStatement("UPDATE question_answer_link SET weightage=?, answer_desc =?, rating =? WHERE answer_id =?");
+
+            preparedStatement.setInt(parameterIndex++, weightage);
 
             preparedStatement.setString(parameterIndex++, label);
 

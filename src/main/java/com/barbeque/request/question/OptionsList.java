@@ -7,7 +7,11 @@ public class OptionsList
 {
     private String label;
     private int rating;
+    private int weightage;
 
+    public int getWeightage() {return weightage;}
+
+    public void setWeightage(int weightage) {this.weightage = weightage;}
 
     public String getLabel() {
         return label;
@@ -30,6 +34,7 @@ public class OptionsList
         return "OptionsList{" +
                 "label='" + label + '\'' +
                 ", rating=" + rating +
+                ", weightage=" + weightage +
                 '}';
     }
 }

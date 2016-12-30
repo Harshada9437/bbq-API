@@ -7,6 +7,15 @@ public class UpdateOptionsList {
     private int answer_id;
     private String answerDesc;
     private int rating;
+    private int weightage;
+
+    public int getWeightage() {
+        return weightage;
+    }
+
+    public void setWeightage(int weightage) {
+        this.weightage = weightage;
+    }
 
     public int getAnswer_id() {
         return answer_id;
@@ -38,6 +47,7 @@ public class UpdateOptionsList {
                 "answer_id=" + answer_id +
                 ", answerDesc='" + answerDesc + '\'' +
                 ", rating=" + rating +
+                ", weightage=" + weightage +
                 '}';
     }
 }

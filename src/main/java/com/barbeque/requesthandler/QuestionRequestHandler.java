@@ -89,7 +89,7 @@ public class QuestionRequestHandler {
                 UpdateOptionsList optionsList = answerOption.get(i);
                 if(prevPptionList.getAnswer_id() == optionsList.getAnswer_id()){
                     isExist = true;
-                    answerDAO.updateAnswer(optionsList.getAnswer_id(),optionsList.getAnswerDesc(),optionsList.getRating());
+                    answerDAO.updateAnswer(optionsList.getAnswer_id(),optionsList.getAnswerDesc(),optionsList.getRating(),optionsList.getWeightage());
                     break;
                 }
             }
@@ -151,7 +151,7 @@ public class QuestionRequestHandler {
             OptionsList optionsList=new OptionsList();
             optionsList=asnwerListIterator.next();
 
-            ansId = answerDAO.createAnswer(id,optionsList.getLabel(),optionsList.getRating());
+            ansId = answerDAO.createAnswer(id,optionsList.getLabel(),optionsList.getRating(),optionsList.getWeightage());
             ansIds.add(ansId);
         }
 
@@ -177,7 +177,7 @@ public class QuestionRequestHandler {
         {
             AnswerDTO answerDTO=answerDTOIterator.next();
             AnswerResponseList answerResponseList=new AnswerResponseList(answerDTO.getAnswerDesc(),
-                    answerDTO.getRating(),answerDTO.getId());
+                    answerDTO.getRating(),answerDTO.getId(),answerDTO.getWeightage());
             answerResponseLists.add(answerResponseList);
         }
         return answerResponseLists;
