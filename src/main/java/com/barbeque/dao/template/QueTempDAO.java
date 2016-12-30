@@ -28,7 +28,7 @@ public class QueTempDAO {
             preparedStatement.setInt(parameterIndex++,
                     templateId);
             preparedStatement.setInt(parameterIndex++,
-                    queTempDTO.getQuestionId());
+                    queTempDTO.getQueId());
             preparedStatement.setFloat(parameterIndex++,
                     queTempDTO.getPriority());
             int i = preparedStatement.executeUpdate();
@@ -62,19 +62,28 @@ public class QueTempDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             TemplateDAO.getTemplateById(templateId);
-            StringBuilder query = new StringBuilder("SELECT m.id,m.question_id,q.question_desc,m.priority\n" +
-                    "FROM template_question_link m\n" +
+            StringBuilder query = new StringBuilder(" SELECT q.id,q.question_desc,q.question_type,q.parent_answer_id, a.answer_desc as parent_answer_desc,\n" +
+                    " q.parent_question_id,(select question_desc from question_bank where id = q.parent_question_id) as\n" +
+                    "parent_question_desc, q.answer_symbol,m.priority FROM \n" +
+                    "template_question_link m\n" +
                     "left join question_bank q\n" +
-                    "on q.id=m.question_id\n" +
+                    "on q.id = m.question_id\n" +
+                    "left join question_answer_link a\n" +
+                    "on q.parent_answer_id = a.answer_id\n" +
                     "where m.template_id=" + templateId + "\n" +
                     "order by m.priority");
             ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 QueTempDTO queTempDTO = new QueTempDTO();
-                queTempDTO.setId(resultSet.getInt("id"));
-                queTempDTO.setQuestionId(resultSet.getInt("question_id"));
-                queTempDTO.setQuestionText(resultSet.getString("question_desc"));
+                queTempDTO.setQueId(resultSet.getInt("id"));
+                queTempDTO.setAnswerSymbol(resultSet.getInt("answer_symbol"));
+                queTempDTO.setParentAnswerId(resultSet.getInt("parent_answer_id"));
+                queTempDTO.setParentQuestionId(resultSet.getInt("parent_question_id"));
+                queTempDTO.setQuestionDesc(resultSet.getString("question_desc"));
+                queTempDTO.setParentQuestionDesc(resultSet.getString("parent_question_desc"));
+                queTempDTO.setParentAnswerDesc(resultSet.getString("parent_answer_desc"));
+                queTempDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
                 queTempDTO.setPriority(resultSet.getInt("priority"));
                 queList.add(queTempDTO);
             }

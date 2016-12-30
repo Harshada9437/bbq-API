@@ -110,7 +110,7 @@ public class TemplateService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/deleteAssignQuestion/{template_id}/{question_id}")
-    public Response removeBatchDetails(@PathParam("template_id") int templateId, @PathParam("question_id") int queId) throws Exception {
+    public Response deleteAssignQuestion(@PathParam("template_id") int templateId, @PathParam("question_id") int queId) throws Exception {
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {
@@ -143,6 +143,5 @@ public class TemplateService {
             e.printStackTrace();
         }
         return ResponseGenerator.generateResponse(templateResponse);
-
     }
 }

@@ -4,11 +4,12 @@ import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.request.QueTempDTO;
 import com.barbeque.dto.request.TemplateDTO;
+import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.bo.AssignQuestionRequestBO;
 import com.barbeque.bo.TemplateRequestBO;
 import com.barbeque.bo.UpdateTemplateRequestBO;
-import com.barbeque.response.template.TempQueLResponse;
+import com.barbeque.response.template.QueResponse;
 import com.barbeque.response.template.TemplateResponseList;
 
 import java.sql.SQLException;
@@ -39,34 +40,40 @@ public class TemplateRequestHandler {
         return isCreated;
     }
 
-    private QueTempDTO buildDTOFromBO(AssignQuestionRequestBO batchRequestBO) {
+    private QueTempDTO buildDTOFromBO(AssignQuestionRequestBO assignQuestionRequestBO) {
         QueTempDTO queTempDTO = new QueTempDTO();
 
-        queTempDTO.setQuestionId(batchRequestBO.getQuestionId());
-        queTempDTO.setPriority(batchRequestBO.getPriority());
+        queTempDTO.setQueId(assignQuestionRequestBO.getQuestionId());
+        queTempDTO.setPriority(assignQuestionRequestBO.getPriority());
 
         return queTempDTO;
     }
 
-    public List<TempQueLResponse> getAssignedQuestions(int templateId) throws SQLException, TemplateNotFoundException {
-        List<TempQueLResponse> queList = new ArrayList<TempQueLResponse>();
+    public List<QueResponse> getAssignedQuestions(int templateId) throws SQLException, TemplateNotFoundException, QuestionNotFoundException {
         QueTempDAO queTempDAO = new QueTempDAO();
-        queList = getTempQueResponseListFromDTOs(queTempDAO.getAssignedQuestions(templateId));
+        List<QueResponse> queList = getTempQueResponseListFromDTOs(queTempDAO.getAssignedQuestions(templateId));
         return queList;
     }
 
-    private List<TempQueLResponse> getTempQueResponseListFromDTOs(List<QueTempDTO> QueTempDTOs) {
-        List<TempQueLResponse> tempQueLResponseList = new ArrayList<TempQueLResponse>();
+    private List<QueResponse> getTempQueResponseListFromDTOs(List<QueTempDTO> QueTempDTOs) throws QuestionNotFoundException, SQLException {
+        List<QueResponse> queResponses = new ArrayList<QueResponse>();
         Iterator<QueTempDTO> queTempDTOIterator = QueTempDTOs.iterator();
         while (queTempDTOIterator.hasNext()) {
             QueTempDTO queTempDTO = queTempDTOIterator.next();
-            TempQueLResponse tempQueLResponse = new TempQueLResponse(queTempDTO.getId(),
-                    queTempDTO.getQuestionId(),
-                    queTempDTO.getPriority(),
-                    queTempDTO.getQuestionText());
-            tempQueLResponseList.add(tempQueLResponse);
+            QueResponse queResponse = new QueResponse();
+            queResponse.setId(queTempDTO.getQueId());
+            queResponse.setAnswerSymbol(queTempDTO.getAnswerSymbol());
+            queResponse.setParentAnswerId(queTempDTO.getParentAnswerId());
+            queResponse.setParentQuestionId(queTempDTO.getParentQuestionId());
+            queResponse.setQuestionDesc(queTempDTO.getQuestionDesc());
+            queResponse.setParentQuestionDesc(queTempDTO.getParentQuestionDesc());
+            queResponse.setParentAnswerDesc(queTempDTO.getParentAnswerDesc());
+            queResponse.setQuestionType(queTempDTO.getQuestionType());
+            queResponse.setOptions(QuestionRequestHandler.getAnswer(queTempDTO.getQueId()));
+            queResponse.setPriority(queTempDTO.getPriority());
+            queResponses.add(queResponse);
         }
-        return tempQueLResponseList;
+        return queResponses;
     }
 
     public void removeQuestionDetails(int templateId, int queId) throws SQLException, TemplateNotFoundException {
@@ -75,7 +82,7 @@ public class TemplateRequestHandler {
     }
 
     public boolean updateTemplate(UpdateTemplateRequestBO updateTemplateRequestBO) {
-        Boolean isProcessed = Boolean.FALSE;
+        Boolean isProcessed;
         TemplateDAO templateDAO = new TemplateDAO();
         try {
             isProcessed = templateDAO.updateTemplate(buildUpdateBOFromDTO(updateTemplateRequestBO));
@@ -93,59 +100,27 @@ public class TemplateRequestHandler {
         return templateDTO;
     }
 
-    public List<TemplateResponseList>getTemplate()throws  SQLException,TemplateNotFoundException
-    {
-        TemplateDAO templateDAO=new TemplateDAO();
-        List<TemplateResponseList> templateResponseLists=new ArrayList<TemplateResponseList>();
-        try
-        {
-            templateResponseLists=getTemplateListDTOsFromBO(templateDAO.getTemplate());
-        }catch (SQLException s) {
+    public List<TemplateResponseList> getTemplate() throws SQLException, TemplateNotFoundException {
+        TemplateDAO templateDAO = new TemplateDAO();
+        List<TemplateResponseList> templateResponseLists = new ArrayList<TemplateResponseList>();
+        try {
+            templateResponseLists = getTemplateListDTOsFromBO(templateDAO.getTemplate());
+        } catch (SQLException s) {
             s.printStackTrace();
         }
         return templateResponseLists;
     }
 
-    public List<TemplateResponseList>getTemplateListDTOsFromBO(List<TemplateDTO>templateDTOs)throws SQLException
-    {
-        List<TemplateResponseList> templateResponseList=new ArrayList<TemplateResponseList>();
-        Iterator<TemplateDTO>templateDTOIterator=templateDTOs.iterator();
-        while (templateDTOIterator.hasNext())
-        {
-            TemplateDTO templateDTO=templateDTOIterator.next();
-            TemplateResponseList templateResponseList1=new TemplateResponseList(templateDTO.getId(),templateDTO.getOutletId(),
+    public List<TemplateResponseList> getTemplateListDTOsFromBO(List<TemplateDTO> templateDTOs) throws SQLException {
+        List<TemplateResponseList> templateResponseList = new ArrayList<TemplateResponseList>();
+        Iterator<TemplateDTO> templateDTOIterator = templateDTOs.iterator();
+        while (templateDTOIterator.hasNext()) {
+            TemplateDTO templateDTO = templateDTOIterator.next();
+            TemplateResponseList templateResponseList1 = new TemplateResponseList(templateDTO.getId(), templateDTO.getOutletId(),
                     templateDTO.getTemplateDesc(),
-                    templateDTO.getStatus(),templateDTO.getOutletDesc(),templateDTO.getShortDesc());
+                    templateDTO.getStatus(), templateDTO.getOutletDesc(), templateDTO.getShortDesc());
             templateResponseList.add(templateResponseList1);
         }
         return templateResponseList;
     }
-
-
-/*
-    public List<CourseResonse> getCoursesList() throws SQLException {
-        TemplateDAO courseDAO = new TemplateDAO();
-        List<CourseResonse> coursesList = new ArrayList<CourseResonse>();
-        try {
-            List<TemplateDTO> templateDTOList = courseDAO
-                    .getAllCourses();
-
-            for (TemplateDTO templateDTO : templateDTOList) {
-                CourseResonse getCourseResonse = new CourseResonse();
-                getCourseResonse.setId(templateDTO.getId());
-                getCourseResonse.setName(templateDTO.getTemplateDesc());
-                getCourseResonse.setDescription(templateDTO.getStatus());
-                getCourseResonse.setCode(templateDTO.getCode());
-                getCourseResonse.setAttendanceType(templateDTO.getAttendanceType());
-                getCourseResonse.setTotalWorkingDays(templateDTO.getTotalWorkingDays());
-                getCourseResonse.setSyllabusName(templateDTO.getAttendanceType());
-                getCourseResonse.setSubjectAssignType(templateDTO.getSubjectAssignType());
-                coursesList.add(getCourseResonse);
-            }
-        } catch (SQLException sq) {
-            sq.printStackTrace();
-        }
-        return coursesList;
-    }
-}*/
 }

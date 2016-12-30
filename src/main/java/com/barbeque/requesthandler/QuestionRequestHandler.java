@@ -158,7 +158,7 @@ public class QuestionRequestHandler {
         return ansIds;
     }
 
-    public List<AnswerResponseList>getAnswer(int questionId)throws SQLException,QuestionNotFoundException
+    public static List<AnswerResponseList>getAnswer(int questionId)throws SQLException,QuestionNotFoundException
     {
         AnswerDAO answerDAO=new AnswerDAO();
         List<AnswerResponseList>answerResponseLists=new ArrayList<AnswerResponseList>();
@@ -169,7 +169,7 @@ public class QuestionRequestHandler {
         }
         return answerResponseLists;
     }
-    public List<AnswerResponseList>getAnswerListDTOFromBO(List<AnswerDTO>answerDTOs)throws SQLException
+    public static List<AnswerResponseList>getAnswerListDTOFromBO(List<AnswerDTO>answerDTOs)throws SQLException
     {
         List<AnswerResponseList> answerResponseLists=new ArrayList<AnswerResponseList>();
         Iterator<AnswerDTO>answerDTOIterator=answerDTOs.iterator();

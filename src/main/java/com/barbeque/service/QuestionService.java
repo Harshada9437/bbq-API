@@ -56,9 +56,9 @@ public class QuestionService {
     public Response getQuestionList() throws Exception {
 
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
-        QuestionResponseList subjectResponseList = new QuestionResponseList();
-        subjectResponseList.setQuestions(questionRequestHandler.getQuestionList());
-        return ResponseGenerator.generateSuccessResponse(subjectResponseList, "List of questions.");
+        QuestionResponseList questionResponseList = new QuestionResponseList();
+        questionResponseList.setQuestions(questionRequestHandler.getQuestionList());
+        return ResponseGenerator.generateSuccessResponse(questionResponseList, "List of questions.");
     }
 
     @POST

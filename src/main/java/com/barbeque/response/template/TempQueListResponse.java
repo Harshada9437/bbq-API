@@ -8,15 +8,15 @@ import java.util.List;
  * Created by System1 on 9/30/2016.
  */
 public class TempQueListResponse implements GenericResponse {
-    private List<TempQueLResponse> questions;
+    private List<QueResponse> questions;
     private String message;
     private String messageType;
 
-    public List<TempQueLResponse> getQuestions() {
+    public List<QueResponse> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<TempQueLResponse> questions) {
+    public void setQuestions(List<QueResponse> questions) {
         this.questions = questions;
     }
 

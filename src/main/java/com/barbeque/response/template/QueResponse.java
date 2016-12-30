@@ -1,15 +1,14 @@
-package com.barbeque.dto.request;
+package com.barbeque.response.template;
 
 import com.barbeque.response.Answer.AnswerResponseList;
 
 import java.util.List;
 
 /**
- * Created by System1 on 9/27/2016.
+ * Created by System-2 on 12/30/2016.
  */
-public class QueTempDTO {
-    private int tempId;
-    private int queId;
+public class QueResponse {
+    private int id;
     private String parentAnswerDesc;
     private String parentQuestionDesc;
     private String questionDesc;
@@ -19,14 +18,6 @@ public class QueTempDTO {
     private int answerSymbol;
     private List<AnswerResponseList> options;
     private int priority;
-
-    public int getTempId() {
-        return tempId;
-    }
-
-    public void setTempId(int tempId) {
-        this.tempId = tempId;
-    }
 
     public int getPriority() {
         return priority;
@@ -52,12 +43,12 @@ public class QueTempDTO {
 
     public void setParentQuestionDesc(String parentQuestionDesc) {this.parentQuestionDesc = parentQuestionDesc;}
 
-    public int getQueId() {
-        return queId;
+    public int getId() {
+        return id;
     }
 
-    public void setQueId(int queId) {
-        this.queId = queId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getQuestionDesc() {
@@ -100,51 +91,10 @@ public class QueTempDTO {
         this.answerSymbol = answerSymbol;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        QueTempDTO that = (QueTempDTO) o;
-
-        if (tempId != that.tempId) return false;
-        if (queId != that.queId) return false;
-        if (questionType != that.questionType) return false;
-        if (parentAnswerId != that.parentAnswerId) return false;
-        if (parentQuestionId != that.parentQuestionId) return false;
-        if (answerSymbol != that.answerSymbol) return false;
-        if (priority != that.priority) return false;
-        if (parentAnswerDesc != null ? !parentAnswerDesc.equals(that.parentAnswerDesc) : that.parentAnswerDesc != null)
-            return false;
-        if (parentQuestionDesc != null ? !parentQuestionDesc.equals(that.parentQuestionDesc) : that.parentQuestionDesc != null)
-            return false;
-        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
-        return options != null ? options.equals(that.options) : that.options == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = tempId;
-        result = 31 * result + queId;
-        result = 31 * result + (parentAnswerDesc != null ? parentAnswerDesc.hashCode() : 0);
-        result = 31 * result + (parentQuestionDesc != null ? parentQuestionDesc.hashCode() : 0);
-        result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
-        result = 31 * result + (int) questionType;
-        result = 31 * result + parentAnswerId;
-        result = 31 * result + parentQuestionId;
-        result = 31 * result + answerSymbol;
-        result = 31 * result + (options != null ? options.hashCode() : 0);
-        result = 31 * result + priority;
-        return result;
-    }
-
     @Override
     public String toString() {
-        return "QueTempDTO{" +
-                "tempId=" + tempId +
-                ", queId=" + queId +
+        return "QueResponse{" +
+                "id=" + id +
                 ", parentAnswerDesc='" + parentAnswerDesc + '\'' +
                 ", parentQuestionDesc='" + parentQuestionDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
@@ -153,7 +103,6 @@ public class QueTempDTO {
                 ", parentQuestionId=" + parentQuestionId +
                 ", answerSymbol=" + answerSymbol +
                 ", options=" + options +
-                ", priority=" + priority +
                 '}';
     }
 }
