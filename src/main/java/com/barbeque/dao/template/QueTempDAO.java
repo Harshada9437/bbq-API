@@ -118,5 +118,34 @@ public class QueTempDAO {
         statement.close();
         connection.close();
     }
+
+    public static boolean isAlreadyAssigned(int questionId, int templateId) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        boolean isExist = false;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT template_id FROM template_question_link where template_id = ").append(templateId).append(" and question_id=").append(questionId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+                isExist = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isExist;
+    }
 }
 

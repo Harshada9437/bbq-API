@@ -2,6 +2,7 @@ package com.barbeque.service;
 
 import com.barbeque.bo.CustomerRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
+import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.request.customer.CustomerRequest;
 import com.barbeque.request.customer.UpdateCustomerRequest;
 import com.barbeque.requesthandler.CustomerRequestHandler;
@@ -35,12 +36,13 @@ public class CustomerService {
         MessageResponse messageResponse = new MessageResponse();
         CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
         try {
-            int customerId = customerRequestHandler.addCustomer(customerRequestBO);
-            if (customerId > 0) {
+            String mobile = customerRequestBO.getPhoneNo();
+            String email = customerRequestBO.getEmailId();
+            if (!CustomerDAO.getValidationForPhoneNumber(mobile, email)) {
+                int customerId = customerRequestHandler.addCustomer(customerRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(customerId));
             } else {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Customer creation failed.");
-
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Mobile number or email already exist.");
             }
         } catch (SQLException sqlException) {
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Customer creation failed.");

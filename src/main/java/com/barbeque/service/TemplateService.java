@@ -1,5 +1,6 @@
 package com.barbeque.service;
 
+import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.bo.AssignQuestionRequestBO;
 import com.barbeque.bo.TemplateRequestBO;
@@ -75,10 +76,11 @@ public class TemplateService {
         MessageResponse tempQueResponse = new MessageResponse();
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         try {
-            if (templateRequestHandler.assignQuestion(assignQuestionRequestBO, templateId)) {
+            if (!QueTempDAO.isAlreadyAssigned(assignQuestionRequest.getQuestionId(),templateId)) {
+                templateRequestHandler.assignQuestion(assignQuestionRequestBO, templateId);
                 return ResponseGenerator.generateSuccessResponse(tempQueResponse, "Questions are assigned");
             } else {
-                return ResponseGenerator.generateFailureResponse(tempQueResponse, "Assign question Failed");
+                return ResponseGenerator.generateFailureResponse(tempQueResponse, "Questiuon is already assigned.");
             }
         } catch (SQLException sqlException) {
             return ResponseGenerator.generateFailureResponse(tempQueResponse, "Assign question Failed");
