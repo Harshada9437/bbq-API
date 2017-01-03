@@ -1,10 +1,12 @@
 package com.barbeque.dao;
 
 import com.barbeque.dto.request.FeedbackRequestDTO;
+import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -20,8 +22,8 @@ public class FeedbackDAO {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            StringBuilder query = new StringBuilder("INSERT INTO feedback( outlet_id, date, customer_id, question_id, answer_id, answer_text, rating, table_no, bill_no, modified_on");
-            query.append(")values (?,?,?,?,?,?,?,?,?,?)");
+            StringBuilder query = new StringBuilder("INSERT INTO feedback_head( outlet_id, date, customer_id, table_no, bill_no, modified_on");
+            query.append(")values (?,?,?,?,?,?)");
 
             preparedStatement = connection.prepareStatement(query.toString());
 
@@ -31,14 +33,6 @@ public class FeedbackDAO {
             preparedStatement.setTimestamp(parameterIndex++, date);
 
             preparedStatement.setInt(parameterIndex++, customerId);
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getQuestionId());
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getAnswerId());
-
-            preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getAnswerText());
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getRating());
 
             preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getTableNo());
 
@@ -84,6 +78,64 @@ public class FeedbackDAO {
         return id;
     }
 
+
+    public int createFeedbackDetail(int feedback_id, int question_id, int answer_id, String answer_text, int rating) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        StringBuilder query = new StringBuilder("INSERT INTO feedback(feedback_id , question_id, answer_id, answer_text, rating) values (?,?,?,?, ?)");
+        Integer id = 0;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement(query.toString());
+            preparedStatement.setInt(parameterIndex++,
+                    feedback_id);
+            preparedStatement.setInt(parameterIndex++,
+                    question_id);
+            preparedStatement.setInt(parameterIndex++,
+                    answer_id);
+            preparedStatement.setString(parameterIndex++,
+                    answer_text);
+            preparedStatement.setInt(parameterIndex++,
+                    rating);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+
+            try {
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    id = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException(
+                            "Creating feddback row failed, no ID obtained.");
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+                throw e;
+            }
+        } catch (SQLException sqlException) {
+            connection.rollback();
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return id;
+    }
+
     public Boolean updateQuestion(FeedbackRequestDTO feedbackRequestDTO)throws SQLException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
@@ -93,20 +145,11 @@ public class FeedbackDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE feedback SET date=?, customer_id=?, question_id=?," +
-                            " answer_id=? ,answer_text=?, rating=?, table_no=?, bill_no=?, modified_on=? WHERE feedback_id =?");
+                    .prepareStatement("UPDATE feedback_head SET date=?, customer_id=?, table_no=?, bill_no=?, modified_on=? WHERE feedback_id =?");
 
             preparedStatement.setString(parameterIndex++, String.valueOf(feedbackRequestDTO.getDate()));
 
             preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getCustomerId());
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getQuestionId());
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getAnswerId());
-
-            preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getAnswerText());
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getRating());
 
             preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getTableNo());
 
@@ -157,10 +200,6 @@ public class FeedbackDAO {
                 feedbackRequestDTO.setDate(date);
                 feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
                 feedbackRequestDTO.setCustomerId(resultSet.getInt("customer_id"));
-                feedbackRequestDTO.setQuestionId(resultSet.getInt("question_id"));
-                feedbackRequestDTO.setAnswerId(resultSet.getInt("answer_id"));
-                feedbackRequestDTO.setAnswerText(resultSet.getString("answer_text"));
-                feedbackRequestDTO.setRating(resultSet.getInt("rating"));
                 feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
                 feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));
                 String createDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on"));

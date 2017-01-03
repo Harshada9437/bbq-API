@@ -37,12 +37,23 @@ public class CustomerService {
         CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
         try {
             String mobile = customerRequestBO.getPhoneNo();
-            String email = customerRequestBO.getEmailId();
-            if (!CustomerDAO.getValidationForPhoneNumber(mobile, email)) {
+            int isExistingCustomer = CustomerDAO.getValidationForPhoneNumber(mobile);
+            if (isExistingCustomer == 0) {
                 int customerId = customerRequestHandler.addCustomer(customerRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(customerId));
             } else {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Mobile number or email already exist.");
+                UpdateCustomerRequestBO updateCustomerRequestBO = new UpdateCustomerRequestBO();
+                updateCustomerRequestBO.setId(isExistingCustomer);
+                updateCustomerRequestBO.setName(customerRequestBO.getName());
+                updateCustomerRequestBO.setPhoneNo(customerRequestBO.getPhoneNo());
+                updateCustomerRequestBO.setEmailId(customerRequestBO.getEmailId());
+                updateCustomerRequestBO.setDob(customerRequestBO.getDob());
+                updateCustomerRequestBO.setDoa(customerRequestBO.getDoa());
+                if (customerRequestHandler.updateCustomer(updateCustomerRequestBO)) {
+                    return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(isExistingCustomer));
+                } else {
+                    return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the customer.");
+                }
             }
         } catch (SQLException sqlException) {
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Customer creation failed.");

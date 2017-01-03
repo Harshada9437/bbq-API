@@ -1,5 +1,9 @@
 package com.barbeque.response.feedback;
 
+import com.barbeque.request.feedback.FeedbackDetails;
+
+import java.util.List;
+
 /**
  * Created by System-2 on 12/14/2016.
  */
@@ -7,10 +11,7 @@ public class FeedbackResponse {
     private int id;
     private int outletId;
     private String date;
-    private int questionId;
-    private int answerId;
-    private String answerText;
-    private int rating;
+    private List<FeedbackDetails> feedbacks;
     private String tableNo;
     private String billNo;
     private String createdOn;
@@ -22,13 +23,9 @@ public class FeedbackResponse {
 
     public String getDate() {return date;}
 
-    public int getQuestionId() {return questionId;}
-
-    public int getAnswerId() {return answerId;}
-
-    public String getAnswerText() {return answerText;}
-
-    public int getRating() {return rating;}
+    public List<FeedbackDetails> getFeedbacks() {
+        return feedbacks;
+    }
 
     public String getTableNo() {return tableNo;}
 
@@ -38,14 +35,11 @@ public class FeedbackResponse {
 
     public String getModifiedOn() {return modifiedOn;}
 
-    public FeedbackResponse(int id, int outletId, String date, int questionId, int answerId, String answerText, int rating, String tableNo, String billNo, String createdOn, String modifiedOn) {
+    public FeedbackResponse(int id, int outletId, String date, List<FeedbackDetails> feedbacks, String tableNo, String billNo, String createdOn, String modifiedOn) {
         this.id = id;
         this.outletId = outletId;
         this.date = date;
-        this.questionId = questionId;
-        this.answerId = answerId;
-        this.answerText = answerText;
-        this.rating = rating;
+        this.feedbacks = feedbacks;
         this.tableNo = tableNo;
         this.billNo = billNo;
         this.createdOn = createdOn;
@@ -58,10 +52,7 @@ public class FeedbackResponse {
                 "id=" + id +
                 ", outletId=" + outletId +
                 ", date='" + date + '\'' +
-                ", questionId=" + questionId +
-                ", answerId=" + answerId +
-                ", answerText='" + answerText + '\'' +
-                ", rating=" + rating +
+                ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
                 ", billNo='" + billNo + '\'' +
                 ", createdOn='" + createdOn + '\'' +

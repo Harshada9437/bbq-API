@@ -31,8 +31,6 @@ public class QuestionService {
         questionRequestBO.setAnswerSymbol(questionRequest.getAnswerSymbol());
         questionRequestBO.setAnswerOption(questionRequest.getAnswerOption());
 
-
-
         MessageResponse messageResponse = new MessageResponse();
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
         try {

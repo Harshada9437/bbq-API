@@ -26,12 +26,9 @@ public class FeedbackService {
     public Response addFeedback(FeedbackRequest feedbackRequest, @PathParam("customer_id") int customerId) throws SQLException {
         FeedbackRequestBO feedbackRequestBO = new FeedbackRequestBO();
         feedbackRequestBO.setOutletId(feedbackRequest.getOutletId());
-        feedbackRequestBO.setQuestionId(feedbackRequest.getQuestionId());
-        feedbackRequestBO.setAnswerId(feedbackRequest.getAnswerId());
-        feedbackRequestBO.setAnswerText(feedbackRequest.getAnswerText());
+        feedbackRequestBO.setFeedbacks(feedbackRequest.getFeedbacks());
         feedbackRequestBO.setTableNo(feedbackRequest.getTableNo());
         feedbackRequestBO.setBillNo(feedbackRequest.getBillNo());
-        feedbackRequestBO.setRating(feedbackRequest.getRating());
         feedbackRequestBO.setDate(feedbackRequest.getDate());
 
         MessageResponse messageResponse = new MessageResponse();

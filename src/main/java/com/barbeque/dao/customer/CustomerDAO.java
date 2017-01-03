@@ -155,20 +155,20 @@ public class CustomerDAO {
         return isCreated;
     }
 
-    public static Boolean getValidationForPhoneNumber(String mobile, String email) throws SQLException {
+    public static int getValidationForPhoneNumber(String mobile) throws SQLException {
         Connection connection = null;
         Statement statement = null;
-        Boolean isProcessed = Boolean.FALSE;
+        int isProcessed = 0;
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT phone_no,email_id FROM customer where phone_no = \"" + mobile + "\"" + " or email_id=\"" + email + "\"");
+                    "SELECT id, phone_no,email_id FROM customer where phone_no = \"" + mobile + "\"");
             ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
-                isProcessed = true;
+                isProcessed = resultSet.getInt("id");
                 connection.commit();
             }
         } catch (SQLException sqlException) {
