@@ -19,7 +19,7 @@ public class FeedbackRequestHandler {
     public Integer addFeedback(FeedbackRequestBO feedbackRequestBO, int customerId) throws SQLException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         int id = feedbackDAO.addFeedback(buildFeedbackRequestDTOFromBO(feedbackRequestBO), customerId);
-        List<Integer> ansIds = assignFeedbacks(id,feedbackRequestBO.getFeedbacks());
+        assignFeedbacks(id,feedbackRequestBO.getFeedbacks());
         return id;
     }
 
@@ -35,21 +35,15 @@ public class FeedbackRequestHandler {
         return feedbackRequestDTO;
     }
 
-    public List<Integer> assignFeedbacks(int id, List<FeedbackDetails> feedbackDetails) throws SQLException {
+    public void assignFeedbacks(int id, List<FeedbackDetails> feedbackDetails) throws SQLException {
 
         int feedId = 0;
         Iterator<FeedbackDetails> feedbackDetailsIterator = feedbackDetails.iterator();
-        List<Integer> feedIds = new ArrayList<Integer>();
-
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         while (feedbackDetailsIterator.hasNext()) {
             FeedbackDetails feedbackDetailsObj = feedbackDetailsIterator.next();
-
-            feedId = feedbackDAO.createFeedbackDetail(id, feedbackDetailsObj.getQuestionId(), feedbackDetailsObj.getAnswerId(), feedbackDetailsObj.getAnswerText(),  feedbackDetailsObj.getRating() );
-            feedIds.add(feedId);
+            feedbackDAO.createFeedbackDetail(id, feedbackDetailsObj.getQuestionId(), feedbackDetailsObj.getAnswerId(), feedbackDetailsObj.getAnswerText(),  feedbackDetailsObj.getRating() );
         }
-
-        return feedIds;
     }
 
     public Boolean updateFeedback(UpdateFeedbackRequestBO updateFeedbackRequestBO) throws SQLException {

@@ -108,19 +108,6 @@ public class FeedbackDAO {
                 connection.rollback();
             }
 
-            try {
-                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    id = generatedKeys.getInt(1);
-                } else {
-                    throw new SQLException(
-                            "Creating feddback row failed, no ID obtained.");
-                }
-            } catch (SQLException e) {
-                connection.rollback();
-                e.printStackTrace();
-                throw e;
-            }
         } catch (SQLException sqlException) {
             connection.rollback();
             sqlException.printStackTrace();
