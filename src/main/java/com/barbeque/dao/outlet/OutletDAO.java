@@ -28,7 +28,7 @@ public class OutletDAO {
             connection.setAutoCommit(false);
             Boolean isExist = TemplateDAO.getTemplateByOutletId(outletId, connection);
             if (isExist) {
-                updateOutletTemplateMap(tempDTO,outletId,connection);
+                isCreated = updateOutletTemplateMap(tempDTO, outletId, connection);
             } else {
                 preparedStatement = connection
                         .prepareStatement(query.toString());
@@ -45,18 +45,19 @@ public class OutletDAO {
                     connection.rollback();
                 }
             }
-            } catch(SQLException sqlException){
-                connection.rollback();
-                sqlException.printStackTrace();
-                throw sqlException;
-        }finally{
-                try {
-                    connection.close();
+        } catch (SQLException sqlException) {
+            connection.rollback();
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                if (preparedStatement != null)
                     preparedStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+        }
         return isCreated;
     }
 
@@ -294,7 +295,7 @@ public class OutletDAO {
         return isCreated;
     }
 
-    public Boolean updateOutletTemplateMap(TempDTO tempDTO, int outletId,Connection connection) throws SQLException {
+    public Boolean updateOutletTemplateMap(TempDTO tempDTO, int outletId, Connection connection) throws SQLException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         try {

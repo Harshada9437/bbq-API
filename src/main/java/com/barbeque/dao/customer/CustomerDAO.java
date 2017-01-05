@@ -12,7 +12,7 @@ import java.util.List;
  * Created by System-2 on 12/15/2016.
  */
 public class CustomerDAO {
-    public Integer addCustomer(CustomerDTO customerDTO) throws SQLException {
+    public Integer addCustomer(String name,String PhoneNo,String emailId,String dob,String doa ) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO customer(name, phone_no, email_id, dob, doa, modified_on) values (?,?,?,?,?,?)");
@@ -23,11 +23,11 @@ public class CustomerDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(query.toString());
 
-            preparedStatement.setString(parameterIndex++, customerDTO.getName());
-            preparedStatement.setString(parameterIndex++, customerDTO.getPhoneNo());
-            preparedStatement.setString(parameterIndex++, customerDTO.getEmailId());
-            preparedStatement.setString(parameterIndex++, customerDTO.getDob());
-            preparedStatement.setString(parameterIndex++, customerDTO.getDoa());
+            preparedStatement.setString(parameterIndex++, name);
+            preparedStatement.setString(parameterIndex++, PhoneNo);
+            preparedStatement.setString(parameterIndex++, emailId);
+            preparedStatement.setString(parameterIndex++, dob);
+            preparedStatement.setString(parameterIndex++, doa);
 
             java.util.Date date1 = new java.util.Date();
             Timestamp t1 = new Timestamp(date1.getTime());

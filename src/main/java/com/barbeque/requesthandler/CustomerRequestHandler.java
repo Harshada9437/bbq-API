@@ -14,7 +14,7 @@ import java.util.List;
  * Created by System-2 on 12/15/2016.
  */
 public class CustomerRequestHandler {
-    public Integer addCustomer(CustomerRequestBO customerRequestBO) throws SQLException {
+   /* public Integer addCustomer(CustomerRequestBO customerRequestBO) throws SQLException {
         CustomerDAO customerDAO = new CustomerDAO();
         int id = customerDAO.addCustomer(buildRequestDTOFromBO(customerRequestBO));
         return id;
@@ -30,7 +30,7 @@ public class CustomerRequestHandler {
         customerDTO.setDoa(customerRequestBO.getDoa());
 
         return customerDTO;
-    }
+    }*/
 
     public boolean updateCustomer(UpdateCustomerRequestBO updateCustomerRequestBO) {
         Boolean isProcessed = Boolean.FALSE;

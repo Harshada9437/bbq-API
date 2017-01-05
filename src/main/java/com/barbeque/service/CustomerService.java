@@ -21,7 +21,7 @@ import java.sql.SQLException;
 
 @Path("/customer")
 public class CustomerService {
-    @POST
+   /* @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/create")
@@ -58,7 +58,7 @@ public class CustomerService {
         } catch (SQLException sqlException) {
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Customer creation failed.");
         }
-    }
+    }*/
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

@@ -22,7 +22,7 @@ public class QuestionRequestHandler {
     public Integer addQuestion(QuestionRequestBO questionRequestBO) throws SQLException {
         QuestionDAO questionDAO = new QuestionDAO();
         int id = questionDAO.addQuestion(buildRequestDTOFromBO(questionRequestBO));
-        List<Integer> ansIds = getAssignAnswer(id,questionRequestBO.getAnswerOption());
+        List<Integer> ansIds = getAssignAnswer(id, questionRequestBO.getAnswerOption());
 
         return id;
     }
@@ -39,6 +39,9 @@ public class QuestionRequestHandler {
 
         return questionRequestDTO;
     }
+
+
+
 
     public List<QuestionResponse> getQuestionList() {
         QuestionDAO questionDAO = new QuestionDAO();
@@ -69,36 +72,55 @@ public class QuestionRequestHandler {
         QuestionDAO questionDAO = new QuestionDAO();
         try {
             isProcessed = questionDAO.updateQuestion(buildDTOFromBO(updateQueRequestBO));
-            updateAnswer(updateQueRequestBO.getAnswerOption(),updateQueRequestBO.getId());
+            updateAnswer(updateQueRequestBO.getAnswerOption(), updateQueRequestBO.getId());
         } catch (SQLException sq) {
             isProcessed = false;
         }
         return isProcessed;
     }
 
-    private Boolean updateAnswer(List<UpdateOptionsList> answerOption,int queId) throws SQLException, QuestionNotFoundException {
+    private Boolean updateAnswer(List<UpdateOptionsList> answerOption, int queId) throws SQLException, QuestionNotFoundException {
         Boolean isCreated = Boolean.FALSE;
-        Iterator<AnswerResponseList> storedAnsList = getAnswer(queId).iterator();
+        List<AnswerResponseList> savedList = getAnswer(queId);
+        AnswerDAO answerDAO = new AnswerDAO();
 
-        AnswerDAO answerDAO=new AnswerDAO();
-
-        while(storedAnsList.hasNext()){
-            boolean isExist = false;
-            AnswerResponseList prevPptionList = storedAnsList.next();
-            for(int i = 0; i<answerOption.size();i++){
-                UpdateOptionsList optionsList = answerOption.get(i);
-                if(prevPptionList.getAnswer_id() == optionsList.getAnswer_id()){
-                    isExist = true;
-                    answerDAO.updateAnswer(optionsList.getAnswer_id(),optionsList.getAnswerDesc(),optionsList.getRating(),optionsList.getWeightage());
-                    break;
-                }
+        for (int i = 0; i < answerOption.size(); i++) {
+            UpdateOptionsList optionItem = answerOption.get(i);
+            if (!isAnswerInDB(optionItem.getAnswer_id(), savedList)) {
+                answerDAO.createAnswer(queId, optionItem.getAnswerDesc(), optionItem.getRating(), optionItem.getWeightage());
+            } else {
+                answerDAO.updateAnswer(optionItem.getAnswer_id(), optionItem.getAnswerDesc(), optionItem.getRating(), optionItem.getWeightage());
             }
-            if(!isExist){
-                answerDAO.deleteAnswer(prevPptionList.getAnswer_id());
-            }
-            isCreated=true;
+            isCreated = true;
         }
+
+        //DELETE AFTER PROCESSING
+        for (int j = 0; j < savedList.size(); j++){
+            AnswerResponseList savedItem = savedList.get(j);
+            if (!isAnswerInPayload(savedItem.getAnswer_id(), answerOption)) {
+                answerDAO.deleteAnswer(savedItem.getAnswer_id());
+            }
+        }
+
         return isCreated;
+    }
+
+    private boolean isAnswerInDB(int ansId, List<AnswerResponseList> ansList) {
+        for (int i = 0; i < ansList.size(); i++) {
+            if (ansList.get(i).getAnswer_id() == ansId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isAnswerInPayload(int ansId, List<UpdateOptionsList> ansList) {
+        for (int i = 0; i < ansList.size(); i++) {
+            if (ansList.get(i).getAnswer_id() == ansId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private QuestionRequestDTO buildDTOFromBO(UpdateQueRequestBO updateQueRequestBO) {
@@ -139,45 +161,42 @@ public class QuestionRequestHandler {
 
     }
 
-    public List<Integer> getAssignAnswer(int id, List<OptionsList>answerOption) throws SQLException {
+    public List<Integer> getAssignAnswer(int id, List<OptionsList> answerOption) throws SQLException {
 
         int ansId = 0;
         Iterator<OptionsList> asnwerListIterator = answerOption.iterator();
         List<Integer> ansIds = new ArrayList<Integer>();
 
-        AnswerDAO answerDAO=new AnswerDAO();
-        while (asnwerListIterator.hasNext())
-        {
-            OptionsList optionsList=new OptionsList();
-            optionsList=asnwerListIterator.next();
+        AnswerDAO answerDAO = new AnswerDAO();
+        while (asnwerListIterator.hasNext()) {
+            OptionsList optionsList = new OptionsList();
+            optionsList = asnwerListIterator.next();
 
-            ansId = answerDAO.createAnswer(id,optionsList.getLabel(),optionsList.getRating(),optionsList.getWeightage());
+            ansId = answerDAO.createAnswer(id, optionsList.getLabel(), optionsList.getRating(), optionsList.getWeightage());
             ansIds.add(ansId);
         }
 
         return ansIds;
     }
 
-    public static List<AnswerResponseList>getAnswer(int questionId)throws SQLException,QuestionNotFoundException
-    {
-        AnswerDAO answerDAO=new AnswerDAO();
-        List<AnswerResponseList>answerResponseLists=new ArrayList<AnswerResponseList>();
-        try{
-            answerResponseLists=getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
-        }catch (SQLException s) {
+    public static List<AnswerResponseList> getAnswer(int questionId) throws SQLException, QuestionNotFoundException {
+        AnswerDAO answerDAO = new AnswerDAO();
+        List<AnswerResponseList> answerResponseLists = new ArrayList<AnswerResponseList>();
+        try {
+            answerResponseLists = getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
+        } catch (SQLException s) {
             s.printStackTrace();
         }
         return answerResponseLists;
     }
-    public static List<AnswerResponseList>getAnswerListDTOFromBO(List<AnswerDTO>answerDTOs)throws SQLException
-    {
-        List<AnswerResponseList> answerResponseLists=new ArrayList<AnswerResponseList>();
-        Iterator<AnswerDTO>answerDTOIterator=answerDTOs.iterator();
-        while (answerDTOIterator.hasNext())
-        {
-            AnswerDTO answerDTO=answerDTOIterator.next();
-            AnswerResponseList answerResponseList=new AnswerResponseList(answerDTO.getAnswerDesc(),
-                    answerDTO.getRating(),answerDTO.getId(),answerDTO.getWeightage());
+
+    public static List<AnswerResponseList> getAnswerListDTOFromBO(List<AnswerDTO> answerDTOs) throws SQLException {
+        List<AnswerResponseList> answerResponseLists = new ArrayList<AnswerResponseList>();
+        Iterator<AnswerDTO> answerDTOIterator = answerDTOs.iterator();
+        while (answerDTOIterator.hasNext()) {
+            AnswerDTO answerDTO = answerDTOIterator.next();
+            AnswerResponseList answerResponseList = new AnswerResponseList(answerDTO.getAnswerDesc(),
+                    answerDTO.getRating(), answerDTO.getId(), answerDTO.getWeightage());
             answerResponseLists.add(answerResponseList);
         }
         return answerResponseLists;

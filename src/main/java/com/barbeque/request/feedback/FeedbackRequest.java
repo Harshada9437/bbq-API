@@ -1,5 +1,7 @@
 package com.barbeque.request.feedback;
 
+import com.barbeque.response.feedback.CreateCustomer;
+
 import java.util.List;
 
 /**
@@ -11,6 +13,7 @@ public class FeedbackRequest {
     private List<FeedbackDetails> feedbacks;
     private String tableNo;
     private String billNo;
+    public CreateCustomer customer;
 
     public int getOutletId() {return outletId;}
 
@@ -36,6 +39,14 @@ public class FeedbackRequest {
         this.feedbacks = feedbacks;
     }
 
+    public CreateCustomer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CreateCustomer customer) {
+        this.customer = customer;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,7 +58,8 @@ public class FeedbackRequest {
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (feedbacks != null ? !feedbacks.equals(that.feedbacks) : that.feedbacks != null) return false;
         if (tableNo != null ? !tableNo.equals(that.tableNo) : that.tableNo != null) return false;
-        return billNo != null ? billNo.equals(that.billNo) : that.billNo == null;
+        if (billNo != null ? !billNo.equals(that.billNo) : that.billNo != null) return false;
+        return customer != null ? customer.equals(that.customer) : that.customer == null;
     }
 
     @Override
@@ -57,6 +69,7 @@ public class FeedbackRequest {
         result = 31 * result + (feedbacks != null ? feedbacks.hashCode() : 0);
         result = 31 * result + (tableNo != null ? tableNo.hashCode() : 0);
         result = 31 * result + (billNo != null ? billNo.hashCode() : 0);
+        result = 31 * result + (customer != null ? customer.hashCode() : 0);
         return result;
     }
 
@@ -68,6 +81,7 @@ public class FeedbackRequest {
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
                 ", billNo='" + billNo + '\'' +
+                ", customer=" + customer +
                 '}';
     }
 }

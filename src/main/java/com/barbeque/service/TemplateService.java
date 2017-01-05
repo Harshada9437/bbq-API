@@ -1,5 +1,6 @@
 package com.barbeque.service;
 
+import com.barbeque.bo.UpdateAssignQuestionRequestBO;
 import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.bo.AssignQuestionRequestBO;
@@ -7,6 +8,7 @@ import com.barbeque.bo.TemplateRequestBO;
 import com.barbeque.bo.UpdateTemplateRequestBO;
 import com.barbeque.request.template.AssignQuestionRequest;
 import com.barbeque.request.template.TemplateRequest;
+import com.barbeque.request.template.UpdateAssignQuestionRequest;
 import com.barbeque.request.template.UpdateTemplateRequest;
 import com.barbeque.requesthandler.TemplateRequestHandler;
 import com.barbeque.response.util.MessageResponse;
@@ -64,6 +66,7 @@ public class TemplateService {
         }
     }
 
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -106,6 +109,32 @@ public class TemplateService {
             e.printStackTrace();
         }
         return ResponseGenerator.generateResponse(response);
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/updateteAssignQuestion")
+    public Response getUpdatedAssignedQuestions(UpdateAssignQuestionRequest updateAssignQuestionRequest) throws Exception {
+
+        UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO = new UpdateAssignQuestionRequestBO();
+        updateAssignQuestionRequestBO.setQuestionId(updateAssignQuestionRequest.getQuestionId());
+        updateAssignQuestionRequestBO.setPriority(updateAssignQuestionRequest.getPriority());
+        updateAssignQuestionRequestBO.setTemplateId(updateAssignQuestionRequest.getTemplateId());
+
+
+        MessageResponse messageResponse = new MessageResponse();
+        TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
+        try
+        {   if (!QueTempDAO.isAssigned(updateAssignQuestionRequest.getPriority())) {
+            templateRequestHandler.updateAssignQuestion(updateAssignQuestionRequestBO);
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Priority of question updated successfully");
+        } else {
+            return ResponseGenerator.generateFailureResponse(messageResponse, " Priority of question already assign.");
+        }
+    }catch (SQLException sqlException) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update Priority of question");
+        }
     }
 
     @DELETE

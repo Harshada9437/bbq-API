@@ -22,19 +22,20 @@ public class FeedbackService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/create/{customer_id}")
-    public Response addFeedback(FeedbackRequest feedbackRequest, @PathParam("customer_id") int customerId) throws SQLException {
+    @Path("/create")
+    public Response addFeedback(FeedbackRequest feedbackRequest) throws SQLException {
         FeedbackRequestBO feedbackRequestBO = new FeedbackRequestBO();
         feedbackRequestBO.setOutletId(feedbackRequest.getOutletId());
         feedbackRequestBO.setFeedbacks(feedbackRequest.getFeedbacks());
         feedbackRequestBO.setTableNo(feedbackRequest.getTableNo());
         feedbackRequestBO.setBillNo(feedbackRequest.getBillNo());
         feedbackRequestBO.setDate(feedbackRequest.getDate());
+        feedbackRequestBO.setCustomer(feedbackRequest.getCustomer());
 
         MessageResponse messageResponse = new MessageResponse();
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         try {
-            int feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO, customerId);
+            int feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO);
             if (feedbackId > 0) {
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(feedbackId));
             } else {

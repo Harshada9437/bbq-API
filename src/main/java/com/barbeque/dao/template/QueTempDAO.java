@@ -119,6 +119,8 @@ public class QueTempDAO {
         connection.close();
     }
 
+
+
     public static boolean isAlreadyAssigned(int questionId, int templateId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
@@ -146,6 +148,75 @@ public class QueTempDAO {
             }
         }
         return isExist;
+    }
+
+    public static boolean isAssigned(int priority) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        boolean isExist = false;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT priority FROM template_question_link where priority = ").append(priority);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+                isExist = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isExist;
+    }
+
+    public Boolean updateupdateAssignQuestion (UpdateAssignQuestionDTO updateAssignQuestionDTO) throws SQLException
+    {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE template_question_link SET priority=? WHERE template_id =? and question_id =?;");
+
+            preparedStatement.setInt(parameterIndex++, updateAssignQuestionDTO.getPriority());
+            preparedStatement.setInt(parameterIndex++, updateAssignQuestionDTO.getTemplateId());
+            preparedStatement.setInt(parameterIndex++, updateAssignQuestionDTO.getQuestionId());
+
+
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
     }
 }
 

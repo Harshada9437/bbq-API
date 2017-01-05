@@ -1,14 +1,17 @@
 package com.barbeque.requesthandler;
 
+import com.barbeque.bo.UpdateAssignQuestionRequestBO;
 import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.request.QueTempDTO;
 import com.barbeque.dto.request.TemplateDTO;
+import com.barbeque.dto.request.UpdateAssignQuestionDTO;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.bo.AssignQuestionRequestBO;
 import com.barbeque.bo.TemplateRequestBO;
 import com.barbeque.bo.UpdateTemplateRequestBO;
+import com.barbeque.request.template.UpdateAssignQuestionRequest;
 import com.barbeque.response.template.QueResponse;
 import com.barbeque.response.template.TemplateResponseList;
 
@@ -99,6 +102,28 @@ public class TemplateRequestHandler {
         templateDTO.setStatus(updateTemplateRequestBO.getStatus());
         return templateDTO;
     }
+
+    public boolean updateAssignQuestion(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO)
+    {
+        Boolean isProcessed;
+        QueTempDAO queTempDAO = new QueTempDAO();
+        try {
+            isProcessed = queTempDAO.updateupdateAssignQuestion(buildUpdateBOFromDTO(updateAssignQuestionRequestBO));
+        } catch (SQLException sq) {
+            isProcessed = false;
+        }
+        return isProcessed;
+    }
+
+    private UpdateAssignQuestionDTO buildUpdateBOFromDTO(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO)
+    {
+        UpdateAssignQuestionDTO updateAssignQuestionDTO=new UpdateAssignQuestionDTO();
+        updateAssignQuestionDTO.setTemplateId(updateAssignQuestionRequestBO.getTemplateId());
+        updateAssignQuestionDTO.setPriority(updateAssignQuestionRequestBO.getPriority());
+        updateAssignQuestionDTO.setQuestionId(updateAssignQuestionRequestBO.getQuestionId());
+        return updateAssignQuestionDTO;
+    }
+
 
     public List<TemplateResponseList> getTemplate() throws SQLException, TemplateNotFoundException {
         TemplateDAO templateDAO = new TemplateDAO();
