@@ -169,6 +169,11 @@ public class OutletDAO {
                 outletDTO.setTemplateId(resultSet.getInt("template_id"));
                 index++;
             }
+
+            if(index == 1){
+                throw new OutletNotFoundException("Invalid id");
+            }
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             throw sqlException;
@@ -231,6 +236,9 @@ public class OutletDAO {
                 outletDTO.setPosStoreId(resultSet.getInt("pos_store_id"));
                 outletDTO.setTemplateId(resultSet.getInt("template_id"));
                 index++;
+            }
+            if(index == 1){
+             throw new OutletNotFoundException("Invalid id");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();

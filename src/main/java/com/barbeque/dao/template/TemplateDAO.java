@@ -142,12 +142,12 @@ public class TemplateDAO {
 
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT t.template_id,ol.outlet_id,t.template_desc,t.status,o.outlet_desc, o.short_desc\n" +
+            StringBuilder query = new StringBuilder("SELECT  t.template_id,ol.outlet_id,t.template_desc,t.status,o.outlet_desc, o.short_desc\n" +
                     "from template t\n" +
                     "left JOIN outlet_template_link ol ON\n" +
-                    "t.template_id=ol.outlet_id\n" +
+                    "t.template_id=ol.template_id\n" +
                     "left join outlet o\n" +
-                    "on ol.outlet_id=o.id; ");
+                    "on ol.outlet_id=o.id;");
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
             int index = 1;
