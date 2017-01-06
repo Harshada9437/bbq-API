@@ -15,21 +15,21 @@ public class FeedbackRequest {
     private String billNo;
     public CreateCustomer customer;
 
-    public int getOutletId() {return outletId;}
+    public int getOutletId() {
+        return outletId;
+    }
 
-    public void setOutletId(int outletId) {this.outletId = outletId;}
+    public void setOutletId(int outletId) {
+        this.outletId = outletId;
+    }
 
-    public String getDate() {return date;}
+    public String getDate() {
+        return date;
+    }
 
-    public void setDate(String date) {this.date = date;}
-
-    public String getTableNo() {return tableNo;}
-
-    public void setTableNo(String tableNo) {this.tableNo = tableNo;}
-
-    public String getBillNo() {return billNo;}
-
-    public void setBillNo(String billNo) {this.billNo = billNo;}
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public List<FeedbackDetails> getFeedbacks() {
         return feedbacks;
@@ -37,6 +37,22 @@ public class FeedbackRequest {
 
     public void setFeedbacks(List<FeedbackDetails> feedbacks) {
         this.feedbacks = feedbacks;
+    }
+
+    public String getTableNo() {
+        return tableNo;
+    }
+
+    public void setTableNo(String tableNo) {
+        this.tableNo = tableNo;
+    }
+
+    public String getBillNo() {
+        return billNo;
+    }
+
+    public void setBillNo(String billNo) {
+        this.billNo = billNo;
     }
 
     public CreateCustomer getCustomer() {

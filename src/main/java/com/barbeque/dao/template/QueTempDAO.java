@@ -150,7 +150,7 @@ public class QueTempDAO {
         return isExist;
     }
 
-    public static boolean isAssigned(int priority) throws SQLException {
+   /* public static boolean isAssigned(int priority) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         boolean isExist = false;
@@ -178,7 +178,7 @@ public class QueTempDAO {
         }
         return isExist;
     }
-
+*/
     public Boolean updateupdateAssignQuestion (UpdateAssignQuestionDTO updateAssignQuestionDTO) throws SQLException
     {
         boolean isCreated = false;

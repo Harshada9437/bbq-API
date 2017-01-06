@@ -156,10 +156,11 @@ public class FeedbackRequestHandler {
         while (feedbackRequestDTOIterator.hasNext())
         {
             AnswerDTO answerDTO=feedbackRequestDTOIterator.next();
-            FeedbackDetails feedbackResponse=new FeedbackDetails(answerDTO.getQuestionId(),
-                    answerDTO.getId(),
-                    answerDTO.getAnswerDesc(),
-                    answerDTO.getRating());
+            FeedbackDetails feedbackResponse=new FeedbackDetails();
+            feedbackResponse.setQuestionId(answerDTO.getQuestionId());
+            feedbackResponse.setAnswerId(answerDTO.getId());
+            feedbackResponse.setAnswerText(answerDTO.getAnswerDesc());
+            feedbackResponse.setRating(answerDTO.getRating());
             feedbackDetailss.add(feedbackResponse);
         }
         return  feedbackDetailss;

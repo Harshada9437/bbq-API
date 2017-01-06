@@ -9,12 +9,7 @@ public class FeedbackDetails {
     private String answerText;
     private int rating;
 
-    public FeedbackDetails(int questionId, int answerId, String answerText, int rating) {
-        this.questionId = questionId;
-        this.answerId = answerId;
-        this.answerText = answerText;
-        this.rating = rating;
-    }
+
 
     public int getQuestionId() {
         return questionId;

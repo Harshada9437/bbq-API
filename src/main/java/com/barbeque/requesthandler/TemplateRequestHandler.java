@@ -105,7 +105,7 @@ public class TemplateRequestHandler {
         return templateDTO;
     }
 
-    public boolean updateAssignQuestion(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO)
+    public boolean updateAssignQuestion(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO) throws SQLException
     {
         Boolean isProcessed;
         QueTempDAO queTempDAO = new QueTempDAO();

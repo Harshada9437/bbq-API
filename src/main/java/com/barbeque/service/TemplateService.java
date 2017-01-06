@@ -126,12 +126,12 @@ public class TemplateService {
         MessageResponse messageResponse = new MessageResponse();
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         try
-        {   if (!QueTempDAO.isAssigned(updateAssignQuestionRequest.getPriority())) {
+        {
             templateRequestHandler.updateAssignQuestion(updateAssignQuestionRequestBO);
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Priority of question updated successfully");
-        } else {
+         /*else {
             return ResponseGenerator.generateFailureResponse(messageResponse, " Priority of question already assign.");
-        }
+        }*/
     }catch (SQLException sqlException) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update Priority of question");
         }
