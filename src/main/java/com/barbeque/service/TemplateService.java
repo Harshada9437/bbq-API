@@ -175,4 +175,22 @@ public class TemplateService {
         }
         return ResponseGenerator.generateResponse(templateResponse);
     }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/templateInfo/{template_id}/{outlet_id}")
+    public Response getOutletByStoreId(@PathParam("template_id") int templateId, @PathParam("outlet_id") int outletId) throws Exception {
+        TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            GetTemplateResponse response = templateRequestHandler.getTemplateById(templateId,outletId);
+            return ResponseGenerator.generateSuccessResponse(response, "Template Information");
+        } catch (TemplateNotFoundException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template id ");
+
+        } catch (SQLException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving outlet details. ");
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.barbeque.dao;
 
+import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
@@ -178,21 +179,29 @@ public class FeedbackDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            String query = "SELECT * FROM feedback";
+            String query = "select fh.id,fh.customer_id,fh.created_on,fh.modified_on,fh.outlet_id,fh.date,fh.table_no,fh.bill_no,\n" +
+                    "c.name,c.phone_no,o.outlet_desc\n" +
+                    " from feedback_head fh\n" +
+                    "left join customer c\n" +
+                    "on fh.customer_id=c.id\n" +
+                    "left join outlet o\n" +
+                    "on fh.outlet_id=o.id";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
-                feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
-                String date = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("date"));
-                feedbackRequestDTO.setDate(date);
-                feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
+                feedbackRequestDTO.setId(resultSet.getInt("id"));
                 feedbackRequestDTO.setCustomerId(resultSet.getInt("customer_id"));
-                feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
-                feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));
                 String createDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on"));
                 feedbackRequestDTO.setCreatedOn(createDate);
                 String modifyDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("modified_on"));
+                feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
+                feedbackRequestDTO.setDate(resultSet.getString("date"));
+                feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
+                feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));
+                feedbackRequestDTO.setCustomerName(resultSet.getString("name"));
+                feedbackRequestDTO.setMobileNo(resultSet.getString("phone_no"));
                 feedbackRequestDTO.setModifiedOn(modifyDate);
+                feedbackRequestDTO.setOutletDesc(resultSet.getString("outlet_desc"));
                 feedbackList.add(feedbackRequestDTO);
             }
         } catch (SQLException sqlException) {
@@ -207,5 +216,41 @@ public class FeedbackDAO {
             }
         }
         return feedbackList;
+    }
+
+    public List<AnswerDTO>getfeedback()throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        List<AnswerDTO> answerDTOS = new ArrayList<AnswerDTO>();
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            String query = "select f.question_id,f.answer_id,f.answer_text,f.rating\n" +
+                    " from feedback f\n" +
+                    "left join feedback_head fh\n" +
+                    "on f.feedback_id = fh.id";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                AnswerDTO answerDTO = new AnswerDTO();
+                answerDTO.setId(resultSet.getInt("answer_id"));
+                answerDTO.setQuestionId(resultSet.getInt("question_id"));
+                answerDTO.setAnswerDesc(resultSet.getString("answer_text"));
+                answerDTO.setRating(resultSet.getInt("rating"));
+                answerDTOS.add(answerDTO);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return  answerDTOS;
     }
 }

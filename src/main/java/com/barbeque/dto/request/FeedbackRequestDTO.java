@@ -18,7 +18,18 @@ public class FeedbackRequestDTO {
     private List<FeedbackDetails> feedbacks;
     private String tableNo;
     private String billNo;
+    private String customerName;
+    private String outletDesc;
+    private String mobileNo;
     public CreateCustomer customer;
+
+    public String getOutletDesc() {
+        return outletDesc;
+    }
+
+    public void setOutletDesc(String outletDesc) {
+        this.outletDesc = outletDesc;
+    }
 
     public int getId() {
         return id;
@@ -92,6 +103,22 @@ public class FeedbackRequestDTO {
         this.feedbacks = feedbacks;
     }
 
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
+    }
+
     public CreateCustomer getCustomer() {
         return customer;
     }
@@ -116,6 +143,9 @@ public class FeedbackRequestDTO {
         if (feedbacks != null ? !feedbacks.equals(that.feedbacks) : that.feedbacks != null) return false;
         if (tableNo != null ? !tableNo.equals(that.tableNo) : that.tableNo != null) return false;
         if (billNo != null ? !billNo.equals(that.billNo) : that.billNo != null) return false;
+        if (customerName != null ? !customerName.equals(that.customerName) : that.customerName != null) return false;
+        if (outletDesc != null ? !outletDesc.equals(that.outletDesc) : that.outletDesc != null) return false;
+        if (mobileNo != null ? !mobileNo.equals(that.mobileNo) : that.mobileNo != null) return false;
         return customer != null ? customer.equals(that.customer) : that.customer == null;
     }
 
@@ -130,6 +160,9 @@ public class FeedbackRequestDTO {
         result = 31 * result + (feedbacks != null ? feedbacks.hashCode() : 0);
         result = 31 * result + (tableNo != null ? tableNo.hashCode() : 0);
         result = 31 * result + (billNo != null ? billNo.hashCode() : 0);
+        result = 31 * result + (customerName != null ? customerName.hashCode() : 0);
+        result = 31 * result + (outletDesc != null ? outletDesc.hashCode() : 0);
+        result = 31 * result + (mobileNo != null ? mobileNo.hashCode() : 0);
         result = 31 * result + (customer != null ? customer.hashCode() : 0);
         return result;
     }
@@ -146,6 +179,9 @@ public class FeedbackRequestDTO {
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
                 ", billNo='" + billNo + '\'' +
+                ", customerName='" + customerName + '\'' +
+                ", outletDesc='" + outletDesc + '\'' +
+                ", mobileNo='" + mobileNo + '\'' +
                 ", customer=" + customer +
                 '}';
     }

@@ -3,6 +3,7 @@ package com.barbeque.requesthandler;
 import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.customer.CustomerDAO;
+import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
@@ -11,6 +12,7 @@ import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
+import com.barbeque.xlxFiles.ExcelCreator;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -83,7 +85,6 @@ public class FeedbackRequestHandler {
     {
 
         CustomerDAO customerDAO=new CustomerDAO();
-       /* CreateCustomer createCustomer1=new CreateCustomer();*/
         int id = customerDAO.addCustomer(createCustomer.getName(),createCustomer.getPhoneNo(),createCustomer.getEmailId(),createCustomer.getDob(),createCustomer.getDoa());
         return id;
 
@@ -103,7 +104,6 @@ public class FeedbackRequestHandler {
     private FeedbackRequestDTO buildDTOFromBO(UpdateFeedbackRequestBO updateFeedbackRequestBO) {
         FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
         feedbackRequestDTO.setId(updateFeedbackRequestBO.getId());
-        //feedbackRequestDTO.setFeedbacks(updateFeedbackRequestBO.getFeedbacks());
         feedbackRequestDTO.setDate(updateFeedbackRequestBO.getDate());
         feedbackRequestDTO.setTableNo(updateFeedbackRequestBO.getTableNo());
         feedbackRequestDTO.setBillNo(updateFeedbackRequestBO.getBillNo());
@@ -112,27 +112,56 @@ public class FeedbackRequestHandler {
         return feedbackRequestDTO;
     }
 
-    public List<FeedbackResponse> getfeedbackList() {
+    public Boolean getfeedbackList() {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
+        Boolean isCreated = Boolean.FALSE;
         List<FeedbackResponse> feedbackList = new ArrayList<FeedbackResponse>();
         try {
-            List<FeedbackRequestDTO> questionRequestDTOList = feedbackDAO.getfeedbackList();
+            List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList();
 
-            for (FeedbackRequestDTO feedbackRequestDTO : questionRequestDTOList) {
-                FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
+            for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
+                FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getOutletDesc(),
+                        feedbackRequestDTO.getId(),
+                        feedbackRequestDTO.getCustomerId(),
+                        feedbackRequestDTO.getCreatedOn(),
+                        feedbackRequestDTO.getModifiedOn(),
                         feedbackRequestDTO.getOutletId(),
                         feedbackRequestDTO.getDate(),
-                        feedbackRequestDTO.getFeedbacks(),
                         feedbackRequestDTO.getTableNo(),
                         feedbackRequestDTO.getBillNo(),
-                        feedbackRequestDTO.getCreatedOn(),
-                        feedbackRequestDTO.getModifiedOn());
-
+                        feedbackRequestDTO.getCustomerName(),
+                        feedbackRequestDTO.getMobileNo());
+                feedbackResponse.setFeedbacks(getfeedback());
                 feedbackList.add(feedbackResponse);
             }
+            ExcelCreator.getExcelSheet(feedbackList);
+            isCreated = Boolean.TRUE;
         } catch (SQLException sq) {
             sq.printStackTrace();
         }
+
+        return isCreated;
+    }
+
+    public List<FeedbackDetails> getfeedback() throws SQLException {
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+
+        List<FeedbackDetails> feedbackList = getFeedbackResponseListFromDTO(feedbackDAO.getfeedback());
+
         return feedbackList;
+    }
+    public static List<FeedbackDetails>getFeedbackResponseListFromDTO(List<AnswerDTO> answerDTOs)throws SQLException {
+        List<FeedbackDetails> feedbackDetailss = new ArrayList<FeedbackDetails>();
+        Iterator<AnswerDTO> feedbackRequestDTOIterator = answerDTOs.iterator();
+        while (feedbackRequestDTOIterator.hasNext())
+        {
+            AnswerDTO answerDTO=feedbackRequestDTOIterator.next();
+            FeedbackDetails feedbackResponse=new FeedbackDetails(answerDTO.getQuestionId(),
+                    answerDTO.getId(),
+                    answerDTO.getAnswerDesc(),
+                    answerDTO.getRating());
+            feedbackDetailss.add(feedbackResponse);
+        }
+        return  feedbackDetailss;
     }
 }

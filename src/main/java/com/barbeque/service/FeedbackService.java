@@ -80,8 +80,12 @@ public class FeedbackService {
     @Path("/list")
     public Response getfeedbackList() throws Exception {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
-        FeedbackResponseList feedbackResponseList = new FeedbackResponseList();
-        feedbackResponseList.setFeedbacks(feedbackRequestHandler.getfeedbackList());
-        return ResponseGenerator.generateSuccessResponse(feedbackResponseList, "List of feedbacks.");
+        MessageResponse messageResponse = new MessageResponse();
+        Boolean isCreated = feedbackRequestHandler.getfeedbackList();
+        if(isCreated) {
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Successfully downloaded.");
+        }else {
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Failed to retrieve the list");
+        }
     }
 }

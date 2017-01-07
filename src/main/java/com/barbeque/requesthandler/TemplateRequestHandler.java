@@ -4,6 +4,7 @@ import com.barbeque.bo.UpdateAssignQuestionRequestBO;
 import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.request.QueTempDTO;
+import com.barbeque.dto.request.TempDTO;
 import com.barbeque.dto.request.TemplateDTO;
 import com.barbeque.dto.request.UpdateAssignQuestionDTO;
 import com.barbeque.exceptions.QuestionNotFoundException;
@@ -12,6 +13,7 @@ import com.barbeque.bo.AssignQuestionRequestBO;
 import com.barbeque.bo.TemplateRequestBO;
 import com.barbeque.bo.UpdateTemplateRequestBO;
 import com.barbeque.request.template.UpdateAssignQuestionRequest;
+import com.barbeque.response.template.GetTemplateResponse;
 import com.barbeque.response.template.QueResponse;
 import com.barbeque.response.template.TemplateResponseList;
 
@@ -147,5 +149,21 @@ public class TemplateRequestHandler {
             templateResponseList.add(templateResponseList1);
         }
         return templateResponseList;
+    }
+
+    public GetTemplateResponse getTemplateById(int templateId, int outletId) throws SQLException, TemplateNotFoundException {
+        TemplateDAO templateDAO = new TemplateDAO();
+        GetTemplateResponse response = buildResponseFromDTO(templateDAO.getTemplateInfo(templateId,outletId));
+        return response;
+    }
+
+    private GetTemplateResponse buildResponseFromDTO(TempDTO tempDTO) {
+        GetTemplateResponse response = new GetTemplateResponse(tempDTO.getTemplateId(),
+                tempDTO.getDesc(),
+                tempDTO.getStatus(),
+                tempDTO.getFromDate(),
+                tempDTO.getToDate(),
+                tempDTO.getOutletId());
+        return response;
     }
 }

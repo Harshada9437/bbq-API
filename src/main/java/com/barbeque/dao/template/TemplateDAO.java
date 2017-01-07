@@ -2,9 +2,11 @@ package com.barbeque.dao.template;
 
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.QuestionRequestDTO;
+import com.barbeque.dto.request.TempDTO;
 import com.barbeque.dto.request.TemplateDTO;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
+import com.barbeque.util.DateUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -195,5 +197,51 @@ public class TemplateDAO {
             throw e;
         }
         return isExist;
+    }
+
+    public TempDTO getTemplateInfo(int templateId,int outletId) throws SQLException, TemplateNotFoundException {
+        Connection connection = null;
+        Statement statement = null;
+        TempDTO tempDTO = new TempDTO();
+        try {
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("select m.outlet_id,m.template_id,m.from_date,m.to_date,t.status,t.template_desc\n" +
+                    " from outlet_template_link m\n" +
+                    " left join template t\n" +
+                    " on t.template_id=m.template_id\n" +
+                    " where m.template_id="+ templateId + " and m.outlet_id=" + outletId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            int index = 1;
+            while (resultSet.next()) {
+
+                tempDTO.setTemplateId(resultSet.getInt("template_id"));
+                tempDTO.setDesc(resultSet.getString("template_desc"));
+                tempDTO.setStatus(resultSet.getString("status"));
+                tempDTO.setOutletId(resultSet.getInt("outlet_id"));
+                String fDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("from_date"));
+                tempDTO.setFromDate(fDate);
+                String tDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("to_date"));
+                tempDTO.setToDate(tDate);
+                index++;
+            }
+
+            if(index == 1){
+                throw new TemplateNotFoundException("Invalid id");
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return tempDTO;
     }
 }
