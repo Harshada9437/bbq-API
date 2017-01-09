@@ -20,7 +20,7 @@ public class OutletDTO
     private String  tableNoRange;
     private String  bannerUrl;
     private String  templateName;
-    private int posStoreId;
+    private String posStoreId;
     private int templateId;
 
     public String getTableNoRange() {
@@ -99,11 +99,11 @@ public class OutletDTO
         this.groupId = groupId;
     }
 
-    public int getPosStoreId() {
+    public String getPosStoreId() {
         return posStoreId;
     }
 
-    public void setPosStoreId(int posStoreId) {
+    public void setPosStoreId(String posStoreId) {
         this.posStoreId = posStoreId;
     }
 
@@ -144,10 +144,10 @@ public class OutletDTO
         if (companyId != outletDTO.companyId) return false;
         if (groupId != outletDTO.groupId) return false;
         if (mobileNoLength != outletDTO.mobileNoLength) return false;
-        if (posStoreId != outletDTO.posStoreId) return false;
         if (templateId != outletDTO.templateId) return false;
         if (outletDesc != null ? !outletDesc.equals(outletDTO.outletDesc) : outletDTO.outletDesc != null) return false;
         if (shortDesc != null ? !shortDesc.equals(outletDTO.shortDesc) : outletDTO.shortDesc != null) return false;
+        if (posStoreId != null ? !posStoreId.equals(outletDTO.posStoreId) : outletDTO.posStoreId != null) return false;
         if (clusterName != null ? !clusterName.equals(outletDTO.clusterName) : outletDTO.clusterName != null)
             return false;
         if (regionName != null ? !regionName.equals(outletDTO.regionName) : outletDTO.regionName != null) return false;
@@ -178,7 +178,7 @@ public class OutletDTO
         result = 31 * result + (tableNoRange != null ? tableNoRange.hashCode() : 0);
         result = 31 * result + (bannerUrl != null ? bannerUrl.hashCode() : 0);
         result = 31 * result + (templateName != null ? templateName.hashCode() : 0);
-        result = 31 * result + posStoreId;
+        result = 31 * result + (posStoreId != null ? posStoreId.hashCode() : 0);
         result = 31 * result + templateId;
         return result;
     }
@@ -201,7 +201,7 @@ public class OutletDTO
                 ", tableNoRange='" + tableNoRange + '\'' +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", templateName='" + templateName + '\'' +
-                ", posStoreId=" + posStoreId +
+                ", posStoreId='" + posStoreId + '\'' +
                 ", templateId=" + templateId +
                 '}';
     }

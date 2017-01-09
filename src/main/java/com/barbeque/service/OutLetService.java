@@ -113,7 +113,7 @@ public class OutLetService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/outletInfo/{outlet_store_id}")
-    public Response getOutletByStoreId(@PathParam("outlet_store_id") int storeId) throws Exception {
+    public Response getOutletByStoreId(@PathParam("outlet_store_id") String storeId) throws Exception {
         OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
         OutletResponseList outletResponse = new OutletResponseList();
         MessageResponse messageResponse = new MessageResponse();

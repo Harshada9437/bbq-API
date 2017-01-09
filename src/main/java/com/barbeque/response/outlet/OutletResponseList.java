@@ -24,7 +24,7 @@ public class OutletResponseList implements GenericResponse
     private String  messageType;
     private String  templateName;
     private String  bannerUrl;
-    private int posStoreId;
+    private String posStoreId;
     private int templateId;
 
     public String getTableNoRange() {
@@ -121,11 +121,11 @@ public class OutletResponseList implements GenericResponse
         this.groupId = groupId;
     }
 
-    public int getPosStoreId() {
+    public String getPosStoreId() {
         return posStoreId;
     }
 
-    public void setPosStoreId(int posStoreId) {
+    public void setPosStoreId(String posStoreId) {
         this.posStoreId = posStoreId;
     }
 
@@ -173,7 +173,7 @@ public class OutletResponseList implements GenericResponse
                 ", messageType='" + messageType + '\'' +
                 ", templateName='" + templateName + '\'' +
                 ", bannerUrl='" + bannerUrl + '\'' +
-                ", posStoreId=" + posStoreId +
+                ", posStoreId='" + posStoreId + '\'' +
                 ", templateId=" + templateId +
                 '}';
     }

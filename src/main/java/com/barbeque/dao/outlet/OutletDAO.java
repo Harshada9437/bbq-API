@@ -4,9 +4,11 @@ import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.UpdateSettingsDTO;
 import com.barbeque.dto.request.OutletDTO;
+import com.barbeque.dto.request.TableDTO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
+import com.barbeque.sync.Outlet;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class OutletDAO {
         return isCreated;
     }
 
-    public List<OutletDTO> getOutlate() throws SQLException, TemplateNotFoundException {
+    public static List<OutletDTO> getOutlate() throws SQLException {
         Connection connection = null;
         Statement statement = null;
         List<OutletDTO> outletDTOs = new ArrayList<OutletDTO>();
@@ -71,8 +73,8 @@ public class OutletDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select o.id,o.outlet_desc,o.short_desc,o.cluster_id,o.region_id,o.company_id\n" +
                     ",o.group_id,o.pos_store_id,c.cluster_desc,r.region_desc,cp.company_desc\n" +
-                    ",g.group_desc,m.template_id,t.template_desc from outlet_template_link m\n" +
-                    "left join outlet o\n" +
+                    ",g.group_desc,m.template_id,t.template_desc from outlet o\n" +
+                    "left join outlet_template_link m\n" +
                     "on m.outlet_id=o.id\n" +
                     "left join cluster c\n" +
                     "on c.id=o.cluster_id\n" +
@@ -101,7 +103,7 @@ public class OutletDAO {
                 outletDTO.setCompanyName(resultSet.getString("company_desc"));
                 outletDTO.setGroupName(resultSet.getString("group_desc"));
                 outletDTO.setGroupId(resultSet.getInt("group_id"));
-                outletDTO.setPosStoreId(resultSet.getInt("pos_store_id"));
+                outletDTO.setPosStoreId(resultSet.getString("pos_store_id"));
                 outletDTO.setTemplateId(resultSet.getInt("template_id"));
                 index++;
                 outletDTOs.add(outletDTO);
@@ -121,6 +123,35 @@ public class OutletDAO {
         return outletDTOs;
     }
 
+    public static List<Integer> getOutlates() {
+        Connection connection = null;
+        Statement statement = null;
+        List<Integer> outlets = new ArrayList<Integer>();
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT id FROM outlet ");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                outlets.add(id);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return outlets;
+    }
+
     public OutletDTO getOutletById(int outletId) throws SQLException, OutletNotFoundException {
         Connection connection = null;
         Statement statement = null;
@@ -130,8 +161,8 @@ public class OutletDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select o.id,o.outlet_desc,o.short_desc,o.cluster_id,o.region_id,o.company_id\n" +
                     ",o.group_id,o.pos_store_id,s.table_no_range,c.cluster_desc,r.region_desc,cp.company_desc\n" +
-                    ",g.group_desc,m.template_id,t.template_desc,s.banner_url,s.mobile_no_length from outlet_template_link m\n" +
-                    "left join outlet o\n" +
+                    ",g.group_desc,m.template_id,t.template_desc,s.banner_url,s.mobile_no_length from outlet o\n" +
+                    "left join outlet_template_link m\n" +
                     "on m.outlet_id=o.id\n" +
                     "left join cluster c\n" +
                     "on c.id=o.cluster_id\n" +
@@ -166,12 +197,12 @@ public class OutletDAO {
                 outletDTO.setTableNoRange(resultSet.getString("table_no_range"));
                 outletDTO.setGroupId(resultSet.getInt("group_id"));
                 outletDTO.setMobileNoLength(resultSet.getInt("mobile_no_length"));
-                outletDTO.setPosStoreId(resultSet.getInt("pos_store_id"));
+                outletDTO.setPosStoreId(resultSet.getString("pos_store_id"));
                 outletDTO.setTemplateId(resultSet.getInt("template_id"));
                 index++;
             }
 
-            if(index == 1){
+            if (index == 1) {
                 throw new OutletNotFoundException("Invalid id");
             }
 
@@ -189,7 +220,7 @@ public class OutletDAO {
         return outletDTO;
     }
 
-    public OutletDTO getOutletByStoreId(int storeId) throws SQLException, OutletNotFoundException {
+    public OutletDTO getOutletByStoreId(String storeId) throws SQLException, OutletNotFoundException {
         Connection connection = null;
         Statement statement = null;
         OutletDTO outletDTO = new OutletDTO();
@@ -198,8 +229,8 @@ public class OutletDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select o.id,o.outlet_desc,o.short_desc,o.cluster_id,o.region_id,o.company_id\n" +
                     ",o.group_id,o.pos_store_id,s.table_no_range,c.cluster_desc,r.region_desc,cp.company_desc\n" +
-                    ",g.group_desc,m.template_id,t.template_desc,s.banner_url,s.mobile_no_length from outlet_template_link m\n" +
-                    "left join outlet o\n" +
+                    ",g.group_desc,m.template_id,t.template_desc,s.banner_url,s.mobile_no_length from outlet o\n" +
+                    "left join outlet_template_link m\n" +
                     "on m.outlet_id=o.id\n" +
                     "left join cluster c\n" +
                     "on c.id=o.cluster_id\n" +
@@ -213,7 +244,7 @@ public class OutletDAO {
                     "on t.template_id=m.template_id\n" +
                     "left join outlet_setting s\n" +
                     "on s.outlet_id=o.id\n" +
-                    "where o.pos_store_id=").append(storeId);
+                    "where o.pos_store_id=\"").append(storeId).append("\"");
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
             int index = 1;
@@ -234,12 +265,12 @@ public class OutletDAO {
                 outletDTO.setTableNoRange(resultSet.getString("table_no_range"));
                 outletDTO.setGroupId(resultSet.getInt("group_id"));
                 outletDTO.setMobileNoLength(resultSet.getInt("mobile_no_length"));
-                outletDTO.setPosStoreId(resultSet.getInt("pos_store_id"));
+                outletDTO.setPosStoreId(resultSet.getString("pos_store_id"));
                 outletDTO.setTemplateId(resultSet.getInt("template_id"));
                 index++;
             }
-            if(index == 1){
-             throw new OutletNotFoundException("Invalid id");
+            if (index == 1) {
+                throw new OutletNotFoundException("Invalid id");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -325,5 +356,131 @@ public class OutletDAO {
             throw sqlException;
         }
         return isCreated;
+    }
+
+    public static void createOutlet(Outlet outlet) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("INSERT INTO outlet(id , outlet_desc, short_desc," +
+                            " company_id, cluster_id, region_id, group_id, pos_store_id) " +
+                            "values (?,?,?,?,?,?,?,?)");
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getId());
+            preparedStatement.setString(parameterIndex++,
+                    outlet.getOutletDesc());
+            preparedStatement.setString(parameterIndex++,
+                    outlet.getShortDesc());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getCompanyId());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getClusterId());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getRegionId());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getGroupId());
+            preparedStatement.setString(parameterIndex++,
+                    outlet.getPosStoreId());
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            connection.rollback();
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static Integer getOutletCount() {
+        Connection connection = null;
+        Statement statement = null;
+        int count = 0;
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT COUNT(id) as count FROM outlet ");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+
+            while (resultSet.next()) {
+                count = resultSet.getInt("count");
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return count;
+    }
+
+    public static void updateOutlet(Outlet outlet) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE outlet SET  outlet_desc=?, short_desc=?," +
+                            " company_id=?, cluster_id=?, region_id=?, group_id=?, pos_store_id=? WHERE id=?");
+
+            preparedStatement.setString(parameterIndex++,
+                    outlet.getOutletDesc());
+            preparedStatement.setString(parameterIndex++,
+                    outlet.getShortDesc());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getCompanyId());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getClusterId());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getRegionId());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getGroupId());
+            preparedStatement.setString(parameterIndex++,
+                    outlet.getPosStoreId());
+            preparedStatement.setInt(parameterIndex++,
+                    outlet.getId());
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            connection.rollback();
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

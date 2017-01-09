@@ -107,7 +107,7 @@ public class OutletRequesthandler
         return outletResponse;
     }
 
-    public OutletResponseList getOutletByStoreId(int storeId) throws SQLException, OutletNotFoundException {
+    public OutletResponseList getOutletByStoreId(String storeId) throws SQLException, OutletNotFoundException {
         OutletDAO outletDAO = new OutletDAO();
         OutletResponseList outletResponse = new OutletResponseList();
         outletResponse = buildResponseFromDTO(outletDAO.getOutletByStoreId(storeId));

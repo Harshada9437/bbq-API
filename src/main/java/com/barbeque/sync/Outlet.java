@@ -1,35 +1,17 @@
-package com.barbeque.response.outlet;
+package com.barbeque.sync;
 
 /**
- * Created by System-2 on 12/27/2016.
+ * Created by System-2 on 1/9/2017.
  */
-public class OutletResponseL {
+public class Outlet {
     private int id;
     private String outletDesc;
     private String shortDesc;
     private int clusterId;
-    private String clusterName;
     private int regionId;
-    private String regionName;
     private int companyId;
-    private String companyName;
     private int  groupId;
-    private String  groupName;
-    private String  templateName;
     private String posStoreId;
-    private int templateId;
-
-    public String getTemplateName() {
-        return templateName;
-    }
-
-    public void setTemplateName(String templateName) {
-        this.templateName = templateName;
-    }
-
-    public void setTemplateId(int templateId) {this.templateId = templateId;}
-
-    public int getTemplateId() {return templateId;}
 
     public int getId() {
         return id;
@@ -95,39 +77,17 @@ public class OutletResponseL {
         this.posStoreId = posStoreId;
     }
 
-    public String getClusterName() {return clusterName;}
-
-    public void setClusterName(String clusterName) {this.clusterName = clusterName;}
-
-    public String getRegionName() {return regionName;}
-
-    public void setRegionName(String regionName) {this.regionName = regionName;}
-
-    public String getCompanyName() {return companyName;}
-
-    public void setCompanyName(String companyName) {this.companyName = companyName;}
-
-    public String getGroupName() {return groupName;}
-
-    public void setGroupName(String groupName) {this.groupName = groupName;}
-
     @Override
     public String toString() {
-        return "OutletResponseL{" +
+        return "Outlet{" +
                 "id=" + id +
                 ", outletDesc='" + outletDesc + '\'' +
                 ", shortDesc='" + shortDesc + '\'' +
                 ", clusterId=" + clusterId +
-                ", clusterName='" + clusterName + '\'' +
                 ", regionId=" + regionId +
-                ", regionName='" + regionName + '\'' +
                 ", companyId=" + companyId +
-                ", companyName='" + companyName + '\'' +
                 ", groupId=" + groupId +
-                ", groupName='" + groupName + '\'' +
-                ", templateName='" + templateName + '\'' +
                 ", posStoreId='" + posStoreId + '\'' +
-                ", templateId=" + templateId +
                 '}';
     }
 }
