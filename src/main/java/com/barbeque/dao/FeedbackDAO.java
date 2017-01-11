@@ -2,12 +2,10 @@ package com.barbeque.dao;
 
 import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
-import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -227,16 +225,22 @@ public class FeedbackDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            String query = "select f.question_id,f.answer_id,f.answer_text,f.rating\n" +
+            String query = "select f.question_id,f.answer_id,f.answer_text,f.rating,q.question_desc,a.answer_desc\n" +
                     " from feedback f\n" +
                     "left join feedback_head fh\n" +
-                    "on f.feedback_id = fh.id";
+                    "on f.feedback_id = fh.id\n" +
+                    "left join question_bank q\n" +
+                    "on f.question_id = q.id\n" +
+                    "left join question_answer_link a\n" +
+                    "on f.answer_id = a.answer_id";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 AnswerDTO answerDTO = new AnswerDTO();
                 answerDTO.setId(resultSet.getInt("answer_id"));
                 answerDTO.setQuestionId(resultSet.getInt("question_id"));
-                answerDTO.setAnswerDesc(resultSet.getString("answer_text"));
+                answerDTO.setAnswerText(resultSet.getString("answer_text"));
+                answerDTO.setQuestionDesc(resultSet.getString("question_desc"));
+                answerDTO.setAnswerDesc(resultSet.getString("answer_desc"));
                 answerDTO.setRating(resultSet.getInt("rating"));
                 answerDTOS.add(answerDTO);
             }

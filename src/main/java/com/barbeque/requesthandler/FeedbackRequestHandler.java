@@ -10,8 +10,6 @@ import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackResponse;
-import com.barbeque.response.util.MessageResponse;
-import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.xlxFiles.ExcelCreator;
 
 import java.sql.SQLException;
@@ -39,6 +37,7 @@ public class FeedbackRequestHandler {
             UpdateCustomerRequestBO updateCustomerRequestBO = new UpdateCustomerRequestBO();
             updateCustomerRequestBO.setId(customerId);
             updateCustomerRequestBO.setName(feedbackRequestBO.getCustomer().getName());
+            updateCustomerRequestBO.setLocality(feedbackRequestBO.getCustomer().getLocality());
             updateCustomerRequestBO.setPhoneNo(feedbackRequestBO.getCustomer().getPhoneNo());
             updateCustomerRequestBO.setEmailId(feedbackRequestBO.getCustomer().getEmailId());
             updateCustomerRequestBO.setDob(feedbackRequestBO.getCustomer().getDob());
@@ -85,7 +84,7 @@ public class FeedbackRequestHandler {
     {
 
         CustomerDAO customerDAO=new CustomerDAO();
-        int id = customerDAO.addCustomer(createCustomer.getName(),createCustomer.getPhoneNo(),createCustomer.getEmailId(),createCustomer.getDob(),createCustomer.getDoa());
+        int id = customerDAO.addCustomer(createCustomer.getLocality(),createCustomer.getName(),createCustomer.getPhoneNo(),createCustomer.getEmailId(),createCustomer.getDob(),createCustomer.getDoa());
         return id;
 
     }
@@ -159,7 +158,9 @@ public class FeedbackRequestHandler {
             FeedbackDetails feedbackResponse=new FeedbackDetails();
             feedbackResponse.setQuestionId(answerDTO.getQuestionId());
             feedbackResponse.setAnswerId(answerDTO.getId());
-            feedbackResponse.setAnswerText(answerDTO.getAnswerDesc());
+            feedbackResponse.setAnswerText(answerDTO.getAnswerText());
+            feedbackResponse.setAnswerDesc(answerDTO.getAnswerDesc());
+            feedbackResponse.setQuestionDesc(answerDTO.getQuestionDesc());
             feedbackResponse.setRating(answerDTO.getRating());
             feedbackDetailss.add(feedbackResponse);
         }

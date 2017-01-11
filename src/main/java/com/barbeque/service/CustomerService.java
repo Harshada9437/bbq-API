@@ -21,45 +21,6 @@ import java.sql.SQLException;
 
 @Path("/customer")
 public class CustomerService {
-   /* @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/create")
-    public Response addCustomer(CustomerRequest customerRequest) throws SQLException {
-        CustomerRequestBO customerRequestBO = new CustomerRequestBO();
-        customerRequestBO.setName(customerRequest.getName());
-        customerRequestBO.setPhoneNo(customerRequest.getPhoneNo());
-        customerRequestBO.setEmailId(customerRequest.getEmailId());
-        customerRequestBO.setDob(customerRequest.getDob());
-        customerRequestBO.setDoa(customerRequest.getDoa());
-
-        MessageResponse messageResponse = new MessageResponse();
-        CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
-        try {
-            String mobile = customerRequestBO.getPhoneNo();
-            int isExistingCustomer = CustomerDAO.getValidationForPhoneNumber(mobile);
-            if (isExistingCustomer == 0) {
-                int customerId = customerRequestHandler.addCustomer(customerRequestBO);
-                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(customerId));
-            } else {
-                UpdateCustomerRequestBO updateCustomerRequestBO = new UpdateCustomerRequestBO();
-                updateCustomerRequestBO.setId(isExistingCustomer);
-                updateCustomerRequestBO.setName(customerRequestBO.getName());
-                updateCustomerRequestBO.setPhoneNo(customerRequestBO.getPhoneNo());
-                updateCustomerRequestBO.setEmailId(customerRequestBO.getEmailId());
-                updateCustomerRequestBO.setDob(customerRequestBO.getDob());
-                updateCustomerRequestBO.setDoa(customerRequestBO.getDoa());
-                if (customerRequestHandler.updateCustomer(updateCustomerRequestBO)) {
-                    return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(isExistingCustomer));
-                } else {
-                    return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the customer.");
-                }
-            }
-        } catch (SQLException sqlException) {
-            return ResponseGenerator.generateSuccessResponse(messageResponse, "Customer creation failed.");
-        }
-    }*/
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

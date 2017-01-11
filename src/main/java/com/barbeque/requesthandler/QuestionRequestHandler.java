@@ -195,7 +195,7 @@ public class QuestionRequestHandler {
         Iterator<AnswerDTO> answerDTOIterator = answerDTOs.iterator();
         while (answerDTOIterator.hasNext()) {
             AnswerDTO answerDTO = answerDTOIterator.next();
-            AnswerResponseList answerResponseList = new AnswerResponseList(answerDTO.getAnswerDesc(),
+            AnswerResponseList answerResponseList = new AnswerResponseList(answerDTO.getAnswerText(),
                     answerDTO.getRating(), answerDTO.getId(), answerDTO.getWeightage());
             answerResponseLists.add(answerResponseList);
         }

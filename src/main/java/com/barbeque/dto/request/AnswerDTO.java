@@ -1,16 +1,32 @@
 package com.barbeque.dto.request;
 
-import java.util.List;
-
 /**
  * Created by System-2 on 12/15/2016.
  */
 public class AnswerDTO {
     private int id;
     private int questionId;
+    private String answerText;
     private String answerDesc;
+    private String questionDesc;
     private int rating;
     private int weightage;
+
+    public String getAnswerDesc() {
+        return answerDesc;
+    }
+
+    public void setAnswerDesc(String answerDesc) {
+        this.answerDesc = answerDesc;
+    }
+
+    public String getQuestionDesc() {
+        return questionDesc;
+    }
+
+    public void setQuestionDesc(String questionDesc) {
+        this.questionDesc = questionDesc;
+    }
 
     public int getWeightage() {
         return weightage;
@@ -36,12 +52,12 @@ public class AnswerDTO {
         this.questionId = questionId;
     }
 
-    public String getAnswerDesc() {
-        return answerDesc;
+    public String getAnswerText() {
+        return answerText;
     }
 
-    public void setAnswerDesc(String answerDesc) {
-        this.answerDesc = answerDesc;
+    public void setAnswerText(String answerText) {
+        this.answerText = answerText;
     }
 
     public int getRating() {
@@ -63,15 +79,18 @@ public class AnswerDTO {
         if (questionId != answerDTO.questionId) return false;
         if (rating != answerDTO.rating) return false;
         if (weightage != answerDTO.weightage) return false;
-        return answerDesc != null ? answerDesc.equals(answerDTO.answerDesc) : answerDTO.answerDesc == null;
-
+        if (answerText != null ? !answerText.equals(answerDTO.answerText) : answerDTO.answerText != null) return false;
+        if (answerDesc != null ? !answerDesc.equals(answerDTO.answerDesc) : answerDTO.answerDesc != null) return false;
+        return questionDesc != null ? questionDesc.equals(answerDTO.questionDesc) : answerDTO.questionDesc == null;
     }
 
     @Override
     public int hashCode() {
         int result = id;
         result = 31 * result + questionId;
+        result = 31 * result + (answerText != null ? answerText.hashCode() : 0);
         result = 31 * result + (answerDesc != null ? answerDesc.hashCode() : 0);
+        result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
         result = 31 * result + rating;
         result = 31 * result + weightage;
         return result;
@@ -82,7 +101,9 @@ public class AnswerDTO {
         return "AnswerDTO{" +
                 "id=" + id +
                 ", questionId=" + questionId +
+                ", answerText='" + answerText + '\'' +
                 ", answerDesc='" + answerDesc + '\'' +
+                ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
                 ", weightage=" + weightage +
                 '}';

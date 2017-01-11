@@ -6,10 +6,15 @@ package com.barbeque.bo;
 public class UpdateCustomerRequestBO {
     private int id;
     private String name;
+    private String locality;
     private String phoneNo;
     private String emailId;
     private String dob;
     private String doa;
+
+    public String getLocality() {return locality;}
+
+    public void setLocality(String locality) {this.locality = locality;}
 
     public int getId() {return id;}
 
@@ -44,17 +49,18 @@ public class UpdateCustomerRequestBO {
 
         if (id != that.id) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (locality != null ? !locality.equals(that.locality) : that.locality != null) return false;
         if (phoneNo != null ? !phoneNo.equals(that.phoneNo) : that.phoneNo != null) return false;
         if (emailId != null ? !emailId.equals(that.emailId) : that.emailId != null) return false;
         if (dob != null ? !dob.equals(that.dob) : that.dob != null) return false;
         return doa != null ? doa.equals(that.doa) : that.doa == null;
-
     }
 
     @Override
     public int hashCode() {
         int result = id;
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (locality != null ? locality.hashCode() : 0);
         result = 31 * result + (phoneNo != null ? phoneNo.hashCode() : 0);
         result = 31 * result + (emailId != null ? emailId.hashCode() : 0);
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
@@ -67,6 +73,7 @@ public class UpdateCustomerRequestBO {
         return "UpdateCustomerRequestBO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", locality='" + locality + '\'' +
                 ", phoneNo='" + phoneNo + '\'' +
                 ", emailId='" + emailId + '\'' +
                 ", dob='" + dob + '\'' +

@@ -12,10 +12,10 @@ import java.util.List;
  * Created by System-2 on 12/15/2016.
  */
 public class CustomerDAO {
-    public Integer addCustomer(String name,String PhoneNo,String emailId,String dob,String doa ) throws SQLException {
+    public Integer addCustomer(String locality ,String name,String PhoneNo,String emailId,String dob,String doa ) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO customer(name, phone_no, email_id, dob, doa, modified_on) values (?,?,?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO customer(locality,name, phone_no, email_id, dob, doa, modified_on) values (?,?,?,?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -23,6 +23,7 @@ public class CustomerDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(query.toString());
 
+            preparedStatement.setString(parameterIndex++, locality);
             preparedStatement.setString(parameterIndex++, name);
             preparedStatement.setString(parameterIndex++, PhoneNo);
             preparedStatement.setString(parameterIndex++, emailId);
@@ -83,6 +84,7 @@ public class CustomerDAO {
                 CustomerDTO customerDTO = new CustomerDTO();
                 customerDTO.setId(resultSet.getInt("id"));
                 customerDTO.setName(resultSet.getString("name"));
+                customerDTO.setLocality(resultSet.getString("locality"));
                 customerDTO.setPhoneNo(resultSet.getString("phone_no"));
                 customerDTO.setEmailId(resultSet.getString("email_id"));
                 customerDTO.setDob(resultSet.getString("dob"));
@@ -105,7 +107,7 @@ public class CustomerDAO {
         return customerList;
     }
 
-    public Boolean updateQuestion(CustomerDTO customerDTO) throws SQLException {
+    public Boolean updateCustomer(CustomerDTO customerDTO) throws SQLException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -114,8 +116,10 @@ public class CustomerDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE customer SET name =?, phone_no =?, " +
+                    .prepareStatement("UPDATE customer SET locality=?, name =?, phone_no =?, " +
                             "email_id=?, dob = ?, doa=?, modified_on=? WHERE id =?");
+
+            preparedStatement.setString(parameterIndex++, customerDTO.getLocality());
 
             preparedStatement.setString(parameterIndex++, customerDTO.getName());
 

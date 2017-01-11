@@ -2,7 +2,6 @@ package com.barbeque.dao.answer;
 
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.AnswerDTO;
-import com.barbeque.exceptions.AnswerNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 
 import java.sql.*;
@@ -90,7 +89,7 @@ public class AnswerDAO {
                 answerDTO.setQuestionId(resultSet.getInt("question_id"));
                 answerDTO.setId(resultSet.getInt("answer_id"));
                 answerDTO.setWeightage(resultSet.getInt("weightage"));
-                answerDTO.setAnswerDesc(resultSet.getString("answer_desc"));
+                answerDTO.setAnswerText(resultSet.getString("answer_desc"));
                 answerDTO.setRating(resultSet.getInt("rating"));
                 index++;
                 answerDTOs.add(answerDTO);

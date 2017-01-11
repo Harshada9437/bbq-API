@@ -17,6 +17,7 @@ public class ExcelCreator {
         public static void getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs)
         {
             String filename = ConfigProperties.app_path +"/feedback/Feedbacks.xls";
+          /*  String filename = "D:/Feedbacks.xls";*/
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet sheet = workbook.createSheet("FirstSheet");
 
@@ -27,11 +28,13 @@ public class ExcelCreator {
             rowhead.createCell(3).setCellValue("Outlet Desc");
             rowhead.createCell(4).setCellValue("Table ");
             rowhead.createCell(5).setCellValue("Question Id");
-            rowhead.createCell(6).setCellValue("Answer Id");
-            rowhead.createCell(7).setCellValue("Answer Text");
-            rowhead.createCell(8).setCellValue("Rating");
-            rowhead.createCell(9).setCellValue("Modified On");
-            rowhead.createCell(10).setCellValue("Created On");
+            rowhead.createCell(6).setCellValue("Question Desc");
+            rowhead.createCell(7).setCellValue("Answer Id");
+            rowhead.createCell(8).setCellValue("Answer Desc");
+            rowhead.createCell(9).setCellValue("Answer Text");
+            rowhead.createCell(10).setCellValue("Rating");
+            rowhead.createCell(11).setCellValue("Modified On");
+            rowhead.createCell(12).setCellValue("Created On");
 
             int i =1;
             for (FeedbackResponse feedbackRequestDTO : feedbackRequestDTOs) {
@@ -43,11 +46,13 @@ public class ExcelCreator {
                     row.createCell(3).setCellValue(feedbackRequestDTO.getOutletDesc());
                     row.createCell(4).setCellValue(feedbackRequestDTO.getTableNo());
                     row.createCell(5).setCellValue(feedbackDetails.getQuestionId());
-                    row.createCell(6).setCellValue(feedbackDetails.getAnswerId());
-                    row.createCell(7).setCellValue(feedbackDetails.getAnswerText());
-                    row.createCell(8).setCellValue(feedbackDetails.getRating());
-                    row.createCell(9).setCellValue(feedbackRequestDTO.getModifiedOn());
-                    row.createCell(10).setCellValue(feedbackRequestDTO.getCreatedOn());
+                    row.createCell(6).setCellValue(feedbackDetails.getQuestionDesc());
+                    row.createCell(7).setCellValue(feedbackDetails.getAnswerId());
+                    row.createCell(8).setCellValue(feedbackDetails.getAnswerDesc());
+                    row.createCell(9).setCellValue(feedbackDetails.getAnswerText());
+                    row.createCell(10).setCellValue(feedbackDetails.getRating());
+                    row.createCell(11).setCellValue(feedbackRequestDTO.getModifiedOn());
+                    row.createCell(12).setCellValue(feedbackRequestDTO.getCreatedOn());
                     i++;
                 }
             }
@@ -55,6 +60,7 @@ public class ExcelCreator {
             FileOutputStream fileOut = null;
             try {
                 fileOut = new FileOutputStream(filename);
+                System.out.println("Fileout::::"+fileOut);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

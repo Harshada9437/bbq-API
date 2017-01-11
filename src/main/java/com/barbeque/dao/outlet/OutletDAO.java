@@ -483,4 +483,72 @@ public class OutletDAO {
             }
         }
     }
+
+    public static boolean getSetting(int outletId) {
+        Connection connection = null;
+        Statement statement = null;
+        boolean isExist = false;
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT outlet_id FROM outlet_setting where outlet_id=" + outletId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+
+            while (resultSet.next()) {
+                isExist = true;
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isExist;
+    }
+
+    public Boolean createSettings(UpdateSettingsDTO updateSettingsDTO, int outletId) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("INSERT  INTO outlet_setting (table_no_range, mobile_no_length , banner_url, outlet_id) VALUES(?,?,?,?) ");
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getTableNoRange());
+
+            preparedStatement.setInt(parameterIndex++, updateSettingsDTO.getMobileNoLength());
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getBannerUrl());
+
+            preparedStatement.setInt(parameterIndex++, outletId);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
 }

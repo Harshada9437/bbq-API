@@ -2,7 +2,6 @@ package com.barbeque.requesthandler;
 
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dto.request.CustomerDTO;
-import com.barbeque.bo.CustomerRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.response.customer.CustomerResponse;
 
@@ -36,7 +35,7 @@ public class CustomerRequestHandler {
         Boolean isProcessed = Boolean.FALSE;
         CustomerDAO customerDAO = new CustomerDAO();
         try {
-            isProcessed = customerDAO.updateQuestion(buildDTOFromBO(updateCustomerRequestBO));
+            isProcessed = customerDAO.updateCustomer(buildDTOFromBO(updateCustomerRequestBO));
         } catch (SQLException sq) {
             isProcessed = false;
         }
@@ -47,6 +46,7 @@ public class CustomerRequestHandler {
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setId(updateCustomerRequestBO.getId());
         customerDTO.setName(updateCustomerRequestBO.getName());
+        customerDTO.setLocality(updateCustomerRequestBO.getLocality());
         customerDTO.setPhoneNo(updateCustomerRequestBO.getPhoneNo());
         customerDTO.setEmailId(updateCustomerRequestBO.getEmailId());
         customerDTO.setDob(updateCustomerRequestBO.getDob());
@@ -63,6 +63,7 @@ public class CustomerRequestHandler {
             for (CustomerDTO customerDTO : customerRequestDTOList) {
                 CustomerResponse customerResponse = new CustomerResponse(customerDTO.getId(),
                         customerDTO.getName(),
+                        customerDTO.getLocality(),
                         customerDTO.getPhoneNo(),
                         customerDTO.getEmailId(),
                         customerDTO.getDob(),

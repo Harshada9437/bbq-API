@@ -8,6 +8,7 @@ import com.barbeque.dto.request.OutletDTO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
+import com.barbeque.request.outlet.UpdateSettingsRequest;
 import com.barbeque.response.outlet.OutletResponseL;
 import com.barbeque.response.outlet.OutletResponseList;
 
@@ -109,8 +110,7 @@ public class OutletRequesthandler
 
     public OutletResponseList getOutletByStoreId(String storeId) throws SQLException, OutletNotFoundException {
         OutletDAO outletDAO = new OutletDAO();
-        OutletResponseList outletResponse = new OutletResponseList();
-        outletResponse = buildResponseFromDTO(outletDAO.getOutletByStoreId(storeId));
+        OutletResponseList outletResponse = buildResponseFromDTO(outletDAO.getOutletByStoreId(storeId));
         return outletResponse;
     }
 
@@ -118,7 +118,11 @@ public class OutletRequesthandler
         Boolean isProcessed = Boolean.FALSE;
         OutletDAO outletDAO = new OutletDAO();
         try {
-            isProcessed = outletDAO.updateSettings(buildDTOFromBO(updateSettingsRequestBO),outletId);
+            if(OutletDAO.getSetting(outletId)) {
+                isProcessed = outletDAO.updateSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
+            }else{
+                isProcessed = outletDAO.createSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
+            }
         } catch (SQLException sq) {
             isProcessed = false;
         }

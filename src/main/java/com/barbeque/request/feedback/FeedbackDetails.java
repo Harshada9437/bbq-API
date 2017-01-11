@@ -7,9 +7,25 @@ public class FeedbackDetails {
     private int questionId;
     private int answerId;
     private String answerText;
+    private String answerDesc;
+    private String questionDesc;
     private int rating;
 
+    public String getAnswerDesc() {
+        return answerDesc;
+    }
 
+    public void setAnswerDesc(String answerDesc) {
+        this.answerDesc = answerDesc;
+    }
+
+    public String getQuestionDesc() {
+        return questionDesc;
+    }
+
+    public void setQuestionDesc(String questionDesc) {
+        this.questionDesc = questionDesc;
+    }
 
     public int getQuestionId() {
         return questionId;
@@ -44,33 +60,13 @@ public class FeedbackDetails {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        FeedbackDetails that = (FeedbackDetails) o;
-
-        if (questionId != that.questionId) return false;
-        if (answerId != that.answerId) return false;
-        if (rating != that.rating) return false;
-        return answerText.equals(that.answerText);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = questionId;
-        result = 31 * result + answerId;
-        result = 31 * result + answerText.hashCode();
-        result = 31 * result + rating;
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "FeedbackDetails{" +
                 "questionId=" + questionId +
                 ", answerId=" + answerId +
                 ", answerText='" + answerText + '\'' +
+                ", answerDesc='" + answerDesc + '\'' +
+                ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
                 '}';
     }

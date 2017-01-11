@@ -6,12 +6,13 @@ package com.barbeque.response.customer;
 public class CustomerResponse {
     private int id;
     private String name;
+    private String locality;
     private String phoneNo;
     private String emailId;
     private String dob;
     private String doa;
-    private String CreatedOn;
-    private String ModifiedOn;
+    private String createdOn;
+    private String modifiedOn;
 
     public String getName() {return name;}
 
@@ -25,19 +26,22 @@ public class CustomerResponse {
 
     public int getId() {return id;}
 
-    public String getCreatedOn() {return CreatedOn;}
+    public String getCreatedOn() {return createdOn;}
 
-    public String getModifiedOn() {return ModifiedOn;}
+    public String getModifiedOn() {return modifiedOn;}
 
-    public CustomerResponse(int id, String name, String phoneNo, String emailId, String dob, String doa, String createdOn, String modifiedOn) {
+    public String getLocality() {return locality;}
+
+    public CustomerResponse(int id, String name, String locality, String phoneNo, String emailId, String dob, String doa, String createdOn, String modifiedOn) {
         this.id = id;
         this.name = name;
+        this.locality = locality;
         this.phoneNo = phoneNo;
         this.emailId = emailId;
         this.dob = dob;
         this.doa = doa;
-        CreatedOn = createdOn;
-        ModifiedOn = modifiedOn;
+        this.createdOn = createdOn;
+        this.modifiedOn = modifiedOn;
     }
 
     @Override
@@ -45,12 +49,13 @@ public class CustomerResponse {
         return "CustomerResponse{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", locality='" + locality + '\'' +
                 ", phoneNo='" + phoneNo + '\'' +
                 ", emailId='" + emailId + '\'' +
                 ", dob='" + dob + '\'' +
                 ", doa='" + doa + '\'' +
-                ", CreatedOn='" + CreatedOn + '\'' +
-                ", ModifiedOn='" + ModifiedOn + '\'' +
+                ", createdOn='" + createdOn + '\'' +
+                ", modifiedOn='" + modifiedOn + '\'' +
                 '}';
     }
 }
