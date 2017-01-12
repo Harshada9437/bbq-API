@@ -119,18 +119,24 @@ public class FeedbackRequestHandler {
             List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList();
 
             for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
-                FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getOutletDesc(),
-                        feedbackRequestDTO.getId(),
+                FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
                         feedbackRequestDTO.getCustomerId(),
                         feedbackRequestDTO.getCreatedOn(),
                         feedbackRequestDTO.getModifiedOn(),
                         feedbackRequestDTO.getOutletId(),
                         feedbackRequestDTO.getDate(),
+                        feedbackRequestDTO.getAnswerDesc(),
+                        feedbackRequestDTO.getAnswerText(),
+                        feedbackRequestDTO.getQuestionDesc(),
+                        feedbackRequestDTO.getRating(),
+                        feedbackRequestDTO.getAnswerId(),
+                        feedbackRequestDTO.getQuestionId(),
                         feedbackRequestDTO.getTableNo(),
                         feedbackRequestDTO.getBillNo(),
                         feedbackRequestDTO.getCustomerName(),
+                        feedbackRequestDTO.getOutletDesc(),
                         feedbackRequestDTO.getMobileNo());
-                feedbackResponse.setFeedbacks(getfeedback());
+
                 feedbackList.add(feedbackResponse);
             }
             ExcelCreator.getExcelSheet(feedbackList);

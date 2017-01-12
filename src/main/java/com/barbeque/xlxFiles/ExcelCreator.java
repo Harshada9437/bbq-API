@@ -16,8 +16,8 @@ import  org.apache.poi.hssf.usermodel.HSSFRow;
 public class ExcelCreator {
         public static void getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs)
         {
-            String filename = ConfigProperties.app_path +"/feedback/Feedbacks.xls";
-          /*  String filename = "D:/Feedbacks.xls";*/
+         /*   String filename = ConfigProperties.app_path +"/feedback/Feedbacks.xls";*/
+            String filename = "D:/Feedbacks.xls";
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet sheet = workbook.createSheet("FirstSheet");
 
@@ -38,23 +38,21 @@ public class ExcelCreator {
 
             int i =1;
             for (FeedbackResponse feedbackRequestDTO : feedbackRequestDTOs) {
-                for(FeedbackDetails feedbackDetails : feedbackRequestDTO.getFeedbacks()){
                     HSSFRow row = sheet.createRow((short) i);
                     row.createCell(0).setCellValue(feedbackRequestDTO.getId());
                     row.createCell(1).setCellValue(feedbackRequestDTO.getCustomerName());
                     row.createCell(2).setCellValue(feedbackRequestDTO.getMobileNo());
                     row.createCell(3).setCellValue(feedbackRequestDTO.getOutletDesc());
                     row.createCell(4).setCellValue(feedbackRequestDTO.getTableNo());
-                    row.createCell(5).setCellValue(feedbackDetails.getQuestionId());
-                    row.createCell(6).setCellValue(feedbackDetails.getQuestionDesc());
-                    row.createCell(7).setCellValue(feedbackDetails.getAnswerId());
-                    row.createCell(8).setCellValue(feedbackDetails.getAnswerDesc());
-                    row.createCell(9).setCellValue(feedbackDetails.getAnswerText());
-                    row.createCell(10).setCellValue(feedbackDetails.getRating());
+                    row.createCell(5).setCellValue(feedbackRequestDTO.getQuestionId());
+                    row.createCell(6).setCellValue(feedbackRequestDTO.getQuestionDesc());
+                    row.createCell(7).setCellValue(feedbackRequestDTO.getAnswerId());
+                    row.createCell(8).setCellValue(feedbackRequestDTO.getAnswerDesc());
+                    row.createCell(9).setCellValue(feedbackRequestDTO.getAnswerText());
+                    row.createCell(10).setCellValue(feedbackRequestDTO.getRating());
                     row.createCell(11).setCellValue(feedbackRequestDTO.getModifiedOn());
                     row.createCell(12).setCellValue(feedbackRequestDTO.getCreatedOn());
                     i++;
-                }
             }
 
             FileOutputStream fileOut = null;

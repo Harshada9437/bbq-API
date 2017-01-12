@@ -21,6 +21,70 @@ public class FeedbackRequestDTO {
     private String customerName;
     private String outletDesc;
     private String mobileNo;
+    private int answerId;
+    private int questionId;
+    private String answerText;
+    private String answerDesc;
+    private String questionDesc;
+    private int rating;
+    private int weightage;
+
+    public String getAnswerDesc() {
+        return answerDesc;
+    }
+
+    public void setAnswerDesc(String answerDesc) {
+        this.answerDesc = answerDesc;
+    }
+
+    public String getQuestionDesc() {
+        return questionDesc;
+    }
+
+    public void setQuestionDesc(String questionDesc) {
+        this.questionDesc = questionDesc;
+    }
+
+    public int getWeightage() {
+        return weightage;
+    }
+
+    public void setWeightage(int weightage) {
+        this.weightage = weightage;
+    }
+
+    public int getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(int answerId) {
+        this.answerId = answerId;
+    }
+
+    public int getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(int questionId) {
+        this.questionId = questionId;
+    }
+
+    public String getAnswerText() {
+        return answerText;
+    }
+
+    public void setAnswerText(String answerText) {
+        this.answerText = answerText;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
     public CreateCustomer customer;
 
     public String getOutletDesc() {
@@ -135,6 +199,13 @@ public class FeedbackRequestDTO {
         FeedbackRequestDTO that = (FeedbackRequestDTO) o;
 
         if (id != that.id) return false;
+        if (answerId != that.answerId) return false;
+        if (questionId != that.questionId) return false;
+        if (rating != that.rating) return false;
+        if (weightage != that.weightage) return false;
+        if (answerText != null ? !answerText.equals(that.answerText) : that.answerText != null) return false;
+        if (answerDesc != null ? !answerDesc.equals(that.answerDesc) : that.answerDesc != null) return false;
+        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
         if (customerId != that.customerId) return false;
         if (outletId != that.outletId) return false;
         if (createdOn != null ? !createdOn.equals(that.createdOn) : that.createdOn != null) return false;
@@ -164,6 +235,13 @@ public class FeedbackRequestDTO {
         result = 31 * result + (outletDesc != null ? outletDesc.hashCode() : 0);
         result = 31 * result + (mobileNo != null ? mobileNo.hashCode() : 0);
         result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + questionId;
+        result = 31 * result + (answerText != null ? answerText.hashCode() : 0);
+        result = 31 * result + (answerDesc != null ? answerDesc.hashCode() : 0);
+        result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
+        result = 31 * result + rating;
+        result = 31 * result + weightage;
+        result = 31 * result + answerId;
         return result;
     }
 
@@ -182,6 +260,13 @@ public class FeedbackRequestDTO {
                 ", customerName='" + customerName + '\'' +
                 ", outletDesc='" + outletDesc + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
+                ", answerId=" + answerId +
+                ", questionId=" + questionId +
+                ", answerText='" + answerText + '\'' +
+                ", answerDesc='" + answerDesc + '\'' +
+                ", questionDesc='" + questionDesc + '\'' +
+                ", rating=" + rating +
+                ", weightage=" + weightage +
                 ", customer=" + customer +
                 '}';
     }

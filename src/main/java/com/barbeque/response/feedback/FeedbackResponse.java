@@ -14,116 +14,104 @@ public class FeedbackResponse {
     private String modifiedOn;
     private int outletId;
     private String date;
-    private List<FeedbackDetails> feedbacks;
+    private String answerDesc;
+    private String answerText;
+    private String questionDesc;
+    private int rating;
+    private int answerId;
+    private int questionId;
     private String tableNo;
     private String billNo;
     private String customerName;
     private String outletDesc;
     private String mobileNo;
 
-
-    public FeedbackResponse(String outletDesc, int id, int customerId, String createdOn, String modifiedOn, int outletId, String date,String tableNo, String billNo, String customerName, String mobileNo) {
-        this.outletDesc = outletDesc;
+    public FeedbackResponse(int id, int customerId, String createdOn, String modifiedOn, int outletId, String date, String answerDesc, String answerText, String questionDesc, int rating, int answerId, int questionId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo) {
         this.id = id;
         this.customerId = customerId;
         this.createdOn = createdOn;
         this.modifiedOn = modifiedOn;
         this.outletId = outletId;
         this.date = date;
+        this.answerDesc = answerDesc;
+        this.answerText = answerText;
+        this.questionDesc = questionDesc;
+        this.rating = rating;
+        this.answerId = answerId;
+        this.questionId = questionId;
         this.tableNo = tableNo;
         this.billNo = billNo;
         this.customerName = customerName;
+        this.outletDesc = outletDesc;
         this.mobileNo = mobileNo;
     }
 
-    public String getOutletDesc() {return outletDesc;}
-
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-
     public String getCreatedOn() {
         return createdOn;
-    }
-
-    public void setCreatedOn(String createdOn) {
-        this.createdOn = createdOn;
     }
 
     public String getModifiedOn() {
         return modifiedOn;
     }
 
-    public void setModifiedOn(String modifiedOn) {
-        this.modifiedOn = modifiedOn;
-    }
-
     public int getOutletId() {
         return outletId;
-    }
-
-    public void setOutletId(int outletId) {
-        this.outletId = outletId;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public String getAnswerDesc() {
+        return answerDesc;
     }
 
-    public List<FeedbackDetails> getFeedbacks() {
-        return feedbacks;
+    public String getAnswerText() {
+        return answerText;
     }
 
-    public void setFeedbacks(List<FeedbackDetails> feedbacks) {
-        this.feedbacks = feedbacks;
+    public String getQuestionDesc() {
+        return questionDesc;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public int getAnswerId() {
+        return answerId;
+    }
+
+    public int getQuestionId() {
+        return questionId;
     }
 
     public String getTableNo() {
         return tableNo;
     }
 
-    public void setTableNo(String tableNo) {
-        this.tableNo = tableNo;
-    }
-
     public String getBillNo() {
         return billNo;
-    }
-
-    public void setBillNo(String billNo) {
-        this.billNo = billNo;
     }
 
     public String getCustomerName() {
         return customerName;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public String getOutletDesc() {
+        return outletDesc;
     }
 
     public String getMobileNo() {
         return mobileNo;
-    }
-
-    public void setMobileNo(String mobileNo) {
-        this.mobileNo = mobileNo;
     }
 
     @Override
@@ -135,7 +123,12 @@ public class FeedbackResponse {
                 ", modifiedOn='" + modifiedOn + '\'' +
                 ", outletId=" + outletId +
                 ", date='" + date + '\'' +
-                ", feedbacks=" + feedbacks +
+                ", answerDesc='" + answerDesc + '\'' +
+                ", answerText='" + answerText + '\'' +
+                ", questionDesc='" + questionDesc + '\'' +
+                ", rating=" + rating +
+                ", answerId=" + answerId +
+                ", questionId=" + questionId +
                 ", tableNo='" + tableNo + '\'' +
                 ", billNo='" + billNo + '\'' +
                 ", customerName='" + customerName + '\'' +

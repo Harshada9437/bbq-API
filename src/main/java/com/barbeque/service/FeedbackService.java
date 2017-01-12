@@ -85,7 +85,7 @@ public class FeedbackService {
         if(isCreated) {
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Successfully downloaded.");
         }else {
-            return ResponseGenerator.generateSuccessResponse(messageResponse, "Failed to retrieve the list");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve the list");
         }
     }
 }
