@@ -122,7 +122,6 @@ public class FeedbackRequestHandler {
                 FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
                         feedbackRequestDTO.getCustomerId(),
                         feedbackRequestDTO.getCreatedOn(),
-                        feedbackRequestDTO.getModifiedOn(),
                         feedbackRequestDTO.getOutletId(),
                         feedbackRequestDTO.getDate(),
                         feedbackRequestDTO.getAnswerDesc(),
@@ -146,30 +145,5 @@ public class FeedbackRequestHandler {
         }
 
         return isCreated;
-    }
-
-    public List<FeedbackDetails> getfeedback() throws SQLException {
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
-
-        List<FeedbackDetails> feedbackList = getFeedbackResponseListFromDTO(feedbackDAO.getfeedback());
-
-        return feedbackList;
-    }
-    public static List<FeedbackDetails>getFeedbackResponseListFromDTO(List<AnswerDTO> answerDTOs)throws SQLException {
-        List<FeedbackDetails> feedbackDetailss = new ArrayList<FeedbackDetails>();
-        Iterator<AnswerDTO> feedbackRequestDTOIterator = answerDTOs.iterator();
-        while (feedbackRequestDTOIterator.hasNext())
-        {
-            AnswerDTO answerDTO=feedbackRequestDTOIterator.next();
-            FeedbackDetails feedbackResponse=new FeedbackDetails();
-            feedbackResponse.setQuestionId(answerDTO.getQuestionId());
-            feedbackResponse.setAnswerId(answerDTO.getId());
-            feedbackResponse.setAnswerText(answerDTO.getAnswerText());
-            feedbackResponse.setAnswerDesc(answerDTO.getAnswerDesc());
-            feedbackResponse.setQuestionDesc(answerDTO.getQuestionDesc());
-            feedbackResponse.setRating(answerDTO.getRating());
-            feedbackDetailss.add(feedbackResponse);
-        }
-        return  feedbackDetailss;
     }
 }

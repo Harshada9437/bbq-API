@@ -17,7 +17,7 @@ public class ExcelCreator {
         public static void getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs)
         {
             String filename = ConfigProperties.app_path +"/feedback/Feedbacks.xls";
-          /*  String filename = "D:/Feedbacks.xls";*/
+        /*    String filename = "D:/Feedbacks.xls";*/
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet sheet = workbook.createSheet("FirstSheet");
 
@@ -33,8 +33,7 @@ public class ExcelCreator {
             rowhead.createCell(8).setCellValue("Answer Desc");
             rowhead.createCell(9).setCellValue("Answer Text");
             rowhead.createCell(10).setCellValue("Rating");
-            rowhead.createCell(11).setCellValue("Modified On");
-            rowhead.createCell(12).setCellValue("Created On");
+            rowhead.createCell(11).setCellValue("Created On");
 
             int i =1;
             for (FeedbackResponse feedbackRequestDTO : feedbackRequestDTOs) {
@@ -50,8 +49,7 @@ public class ExcelCreator {
                     row.createCell(8).setCellValue(feedbackRequestDTO.getAnswerDesc());
                     row.createCell(9).setCellValue(feedbackRequestDTO.getAnswerText());
                     row.createCell(10).setCellValue(feedbackRequestDTO.getRating());
-                    row.createCell(11).setCellValue(feedbackRequestDTO.getModifiedOn());
-                    row.createCell(12).setCellValue(feedbackRequestDTO.getCreatedOn());
+                    row.createCell(11).setCellValue(feedbackRequestDTO.getCreatedOn());
                     i++;
             }
 

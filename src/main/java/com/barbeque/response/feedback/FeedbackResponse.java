@@ -11,7 +11,6 @@ public class FeedbackResponse {
     private int id;
     private int customerId;
     private String createdOn;
-    private String modifiedOn;
     private int outletId;
     private String date;
     private String answerDesc;
@@ -26,11 +25,10 @@ public class FeedbackResponse {
     private String outletDesc;
     private String mobileNo;
 
-    public FeedbackResponse(int id, int customerId, String createdOn, String modifiedOn, int outletId, String date, String answerDesc, String answerText, String questionDesc, int rating, int answerId, int questionId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo) {
+    public FeedbackResponse(int id, int customerId, String createdOn, int outletId, String date, String answerDesc, String answerText, String questionDesc, int rating, int answerId, int questionId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo) {
         this.id = id;
         this.customerId = customerId;
         this.createdOn = createdOn;
-        this.modifiedOn = modifiedOn;
         this.outletId = outletId;
         this.date = date;
         this.answerDesc = answerDesc;
@@ -56,10 +54,6 @@ public class FeedbackResponse {
 
     public String getCreatedOn() {
         return createdOn;
-    }
-
-    public String getModifiedOn() {
-        return modifiedOn;
     }
 
     public int getOutletId() {
@@ -120,7 +114,6 @@ public class FeedbackResponse {
                 "id=" + id +
                 ", customerId=" + customerId +
                 ", createdOn='" + createdOn + '\'' +
-                ", modifiedOn='" + modifiedOn + '\'' +
                 ", outletId=" + outletId +
                 ", date='" + date + '\'' +
                 ", answerDesc='" + answerDesc + '\'' +
