@@ -1,7 +1,7 @@
 package com.barbeque.dao;
 
-import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
+import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
@@ -38,25 +38,28 @@ public class FeedbackDAO {
             preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getBillNo());
 
             int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                connection.commit();
-            } else {
-                connection.rollback();
-            }
 
             try {
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     id = generatedKeys.getInt(1);
+                    for (FeedbackDetails feedbackDetailsObj : feedbackRequestDTO.getFeedbacks()){
+                        createFeedbackDetail(id, feedbackDetailsObj.getQuestionId(), feedbackDetailsObj.getAnswerId(), feedbackDetailsObj.getAnswerText(), feedbackDetailsObj.getRating(), connection);
+                }
+                    connection.commit();
                 } else {
+                    id = 0;
+                    connection.rollback();
                     throw new SQLException(
                             "Creating feedback failed, no ID obtained.");
                 }
             } catch (SQLException e) {
+                id = 0;
                 connection.rollback();
                 e.printStackTrace();
             }
         } catch (SQLException sqlException) {
+            id = 0;
             connection.rollback();
             sqlException.printStackTrace();
             throw sqlException;
@@ -72,15 +75,11 @@ public class FeedbackDAO {
     }
 
 
-    public int createFeedbackDetail(int feedback_id, int question_id, int answer_id, String answer_text, int rating) throws SQLException {
+    public void createFeedbackDetail(int feedback_id, int question_id, int answer_id, String answer_text, int rating, Connection connection) throws SQLException {
         PreparedStatement preparedStatement = null;
-        Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO feedback(feedback_id, question_id, answer_id, answer_text, rating) values (?,?,?,?,?)");
-        Integer id = 0;
         try {
             int parameterIndex = 1;
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
             preparedStatement = connection
                     .prepareStatement(query.toString());
             preparedStatement.setInt(parameterIndex++,
@@ -95,25 +94,10 @@ public class FeedbackDAO {
                     rating);
 
             int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                connection.commit();
-            } else {
-                connection.rollback();
-            }
-
         } catch (SQLException sqlException) {
-            connection.rollback();
             sqlException.printStackTrace();
             throw sqlException;
-        } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-        return id;
     }
 
     public Boolean updateQuestion(FeedbackRequestDTO feedbackRequestDTO)throws SQLException {

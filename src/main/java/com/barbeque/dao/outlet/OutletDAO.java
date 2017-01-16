@@ -18,7 +18,7 @@ import java.util.List;
  * Created by System-2 on 12/20/2016.
  */
 public class OutletDAO {
-    public Boolean assignoutlet(TempDTO tempDTO, int outletId) throws SQLException {
+    public Boolean assignTemplate(TempDTO tempDTO, int outletId) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO outlet_template_link(outlet_id, template_id,from_date,to_date");
@@ -28,24 +28,16 @@ public class OutletDAO {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            Boolean isExist = TemplateDAO.getTemplateByOutletId(outletId, connection);
-            if (isExist) {
-                isCreated = updateOutletTemplateMap(tempDTO, outletId, connection);
+            preparedStatement = connection.prepareStatement(query.toString());
+            preparedStatement.setInt(parameterIndex++, outletId);
+            preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
+            preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                isCreated = Boolean.TRUE;
+                connection.commit();
             } else {
-                preparedStatement = connection
-                        .prepareStatement(query.toString());
-                preparedStatement.setInt(parameterIndex++,
-                        outletId);
-                preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());
-                preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
-                preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
-                int i = preparedStatement.executeUpdate();
-                if (i > 0) {
-                    isCreated = Boolean.TRUE;
-                    connection.commit();
-                } else {
                     connection.rollback();
-                }
             }
         } catch (SQLException sqlException) {
             connection.rollback();
@@ -326,38 +318,6 @@ public class OutletDAO {
         return isCreated;
     }
 
-    public Boolean updateOutletTemplateMap(TempDTO tempDTO, int outletId, Connection connection) throws SQLException {
-        boolean isCreated = false;
-        PreparedStatement preparedStatement = null;
-        try {
-            int parameterIndex = 1;
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement("UPDATE outlet_template_link SET template_id=?,to_date =?, from_date =? WHERE outlet_id =?");
-
-            preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());
-
-            preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
-
-            preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
-
-            preparedStatement.setInt(parameterIndex++, outletId);
-
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                connection.commit();
-                isCreated = Boolean.TRUE;
-            } else {
-                connection.rollback();
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            throw sqlException;
-        }
-        return isCreated;
-    }
-
     public static void createOutlet(Outlet outlet) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -405,34 +365,6 @@ public class OutletDAO {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static Integer getOutletCount() {
-        Connection connection = null;
-        Statement statement = null;
-        int count = 0;
-        try {
-
-            connection = new ConnectionHandler().getConnection();
-            statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT COUNT(id) as count FROM outlet ");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-
-            while (resultSet.next()) {
-                count = resultSet.getInt("count");
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        } finally {
-            try {
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return count;
     }
 
     public static void updateOutlet(Outlet outlet) throws SQLException {
@@ -550,5 +482,34 @@ public class OutletDAO {
             }
         }
         return isCreated;
+    }
+
+    public void removeAssugnTemplate(int outletId, int templateId) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("delete from outlet_template_link WHERE outlet_id = " + outletId
+                    + " and template_id=" + templateId);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

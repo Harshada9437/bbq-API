@@ -25,8 +25,6 @@ public class FeedbackRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         int customerId = 0;
 
-
-
         String mobile=feedbackRequestBO.getCustomer().getPhoneNo();
         customerId = CustomerDAO.getValidationForPhoneNumber(mobile);
         if (customerId == 0)
@@ -47,7 +45,6 @@ public class FeedbackRequestHandler {
         }
 
         int id = feedbackDAO.addFeedback(buildFeedbackRequestDTOFromBO(feedbackRequestBO), customerId);
-        List<Integer> ansIds = assignFeedbacks(id,feedbackRequestBO.getFeedbacks());
         return id;
     }
 
@@ -64,22 +61,6 @@ public class FeedbackRequestHandler {
         return feedbackRequestDTO;
     }
 
-    public List<Integer> assignFeedbacks(int id, List<FeedbackDetails> feedbackDetails) throws SQLException {
-
-        int feedId = 0;
-        Iterator<FeedbackDetails> feedbackDetailsIterator = feedbackDetails.iterator();
-        List<Integer> feedIds = new ArrayList<Integer>();
-
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
-        while (feedbackDetailsIterator.hasNext()) {
-            FeedbackDetails feedbackDetailsObj = feedbackDetailsIterator.next();
-
-            feedId = feedbackDAO.createFeedbackDetail(id, feedbackDetailsObj.getQuestionId(), feedbackDetailsObj.getAnswerId(), feedbackDetailsObj.getAnswerText(),  feedbackDetailsObj.getRating() );
-            feedIds.add(feedId);
-        }
-
-        return feedIds;
-    }
     public int createCustomer(CreateCustomer createCustomer)throws SQLException
     {
 

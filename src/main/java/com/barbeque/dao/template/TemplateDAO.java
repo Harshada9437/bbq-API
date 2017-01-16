@@ -9,8 +9,8 @@ import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
+import java.util.*;
 
 /**
  * Created by System1 on 9/9/2016.
@@ -19,7 +19,7 @@ public class TemplateDAO {
     public Integer createTemplate(TemplateDTO templateDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO template(template_desc , status) values (?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO template(template_desc) values (?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -29,8 +29,6 @@ public class TemplateDAO {
                     .prepareStatement(query.toString());
             preparedStatement.setString(parameterIndex++,
                     templateDTO.getTemplateDesc());
-            preparedStatement.setString(parameterIndex++,
-                    templateDTO.getStatus());
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -180,23 +178,29 @@ public class TemplateDAO {
         return templateDTOs;
     }
 
-    public static Boolean getTemplateByOutletId(int outletId,Connection connection) throws SQLException {
+    public static TempDTO getTemplateByOutletId(int outletId) throws SQLException {
         Statement statement = null;
-        Boolean isExist = Boolean.FALSE;
+        TempDTO tempDTO = new TempDTO();
+        Connection connection = null;
         try {
+            connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT template_id FROM outlet_template_link where outlet_id = ").append(outletId);
+                    "SELECT * FROM outlet_template_link where outlet_id = ").append(outletId);
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
             while (resultSet.next()) {
-                isExist = Boolean.TRUE;
+                String toDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("to_date"));
+                tempDTO.setToDate(toDate);
+                String fromDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("from_date"));
+                tempDTO.setFromDate(fromDate);
+                tempDTO.setTemplateId(resultSet.getInt("template_id"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
-        return isExist;
+        return tempDTO;
     }
 
     public TempDTO getTemplateInfo(int templateId,int outletId) throws SQLException, TemplateNotFoundException {
@@ -244,4 +248,35 @@ public class TemplateDAO {
         }
         return tempDTO;
     }
+
+    public static Boolean getTemplateByName(String name) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        Boolean isExist = Boolean.FALSE;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT * FROM template where template_desc =\"").append(name).append("\"");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+               isExist = Boolean.TRUE;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isExist;
+    }
+
+
 }

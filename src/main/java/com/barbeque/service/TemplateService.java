@@ -2,6 +2,7 @@ package com.barbeque.service;
 
 import com.barbeque.bo.UpdateAssignQuestionRequestBO;
 import com.barbeque.dao.template.QueTempDAO;
+import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.bo.AssignQuestionRequestBO;
 import com.barbeque.bo.TemplateRequestBO;
@@ -30,17 +31,17 @@ public class TemplateService {
     public Response createTemplate(TemplateRequest templateRequest) {
         TemplateRequestBO templateRequestBO = new TemplateRequestBO();
         templateRequestBO.setTemplateDesc(templateRequest.getTemplateDesc());
-        templateRequestBO.setStatus(templateRequest.getStatus());
 
         MessageResponse messageResponse = new MessageResponse();
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         try {
-            int templateId = templateRequestHandler.createTemplate(templateRequestBO);
-            if (templateId > 0) {
+            if (!TemplateDAO.getTemplateByName(templateRequest.getTemplateDesc())){
+                int templateId = templateRequestHandler.createTemplate(templateRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(templateId));
-            } else {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Template Creation Failed");
+            }else {
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Template description already exist");
             }
+
         } catch (SQLException sqlException) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Template Creation Failed");
         }

@@ -1,5 +1,7 @@
 package com.barbeque.service;
 
+import com.barbeque.dao.template.TemplateDAO;
+import com.barbeque.dto.request.TempDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.request.outlet.AssignTemplateRequest;
@@ -11,11 +13,13 @@ import com.barbeque.response.outlet.OutletResponse;
 import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.bo.AssignTemplateRequestBO;
 import com.barbeque.bo.UpdateSettingsRequestBO;
+import com.barbeque.util.DateUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /**
  * Created by System-2 on 12/20/2016.
@@ -27,22 +31,28 @@ public class OutLetService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/assignTemplate/{outlet_id}")
     public Response assignTemplate(AssignTemplateRequest assignTemplateRequest, @PathParam("outlet_id") int outletId) throws Exception {
-        AssignTemplateRequestBO assignOutletRequestBO = new AssignTemplateRequestBO();
-        assignOutletRequestBO.setTemplateId(assignTemplateRequest.getTemplateId());
-        assignOutletRequestBO.setFromDate(assignTemplateRequest.getFromDate());
-        assignOutletRequestBO.setToDate(assignTemplateRequest.getToDate());
+        AssignTemplateRequestBO assignTemplateRequestBO = new AssignTemplateRequestBO();
+        assignTemplateRequestBO.setTemplateId(assignTemplateRequest.getTemplateId());
+        assignTemplateRequestBO.setFromDate(assignTemplateRequest.getFromDate());
+        assignTemplateRequestBO.setToDate(assignTemplateRequest.getToDate());
 
 
         MessageResponse assignoutletResponse = new MessageResponse();
         OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
         try {
-            if (outletRequesthandler.assignoutlet(assignOutletRequestBO, outletId)) {
+            TempDTO tempDTO = TemplateDAO.getTemplateByOutletId(outletId);
+            Timestamp fromDateR = DateUtil.getTimeStampFromString(assignTemplateRequestBO.getFromDate());
+            Timestamp fromDate = DateUtil.getTimeStampFromString(tempDTO.getFromDate());
+            Timestamp toDateR = DateUtil.getTimeStampFromString(assignTemplateRequestBO.getToDate());
+            Timestamp toDate = DateUtil.getTimeStampFromString(tempDTO.getToDate());
+        if (toDateR.before(fromDate) || fromDate.after(toDate) || (fromDateR.after(fromDate) && toDateR.before(toDate)) ) {
+                outletRequesthandler.assignTemplate(assignTemplateRequestBO, outletId);
                 return ResponseGenerator.generateSuccessResponse(assignoutletResponse, "Templates are assigned");
-            } else {
-                return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template outlet Failed");
+           } else {
+                return ResponseGenerator.generateFailureResponse(assignoutletResponse, "This outlet has  been already assgned to some another template.");
             }
         } catch (SQLException sqlException) {
-            return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template outlet Failed");
+            return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template assignment Failed");
         }
     }
 

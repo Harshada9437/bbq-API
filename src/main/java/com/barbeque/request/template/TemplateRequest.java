@@ -5,15 +5,10 @@ package com.barbeque.request.template;
  */
 public class TemplateRequest {
     private String templateDesc;
-    private String status;
 
     public String getTemplateDesc() {return templateDesc;}
 
     public void setTemplateDesc(String templateDesc) {this.templateDesc = templateDesc;}
-
-    public String getStatus() {return status;}
-
-    public void setStatus(String status) {this.status = status;}
 
     @Override
     public boolean equals(Object o) {
@@ -22,23 +17,18 @@ public class TemplateRequest {
 
         TemplateRequest that = (TemplateRequest) o;
 
-        if (templateDesc != null ? !templateDesc.equals(that.templateDesc) : that.templateDesc != null) return false;
-        return status != null ? status.equals(that.status) : that.status == null;
-
+        return templateDesc != null ? templateDesc.equals(that.templateDesc) : that.templateDesc == null;
     }
 
     @Override
     public int hashCode() {
-        int result = templateDesc != null ? templateDesc.hashCode() : 0;
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        return result;
+        return templateDesc != null ? templateDesc.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         return "TemplateRequest{" +
                 "templateDesc='" + templateDesc + '\'' +
-                ", status='" + status + '\'' +
                 '}';
     }
 }

@@ -3,29 +3,61 @@ package com.barbeque.requesthandler;
 import com.barbeque.bo.AssignTemplateRequestBO;
 import com.barbeque.bo.UpdateSettingsRequestBO;
 import com.barbeque.dao.outlet.OutletDAO;
+import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.UpdateSettingsDTO;
 import com.barbeque.dto.request.OutletDTO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
-import com.barbeque.request.outlet.UpdateSettingsRequest;
 import com.barbeque.response.outlet.OutletResponseL;
 import com.barbeque.response.outlet.OutletResponseList;
+import com.barbeque.util.DateUtil;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by System-2 on 12/20/2016.
  */
 public class OutletRequesthandler
 {
-    public Boolean assignoutlet(AssignTemplateRequestBO assignTemplateRequestBO, int outletId)throws SQLException
-    {
+    public Boolean assignTemplate(AssignTemplateRequestBO assignTemplateRequestBO, int outletId) throws SQLException, ParseException {
+        Boolean isCreated ;
         OutletDAO outletDAO=new OutletDAO();
-        Boolean isCreated=outletDAO.assignoutlet(buildotletDTOFromBO(assignTemplateRequestBO), outletId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        TempDTO tempDTO = TemplateDAO.getTemplateByOutletId(outletId);
+        Timestamp fromDateR = DateUtil.getTimeStampFromString(assignTemplateRequestBO.getFromDate());
+        Timestamp fromDate = DateUtil.getTimeStampFromString(tempDTO.getFromDate());
+        Timestamp toDateR = DateUtil.getTimeStampFromString(assignTemplateRequestBO.getToDate());
+        Timestamp toDate = DateUtil.getTimeStampFromString(tempDTO.getToDate());
+            if(fromDateR.after(fromDate) && toDateR.before(toDate))
+            {
+                outletDAO.removeAssugnTemplate(outletId,tempDTO.getTemplateId());
+
+                outletDAO.assignTemplate(buildotletDTOFromBO(assignTemplateRequestBO), outletId);
+
+                assignTemplateRequestBO.setTemplateId(tempDTO.getTemplateId());
+                calendar.setTime(sdf.parse(assignTemplateRequestBO.getFromDate()));
+                calendar.add(Calendar.DATE, -1);
+                Date yesterday = calendar.getTime();
+                assignTemplateRequestBO.setToDate(sdf.format(yesterday.getTime()));
+                assignTemplateRequestBO.setFromDate(tempDTO.getFromDate());
+                outletDAO.assignTemplate(buildotletDTOFromBO(assignTemplateRequestBO), outletId);
+
+                assignTemplateRequestBO.setToDate(tempDTO.getToDate());
+                calendar.setTime(sdf.parse(DateUtil.getDateStringFromTimeStamp(toDateR)));
+                calendar.add(Calendar.DATE, 1);
+                Date tommorow = calendar.getTime();
+                assignTemplateRequestBO.setFromDate(sdf.format(tommorow.getTime()));
+                isCreated = outletDAO.assignTemplate(buildotletDTOFromBO(assignTemplateRequestBO), outletId);
+
+            }else {
+                isCreated = outletDAO.assignTemplate(buildotletDTOFromBO(assignTemplateRequestBO), outletId);
+            }
         return isCreated;
     }
 

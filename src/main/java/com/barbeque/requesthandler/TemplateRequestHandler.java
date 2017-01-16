@@ -35,7 +35,6 @@ public class TemplateRequestHandler {
     private TemplateDTO buildTemplateDTOFromBO(TemplateRequestBO templateRequestBO) {
         TemplateDTO templateDTO = new TemplateDTO();
         templateDTO.setTemplateDesc(templateRequestBO.getTemplateDesc());
-        templateDTO.setStatus(templateRequestBO.getStatus());
         return templateDTO;
     }
 
