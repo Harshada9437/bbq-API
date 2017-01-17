@@ -19,7 +19,7 @@ public class TableService {
     @Path("/list")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTables(@HeaderParam("Auth") String auth) throws Exception {
+    public Response getTables( ) throws Exception {
         TableRequestHandler statusRequestHandler = new TableRequestHandler();
         TableResponseList tableResponseList = new TableResponseList();
         tableResponseList.setTableResponse(statusRequestHandler.getTables());

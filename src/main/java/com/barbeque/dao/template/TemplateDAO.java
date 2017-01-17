@@ -65,22 +65,23 @@ public class TemplateDAO {
         return id;
     }
 
-    public static void getTemplateById(int templateId) throws SQLException, TemplateNotFoundException {
+    public static TemplateDTO getTemplateById(int templateId) throws SQLException, TemplateNotFoundException {
         Connection connection = null;
         Statement statement = null;
-        int id = 0;
+        TemplateDTO templateDTO = new TemplateDTO();
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT template_id FROM template where template_id = ").append(templateId);
+                    "SELECT template_id,template_desc FROM template where template_id = ").append(templateId);
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
             while (resultSet.next()) {
-                id = resultSet.getInt("template_id");
+                templateDTO.setId(resultSet.getInt("template_id"));
+                templateDTO.setTemplateDesc(resultSet.getString("template_desc"));
             }
-            if (id == 0) {
+            if (templateDTO.getId() == 0) {
                 throw new TemplateNotFoundException("Invalid template id");
             }
         } catch (SQLException e) {
@@ -94,6 +95,7 @@ public class TemplateDAO {
                 e.printStackTrace();
             }
         }
+        return templateDTO;
     }
 
     public Boolean updateTemplate(TemplateDTO templateDTO) throws SQLException {
@@ -178,9 +180,9 @@ public class TemplateDAO {
         return templateDTOs;
     }
 
-    public static TempDTO getTemplateByOutletId(int outletId) throws SQLException {
+    public static List<TempDTO> getTemplateByOutletId(int outletId) throws SQLException {
         Statement statement = null;
-        TempDTO tempDTO = new TempDTO();
+        List<TempDTO> tempDTOs = new ArrayList<TempDTO>();
         Connection connection = null;
         try {
             connection = new ConnectionHandler().getConnection();
@@ -190,17 +192,19 @@ public class TemplateDAO {
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
             while (resultSet.next()) {
+                TempDTO tempDTO = new TempDTO();
                 String toDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("to_date"));
                 tempDTO.setToDate(toDate);
                 String fromDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("from_date"));
                 tempDTO.setFromDate(fromDate);
                 tempDTO.setTemplateId(resultSet.getInt("template_id"));
+                tempDTOs.add(tempDTO);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
-        return tempDTO;
+        return tempDTOs;
     }
 
     public TempDTO getTemplateInfo(int templateId,int outletId) throws SQLException, TemplateNotFoundException {

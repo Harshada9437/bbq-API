@@ -6,7 +6,7 @@ import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.request.outlet.AssignTemplateRequest;
 import com.barbeque.request.outlet.UpdateSettingsRequest;
-import com.barbeque.requesthandler.OutletRequesthandler;
+import com.barbeque.requesthandler.OutletRequestHandler;
 import com.barbeque.response.outlet.OutletResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.outlet.OutletResponse;
@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Created by System-2 on 12/20/2016.
@@ -36,20 +37,19 @@ public class OutLetService {
         assignTemplateRequestBO.setFromDate(assignTemplateRequest.getFromDate());
         assignTemplateRequestBO.setToDate(assignTemplateRequest.getToDate());
 
-
         MessageResponse assignoutletResponse = new MessageResponse();
-        OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
+        OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         try {
-            TempDTO tempDTO = TemplateDAO.getTemplateByOutletId(outletId);
-            Timestamp fromDateR = DateUtil.getTimeStampFromString(assignTemplateRequestBO.getFromDate());
-            Timestamp fromDate = DateUtil.getTimeStampFromString(tempDTO.getFromDate());
-            Timestamp toDateR = DateUtil.getTimeStampFromString(assignTemplateRequestBO.getToDate());
-            Timestamp toDate = DateUtil.getTimeStampFromString(tempDTO.getToDate());
-        if (toDateR.before(fromDate) || fromDate.after(toDate) || (fromDateR.after(fromDate) && toDateR.before(toDate)) ) {
-                outletRequesthandler.assignTemplate(assignTemplateRequestBO, outletId);
+            Boolean isCreate=Boolean.FALSE;
+            List<TempDTO> tempDTOs = null;
+            tempDTOs= TemplateDAO.getTemplateByOutletId(outletId);
+                if (tempDTOs == null) {
+                     isCreate = outletRequestHandler.assignTemplate(assignTemplateRequestBO, outletId);
+                }
+            if(isCreate){
                 return ResponseGenerator.generateSuccessResponse(assignoutletResponse, "Templates are assigned");
-           } else {
-                return ResponseGenerator.generateFailureResponse(assignoutletResponse, "This outlet has  been already assgned to some another template.");
+            }else {
+                return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template assignment Failed");
             }
         } catch (SQLException sqlException) {
             return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template assignment Failed");
@@ -66,9 +66,9 @@ public class OutLetService {
         updateSettingsRequestBO.setBannerUrl(updateSettingsRequest.getBannerUrl());
         updateSettingsRequestBO.setTableNoRange(updateSettingsRequest.getTableNoRange());
         MessageResponse assignoutletResponse = new MessageResponse();
-        OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
+        OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         try {
-            if (outletRequesthandler.updateSettings(updateSettingsRequestBO, outletId)) {
+            if (outletRequestHandler.updateSettings(updateSettingsRequestBO, outletId)) {
                 return ResponseGenerator.generateSuccessResponse(assignoutletResponse, "Outlet settings are updated");
             } else {
                 return ResponseGenerator.generateFailureResponse(assignoutletResponse, "update setting Failed");
@@ -85,10 +85,10 @@ public class OutLetService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
     public Response getOutletList() throws Exception {
-        OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
+        OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         OutletResponse outletResponse = new OutletResponse();
         try {
-            outletResponse.setOutletResponseList(outletRequesthandler.getOutlate());
+            outletResponse.setOutletResponseList(outletRequestHandler.getOutlate());
             return ResponseGenerator.generateSuccessResponse(outletResponse, "outlet are available");
         } catch (TemplateNotFoundException e) {
             MessageResponse messageResponse = new MessageResponse();
@@ -105,11 +105,11 @@ public class OutLetService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/outletInfoById/{outlet_id}")
     public Response getOutletById(@PathParam("outlet_id") int outletId) throws Exception {
-        OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
+        OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         OutletResponseList outletResponse = new OutletResponseList();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            outletResponse = outletRequesthandler.getOutletById(outletId);
+            outletResponse = outletRequestHandler.getOutletById(outletId);
             return ResponseGenerator.generateSuccessResponse(outletResponse, "Outlet Information");
         } catch (OutletNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid outlet id ");
@@ -124,11 +124,11 @@ public class OutLetService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/outletInfo/{outlet_store_id}")
     public Response getOutletByStoreId(@PathParam("outlet_store_id") String storeId) throws Exception {
-        OutletRequesthandler outletRequesthandler = new OutletRequesthandler();
+        OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         OutletResponseList outletResponse = new OutletResponseList();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            outletResponse = outletRequesthandler.getOutletByStoreId(storeId);
+            outletResponse = outletRequestHandler.getOutletByStoreId(storeId);
             return ResponseGenerator.generateSuccessResponse(outletResponse, "Outlet Information");
         } catch (OutletNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid store id ");
