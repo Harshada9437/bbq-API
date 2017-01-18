@@ -212,4 +212,33 @@ public class DeviceDAO {
         }
         return isCreated;
     }
+
+    public static Boolean getDeviceBySerialNo(String serialNo) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        Boolean isExist = Boolean.FALSE;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT * FROM devices where serial_no =\"").append(serialNo).append("\"");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+                isExist = Boolean.TRUE;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isExist;
+    }
 }

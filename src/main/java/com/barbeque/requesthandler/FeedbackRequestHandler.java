@@ -52,6 +52,7 @@ public class FeedbackRequestHandler {
         FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
 
         feedbackRequestDTO.setOutletId(feedbackRequestBO.getOutletId());
+        feedbackRequestDTO.setDeviceId(feedbackRequestBO.getDeviceId());
         feedbackRequestDTO.setFeedbacks(feedbackRequestBO.getFeedbacks());
         feedbackRequestDTO.setTableNo(feedbackRequestBO.getTableNo());
         feedbackRequestDTO.setBillNo(feedbackRequestBO.getBillNo());

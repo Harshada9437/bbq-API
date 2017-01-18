@@ -21,10 +21,12 @@ public class FeedbackDAO {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            StringBuilder query = new StringBuilder("INSERT INTO feedback_head( outlet_id, date, customer_id, table_no, bill_no");
-            query.append(")values (?,?,?,?,?)");
+            StringBuilder query = new StringBuilder("INSERT INTO feedback_head( device_id, outlet_id, date, customer_id, table_no, bill_no");
+            query.append(")values (?,?,?,?,?,?)");
 
             preparedStatement = connection.prepareStatement(query.toString());
+
+            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getDeviceId());
 
             preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getOutletId());
 

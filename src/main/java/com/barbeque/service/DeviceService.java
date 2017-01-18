@@ -3,6 +3,7 @@ package com.barbeque.service;
 import com.barbeque.bo.DeviceRequestBO;
 import com.barbeque.bo.DeviceStatusRequestBO;
 import com.barbeque.bo.UpdateDeviceRequestBO;
+import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.request.device.DeviceRequest;
 import com.barbeque.request.device.DeviceStatusRequest;
 import com.barbeque.request.device.UpdateDeviceRequest;
@@ -35,15 +36,18 @@ public class DeviceService {
         deviceRequestBO.setSerialNo(deviceRequest.getSerialNo());
 
         try {
-            DeviceRequestHandler deviceRequestHandler = new DeviceRequestHandler();
-            int deviceId = deviceRequestHandler.addDevice(deviceRequestBO);
+            if(!DeviceDAO.getDeviceBySerialNo( deviceRequestBO.getSerialNo())) {
+                DeviceRequestHandler deviceRequestHandler = new DeviceRequestHandler();
+                int deviceId = deviceRequestHandler.addDevice(deviceRequestBO);
 
-            if (deviceId > 0) {
-                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(deviceId));
+                if (deviceId > 0) {
+                    return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(deviceId));
 
-            } else {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
-
+                } else {
+                    return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
+                }
+            }else {
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Device already exist with same serial number.");
             }
         } catch (SQLException e) {
             e.printStackTrace();

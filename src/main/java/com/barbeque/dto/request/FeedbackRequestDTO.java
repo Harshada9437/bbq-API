@@ -11,6 +11,7 @@ import java.util.List;
 public class FeedbackRequestDTO {
     private int id;
     private int customerId;
+    private int deviceId;
     private String createdOn;
     private String modifiedOn;
     private int outletId;
@@ -28,6 +29,14 @@ public class FeedbackRequestDTO {
     private String questionDesc;
     private int rating;
     private int weightage;
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
 
     public String getAnswerDesc() {
         return answerDesc;
@@ -199,15 +208,13 @@ public class FeedbackRequestDTO {
         FeedbackRequestDTO that = (FeedbackRequestDTO) o;
 
         if (id != that.id) return false;
+        if (customerId != that.customerId) return false;
+        if (deviceId != that.deviceId) return false;
+        if (outletId != that.outletId) return false;
         if (answerId != that.answerId) return false;
         if (questionId != that.questionId) return false;
         if (rating != that.rating) return false;
         if (weightage != that.weightage) return false;
-        if (answerText != null ? !answerText.equals(that.answerText) : that.answerText != null) return false;
-        if (answerDesc != null ? !answerDesc.equals(that.answerDesc) : that.answerDesc != null) return false;
-        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
-        if (customerId != that.customerId) return false;
-        if (outletId != that.outletId) return false;
         if (createdOn != null ? !createdOn.equals(that.createdOn) : that.createdOn != null) return false;
         if (modifiedOn != null ? !modifiedOn.equals(that.modifiedOn) : that.modifiedOn != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -217,6 +224,9 @@ public class FeedbackRequestDTO {
         if (customerName != null ? !customerName.equals(that.customerName) : that.customerName != null) return false;
         if (outletDesc != null ? !outletDesc.equals(that.outletDesc) : that.outletDesc != null) return false;
         if (mobileNo != null ? !mobileNo.equals(that.mobileNo) : that.mobileNo != null) return false;
+        if (answerText != null ? !answerText.equals(that.answerText) : that.answerText != null) return false;
+        if (answerDesc != null ? !answerDesc.equals(that.answerDesc) : that.answerDesc != null) return false;
+        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
         return customer != null ? customer.equals(that.customer) : that.customer == null;
     }
 
@@ -224,6 +234,7 @@ public class FeedbackRequestDTO {
     public int hashCode() {
         int result = id;
         result = 31 * result + customerId;
+        result = 31 * result + deviceId;
         result = 31 * result + (createdOn != null ? createdOn.hashCode() : 0);
         result = 31 * result + (modifiedOn != null ? modifiedOn.hashCode() : 0);
         result = 31 * result + outletId;
@@ -234,14 +245,14 @@ public class FeedbackRequestDTO {
         result = 31 * result + (customerName != null ? customerName.hashCode() : 0);
         result = 31 * result + (outletDesc != null ? outletDesc.hashCode() : 0);
         result = 31 * result + (mobileNo != null ? mobileNo.hashCode() : 0);
-        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + answerId;
         result = 31 * result + questionId;
         result = 31 * result + (answerText != null ? answerText.hashCode() : 0);
         result = 31 * result + (answerDesc != null ? answerDesc.hashCode() : 0);
         result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
         result = 31 * result + rating;
         result = 31 * result + weightage;
-        result = 31 * result + answerId;
+        result = 31 * result + (customer != null ? customer.hashCode() : 0);
         return result;
     }
 
@@ -253,6 +264,7 @@ public class FeedbackRequestDTO {
                 ", createdOn='" + createdOn + '\'' +
                 ", modifiedOn='" + modifiedOn + '\'' +
                 ", outletId=" + outletId +
+                ", deviceId=" + deviceId +
                 ", date='" + date + '\'' +
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +

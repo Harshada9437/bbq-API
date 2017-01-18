@@ -26,6 +26,7 @@ public class FeedbackService {
     public Response addFeedback(FeedbackRequest feedbackRequest) throws SQLException {
         FeedbackRequestBO feedbackRequestBO = new FeedbackRequestBO();
         feedbackRequestBO.setOutletId(feedbackRequest.getOutletId());
+        feedbackRequestBO.setDeviceId(feedbackRequest.getDeviceId());
         feedbackRequestBO.setFeedbacks(feedbackRequest.getFeedbacks());
         feedbackRequestBO.setTableNo(feedbackRequest.getTableNo());
         feedbackRequestBO.setBillNo(feedbackRequest.getBillNo());
@@ -43,8 +44,8 @@ public class FeedbackService {
 
             }
         } catch (SQLException sqlException) {
-            MessageResponse MessageResponse = new MessageResponse();
-            return ResponseGenerator.generateSuccessResponse(MessageResponse, "feedback creation failed.");
+            sqlException.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "feedback creation failed.");
         }
     }
 

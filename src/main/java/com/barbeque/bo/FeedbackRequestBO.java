@@ -10,11 +10,20 @@ import java.util.List;
  */
 public class FeedbackRequestBO {
     private int outletId;
+    private int deviceId;
     private String date;
     private List<FeedbackDetails> feedbacks;
     private String tableNo;
     private String billNo;
     public CreateCustomer customer;
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
 
     public int getOutletId() {return outletId;}
 
@@ -56,6 +65,7 @@ public class FeedbackRequestBO {
         FeedbackRequestBO that = (FeedbackRequestBO) o;
 
         if (outletId != that.outletId) return false;
+        if (deviceId != that.deviceId) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (feedbacks != null ? !feedbacks.equals(that.feedbacks) : that.feedbacks != null) return false;
         if (tableNo != null ? !tableNo.equals(that.tableNo) : that.tableNo != null) return false;
@@ -66,6 +76,7 @@ public class FeedbackRequestBO {
     @Override
     public int hashCode() {
         int result = outletId;
+        result = 31 * result + deviceId;
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (feedbacks != null ? feedbacks.hashCode() : 0);
         result = 31 * result + (tableNo != null ? tableNo.hashCode() : 0);
@@ -82,6 +93,7 @@ public class FeedbackRequestBO {
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
                 ", billNo='" + billNo + '\'' +
+                ", deviceId=" + deviceId +
                 ", customer=" + customer +
                 '}';
     }
