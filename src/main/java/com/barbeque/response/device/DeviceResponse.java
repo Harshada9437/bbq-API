@@ -6,19 +6,21 @@ package com.barbeque.response.device;
 public class DeviceResponse {
     private int id;
     private int feedbackId;
-    private String serialNo;
-    private String model;
-    private String androidVersion;
+    private String installationId;
+    private String fingerprint;
+    private String androidDeviceId;
     private String installationDate;
+    private String storeId;
     private String status;
     private String feedbackDate;
 
-    public DeviceResponse(int id, int feedbackId, String serialNo, String model, String androidVersion, String installationDate, String status, String feedbackDate) {
+    public DeviceResponse(String storeId,int id, int feedbackId, String installationId, String fingerprint, String androidDeviceId, String installationDate, String status, String feedbackDate) {
+        this.storeId = storeId;
         this.id = id;
         this.feedbackId = feedbackId;
-        this.serialNo = serialNo;
-        this.model = model;
-        this.androidVersion = androidVersion;
+        this.installationId = installationId;
+        this.fingerprint = fingerprint;
+        this.androidDeviceId = androidDeviceId;
         this.installationDate = installationDate;
         this.status = status;
         this.feedbackDate = feedbackDate;
@@ -32,28 +34,28 @@ public class DeviceResponse {
         this.id = id;
     }
 
-    public String getSerialNo() {
-        return serialNo;
+    public String getInstallationId() {
+        return installationId;
     }
 
-    public void setSerialNo(String serialNo) {
-        this.serialNo = serialNo;
+    public void setInstallationId(String installationId) {
+        this.installationId = installationId;
     }
 
-    public String getModel() {
-        return model;
+    public String getFingerprint() {
+        return fingerprint;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
     }
 
-    public String getAndroidVersion() {
-        return androidVersion;
+    public String getAndroidDeviceId() {
+        return androidDeviceId;
     }
 
-    public void setAndroidVersion(String androidVersion) {
-        this.androidVersion = androidVersion;
+    public void setAndroidDeviceId(String androidDeviceId) {
+        this.androidDeviceId = androidDeviceId;
     }
 
     public String getInstallationDate() {
@@ -85,9 +87,9 @@ public class DeviceResponse {
         return "DeviceResponse{" +
                 "id=" + id +
                 ", feedbackId=" + feedbackId +
-                ", serialNo='" + serialNo + '\'' +
-                ", model='" + model + '\'' +
-                ", androidVersion='" + androidVersion + '\'' +
+                ", installationId='" + installationId + '\'' +
+                ", fingerprint='" + fingerprint + '\'' +
+                ", androidDeviceId='" + androidDeviceId + '\'' +
                 ", installationDate='" + installationDate + '\'' +
                 ", status='" + status + '\'' +
                 ", feedbackDate='" + feedbackDate + '\'' +

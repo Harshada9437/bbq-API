@@ -83,10 +83,11 @@ public class DeviceDAO {
                 DeviceDTO deviceDTO = new DeviceDTO();
                 date = "";
                 deviceDTO.setId(resultSet.getInt("id"));
-                deviceDTO.setAndroidDeviceId(resultSet.getString("android_version"));
+                deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
                 deviceDTO.setInstallationDate(resultSet.getString("installation_date"));
-                deviceDTO.setFingerprint(resultSet.getString("model"));
-                deviceDTO.setInstallationId(resultSet.getString("serial_no"));
+                deviceDTO.setFingerprint(resultSet.getString("fingerprint"));
+                deviceDTO.setInstallationId(resultSet.getString("installation_id"));
+                deviceDTO.setStoreId(resultSet.getString("store_id"));
                 deviceDTO.setStatus(resultSet.getString("status"));
                 if(resultSet.getTimestamp("created_on") != null){
                      date = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on"));

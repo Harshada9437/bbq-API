@@ -28,7 +28,7 @@ public class DeviceRequestHandler {
         List<DeviceDTO> deviceDTOs = deviceDAO.getDeviceList();
         List<DeviceResponse> deviceList = new ArrayList<DeviceResponse>();
         for (DeviceDTO deviceDTO : deviceDTOs){
-            DeviceResponse deviceResponse = new DeviceResponse(
+            DeviceResponse deviceResponse = new DeviceResponse(deviceDTO.getStoreId(),
                     deviceDTO.getId(),
                     deviceDTO.getFeedbackId(),
                     deviceDTO.getInstallationId(),
