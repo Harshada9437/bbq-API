@@ -4,43 +4,51 @@ package com.barbeque.bo;
  * Created by System-2 on 1/17/2017.
  */
 public class UpdateDeviceRequestBO {
-    private int id;
-    private String model;
-    private String androidVersion;
-    private String installationDate;
+    private int otp;
+    private String fingerprint;
+    private String androidDeviceId;
+    private String installationId;
+    private String storeId;
 
-    public int getId() {
-        return id;
+    public String getInstallationId() {
+        return installationId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setInstallationId(String installationId) {
+        this.installationId = installationId;
     }
 
-    public String getModel() {
-        return model;
+    public String getStoreId() {
+        return storeId;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
-    public String getAndroidVersion() {
-        return androidVersion;
+    public int getOtp() {
+        return otp;
     }
 
-    public void setAndroidVersion(String androidVersion) {
-        this.androidVersion = androidVersion;
+    public void setOtp(int otp) {
+        this.otp = otp;
     }
 
-    public String getInstallationDate() {
-        return installationDate;
+    public String getFingerprint() {
+        return fingerprint;
     }
 
-    public void setInstallationDate(String installationDate) {
-        this.installationDate = installationDate;
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
     }
 
+    public String getAndroidDeviceId() {
+        return androidDeviceId;
+    }
+
+    public void setAndroidDeviceId(String androidDeviceId) {
+        this.androidDeviceId = androidDeviceId;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,29 +57,33 @@ public class UpdateDeviceRequestBO {
 
         UpdateDeviceRequestBO that = (UpdateDeviceRequestBO) o;
 
-        if (id != that.id) return false;
-        if (model != null ? !model.equals(that.model) : that.model != null) return false;
-        if (androidVersion != null ? !androidVersion.equals(that.androidVersion) : that.androidVersion != null)
+        if (otp != that.otp) return false;
+        if (fingerprint != null ? !fingerprint.equals(that.fingerprint) : that.fingerprint != null) return false;
+        if (androidDeviceId != null ? !androidDeviceId.equals(that.androidDeviceId) : that.androidDeviceId != null)
             return false;
-        return installationDate != null ? installationDate.equals(that.installationDate) : that.installationDate == null;
+        if (installationId != null ? !installationId.equals(that.installationId) : that.installationId != null)
+            return false;
+        return storeId != null ? storeId.equals(that.storeId) : that.storeId == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (model != null ? model.hashCode() : 0);
-        result = 31 * result + (androidVersion != null ? androidVersion.hashCode() : 0);
-        result = 31 * result + (installationDate != null ? installationDate.hashCode() : 0);
+        int result = otp;
+        result = 31 * result + (fingerprint != null ? fingerprint.hashCode() : 0);
+        result = 31 * result + (androidDeviceId != null ? androidDeviceId.hashCode() : 0);
+        result = 31 * result + (installationId != null ? installationId.hashCode() : 0);
+        result = 31 * result + (storeId != null ? storeId.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "UpdateDeviceRequestBO{" +
-                "id=" + id +
-                ", model='" + model + '\'' +
-                ", androidVersion='" + androidVersion + '\'' +
-                ", installationDate='" + installationDate + '\'' +
+                "otp=" + otp +
+                ", fingerprint='" + fingerprint + '\'' +
+                ", androidDeviceId='" + androidDeviceId + '\'' +
+                ", installationId='" + installationId + '\'' +
+                ", storeId='" + storeId + '\'' +
                 '}';
     }
 }

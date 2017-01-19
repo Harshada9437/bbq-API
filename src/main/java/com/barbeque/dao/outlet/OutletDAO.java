@@ -212,7 +212,7 @@ public class OutletDAO {
         return outletDTO;
     }
 
-    public OutletDTO getOutletByStoreId(String storeId) throws SQLException, OutletNotFoundException {
+    public static OutletDTO getOutletByStoreId(String storeId) throws SQLException, OutletNotFoundException {
         Connection connection = null;
         Statement statement = null;
         OutletDTO outletDTO = new OutletDTO();
@@ -287,7 +287,7 @@ public class OutletDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE outlet_setting SET table_no_range=?, mobile_no_length =?, banner_url =? WHERE outlet_id =?");
+                    .prepareStatement("UPDATE outlet_setting SET table_no_range=?, mobile_no_length =?, banner_url =?, poc_name=?, poc_mobile=?, poc_email=? WHERE outlet_id =?");
 
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getTableNoRange());
 
@@ -296,6 +296,13 @@ public class OutletDAO {
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getBannerUrl());
 
             preparedStatement.setInt(parameterIndex++, outletId);
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getPocName());
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getPocMobile());
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getPocEmail());
+
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -416,20 +423,26 @@ public class OutletDAO {
         }
     }
 
-    public static boolean getSetting(int outletId) {
+    public static UpdateSettingsDTO getSetting(int outletId) {
         Connection connection = null;
         Statement statement = null;
-        boolean isExist = false;
+        UpdateSettingsDTO updateSettingsDTO = new UpdateSettingsDTO();
         try {
 
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT outlet_id FROM outlet_setting where outlet_id=" + outletId);
+            StringBuilder query = new StringBuilder("SELECT * FROM outlet_setting where outlet_id=" + outletId);
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
 
             while (resultSet.next()) {
-                isExist = true;
+                updateSettingsDTO.setPocEmail(resultSet.getString("poc_email"));
+                updateSettingsDTO.setPocName(resultSet.getString("poc_name"));
+                updateSettingsDTO.setPocMobile(resultSet.getString("poc_mobile"));
+                updateSettingsDTO.setBannerUrl(resultSet.getString("banner_url"));
+                updateSettingsDTO.setMobileNoLength(resultSet.getInt("mobile_no_length"));
+                updateSettingsDTO.setTableNoRange(resultSet.getString("table_no_range"));
+
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -441,7 +454,7 @@ public class OutletDAO {
                 e.printStackTrace();
             }
         }
-        return isExist;
+        return updateSettingsDTO;
     }
 
     public Boolean createSettings(UpdateSettingsDTO updateSettingsDTO, int outletId) throws SQLException {
@@ -453,7 +466,7 @@ public class OutletDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("INSERT  INTO outlet_setting (table_no_range, mobile_no_length , banner_url, outlet_id) VALUES(?,?,?,?) ");
+                    .prepareStatement("INSERT  INTO outlet_setting (table_no_range, mobile_no_length , banner_url, outlet_id, poc_name, poc_mobile, poc_email) VALUES(?,?,?,?,?,?,?) ");
 
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getTableNoRange());
 
@@ -462,6 +475,12 @@ public class OutletDAO {
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getBannerUrl());
 
             preparedStatement.setInt(parameterIndex++, outletId);
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getPocName());
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getPocMobile());
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getPocEmail());
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {

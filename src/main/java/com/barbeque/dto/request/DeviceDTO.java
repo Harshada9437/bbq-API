@@ -6,13 +6,22 @@ package com.barbeque.dto.request;
 public class DeviceDTO {
     private int id;
     private int feedbackId;
+    private int otp;
     private String feedbackDate;
-    private String serialNo;
-    private String model;
-    private String androidVersion;
-    private String buildNo;
+    private String installationId;
+    private String fingerprint;
+    private String androidDeviceId;
+    private String storeId;
     private String installationDate;
     private String status;
+
+    public int getOtp() {
+        return otp;
+    }
+
+    public void setOtp(int otp) {
+        this.otp = otp;
+    }
 
     public int getId() {
         return id;
@@ -22,36 +31,36 @@ public class DeviceDTO {
         this.id = id;
     }
 
-    public String getSerialNo() {
-        return serialNo;
+    public String getInstallationId() {
+        return installationId;
     }
 
-    public void setSerialNo(String serialNo) {
-        this.serialNo = serialNo;
+    public void setInstallationId(String installationId) {
+        this.installationId = installationId;
     }
 
-    public String getModel() {
-        return model;
+    public String getFingerprint() {
+        return fingerprint;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
     }
 
-    public String getAndroidVersion() {
-        return androidVersion;
+    public String getAndroidDeviceId() {
+        return androidDeviceId;
     }
 
-    public void setAndroidVersion(String androidVersion) {
-        this.androidVersion = androidVersion;
+    public void setAndroidDeviceId(String androidDeviceId) {
+        this.androidDeviceId = androidDeviceId;
     }
 
-    public String getBuildNo() {
-        return buildNo;
+    public String getStoreId() {
+        return storeId;
     }
 
-    public void setBuildNo(String buildNo) {
-        this.buildNo = buildNo;
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public String getInstallationDate() {
@@ -87,13 +96,14 @@ public class DeviceDTO {
 
         if (id != deviceDTO.id) return false;
         if (feedbackId != deviceDTO.feedbackId) return false;
+        if (otp != deviceDTO.otp) return false;
         if (feedbackDate != null ? !feedbackDate.equals(deviceDTO.feedbackDate) : deviceDTO.feedbackDate != null)
             return false;
-        if (serialNo != null ? !serialNo.equals(deviceDTO.serialNo) : deviceDTO.serialNo != null) return false;
-        if (model != null ? !model.equals(deviceDTO.model) : deviceDTO.model != null) return false;
-        if (androidVersion != null ? !androidVersion.equals(deviceDTO.androidVersion) : deviceDTO.androidVersion != null)
+        if (installationId != null ? !installationId.equals(deviceDTO.installationId) : deviceDTO.installationId != null) return false;
+        if (fingerprint != null ? !fingerprint.equals(deviceDTO.fingerprint) : deviceDTO.fingerprint != null) return false;
+        if (androidDeviceId != null ? !androidDeviceId.equals(deviceDTO.androidDeviceId) : deviceDTO.androidDeviceId != null)
             return false;
-        if (buildNo != null ? !buildNo.equals(deviceDTO.buildNo) : deviceDTO.buildNo != null) return false;
+        if (storeId != null ? !storeId.equals(deviceDTO.storeId) : deviceDTO.storeId != null) return false;
         if (installationDate != null ? !installationDate.equals(deviceDTO.installationDate) : deviceDTO.installationDate != null)
             return false;
         return status != null ? status.equals(deviceDTO.status) : deviceDTO.status == null;
@@ -103,11 +113,12 @@ public class DeviceDTO {
     public int hashCode() {
         int result = id;
         result = 31 * result + feedbackId;
+        result = 31 * result + otp;
         result = 31 * result + (feedbackDate != null ? feedbackDate.hashCode() : 0);
-        result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
-        result = 31 * result + (model != null ? model.hashCode() : 0);
-        result = 31 * result + (androidVersion != null ? androidVersion.hashCode() : 0);
-        result = 31 * result + (buildNo != null ? buildNo.hashCode() : 0);
+        result = 31 * result + (installationId != null ? installationId.hashCode() : 0);
+        result = 31 * result + (fingerprint != null ? fingerprint.hashCode() : 0);
+        result = 31 * result + (androidDeviceId != null ? androidDeviceId.hashCode() : 0);
+        result = 31 * result + (storeId != null ? storeId.hashCode() : 0);
         result = 31 * result + (installationDate != null ? installationDate.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
@@ -118,11 +129,12 @@ public class DeviceDTO {
         return "DeviceDTO{" +
                 "id=" + id +
                 ", feedbackId=" + feedbackId +
+                ", otp=" + otp +
                 ", feedbackDate='" + feedbackDate + '\'' +
-                ", serialNo='" + serialNo + '\'' +
-                ", model='" + model + '\'' +
-                ", androidVersion='" + androidVersion + '\'' +
-                ", buildNo='" + buildNo + '\'' +
+                ", installationId='" + installationId + '\'' +
+                ", fingerprint='" + fingerprint + '\'' +
+                ", androidDeviceId='" + androidDeviceId + '\'' +
+                ", storeId='" + storeId + '\'' +
                 ", installationDate='" + installationDate + '\'' +
                 ", status='" + status + '\'' +
                 '}';

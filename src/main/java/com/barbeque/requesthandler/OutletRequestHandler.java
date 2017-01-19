@@ -109,8 +109,10 @@ public class OutletRequestHandler {
     public Boolean updateSettings(UpdateSettingsRequestBO updateSettingsRequestBO, int outletId) throws SQLException {
         Boolean isProcessed = Boolean.FALSE;
         OutletDAO outletDAO = new OutletDAO();
+        UpdateSettingsDTO updateSettingsDTO = null;
         try {
-            if (OutletDAO.getSetting(outletId)) {
+            updateSettingsDTO= OutletDAO.getSetting(outletId);
+            if (updateSettingsDTO != null ) {
                 isProcessed = outletDAO.updateSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
             } else {
                 isProcessed = outletDAO.createSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
@@ -126,6 +128,9 @@ public class OutletRequestHandler {
         updateSettingsDTO.setBannerUrl(updateSettingsRequestBO.getBannerUrl());
         updateSettingsDTO.setMobileNoLength(updateSettingsRequestBO.getMobileNoLength());
         updateSettingsDTO.setTableNoRange(updateSettingsRequestBO.getTableNoRange());
+        updateSettingsDTO.setPocName(updateSettingsRequestBO.getPocName());
+        updateSettingsDTO.setPocMobile(updateSettingsRequestBO.getPocMobile());
+        updateSettingsDTO.setPocEmail(updateSettingsRequestBO.getPocEmail());
         return updateSettingsDTO;
     }
 }

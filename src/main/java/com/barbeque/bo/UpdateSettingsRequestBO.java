@@ -9,6 +9,33 @@ public class UpdateSettingsRequestBO {
     private int mobileNoLength;
     private String bannerUrl;
     private String tableNoRange;
+    private String pocName;
+    private String pocMobile;
+    private String pocEmail;
+
+    public String getPocName() {
+        return pocName;
+    }
+
+    public void setPocName(String pocName) {
+        this.pocName = pocName;
+    }
+
+    public String getPocMobile() {
+        return pocMobile;
+    }
+
+    public void setPocMobile(String pocMobile) {
+        this.pocMobile = pocMobile;
+    }
+
+    public String getPocEmail() {
+        return pocEmail;
+    }
+
+    public void setPocEmail(String pocEmail) {
+        this.pocEmail = pocEmail;
+    }
 
     public String getTableNoRange() {return tableNoRange;}
 
@@ -39,8 +66,10 @@ public class UpdateSettingsRequestBO {
 
         if (mobileNoLength != that.mobileNoLength) return false;
         if (bannerUrl != null ? !bannerUrl.equals(that.bannerUrl) : that.bannerUrl != null) return false;
-        return tableNoRange != null ? tableNoRange.equals(that.tableNoRange) : that.tableNoRange == null;
-
+        if (tableNoRange != null ? !tableNoRange.equals(that.tableNoRange) : that.tableNoRange != null) return false;
+        if (pocName != null ? !pocName.equals(that.pocName) : that.pocName != null) return false;
+        if (pocMobile != null ? !pocMobile.equals(that.pocMobile) : that.pocMobile != null) return false;
+        return pocEmail != null ? pocEmail.equals(that.pocEmail) : that.pocEmail == null;
     }
 
     @Override
@@ -48,15 +77,21 @@ public class UpdateSettingsRequestBO {
         int result = mobileNoLength;
         result = 31 * result + (bannerUrl != null ? bannerUrl.hashCode() : 0);
         result = 31 * result + (tableNoRange != null ? tableNoRange.hashCode() : 0);
+        result = 31 * result + (pocName != null ? pocName.hashCode() : 0);
+        result = 31 * result + (pocMobile != null ? pocMobile.hashCode() : 0);
+        result = 31 * result + (pocEmail != null ? pocEmail.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "UpdateSettingsRequest{" +
+        return "UpdateSettingsRequestBO{" +
                 "mobileNoLength=" + mobileNoLength +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", tableNoRange='" + tableNoRange + '\'' +
+                ", pocName='" + pocName + '\'' +
+                ", pocMobile='" + pocMobile + '\'' +
+                ", pocEmail='" + pocEmail + '\'' +
                 '}';
     }
 }

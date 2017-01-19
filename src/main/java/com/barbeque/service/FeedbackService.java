@@ -2,6 +2,8 @@ package com.barbeque.service;
 
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
+import com.barbeque.dao.device.DeviceDAO;
+import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.request.feedback.FeedbackRequest;
 import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
@@ -36,12 +38,12 @@ public class FeedbackService {
         MessageResponse messageResponse = new MessageResponse();
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         try {
-            int feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO);
-            if (feedbackId > 0) {
+           DeviceDTO deviceDTO = DeviceDAO.getDevice(feedbackRequestBO.getDeviceId());
+            if (deviceDTO.getStatus().equals("A")) {
+                int feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(feedbackId));
             } else {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "feedback creation failed.");
-
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Inactive device.");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();

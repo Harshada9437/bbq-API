@@ -2,15 +2,22 @@ package com.barbeque.service;
 
 import com.barbeque.bo.DeviceRequestBO;
 import com.barbeque.bo.DeviceStatusRequestBO;
+import com.barbeque.bo.RegisterRequestBO;
 import com.barbeque.bo.UpdateDeviceRequestBO;
 import com.barbeque.dao.device.DeviceDAO;
+import com.barbeque.dao.outlet.OutletDAO;
+import com.barbeque.dto.UpdateSettingsDTO;
+import com.barbeque.dto.request.OutletDTO;
+import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.request.device.DeviceRequest;
 import com.barbeque.request.device.DeviceStatusRequest;
+import com.barbeque.request.device.RegisterRequest;
 import com.barbeque.request.device.UpdateDeviceRequest;
 import com.barbeque.requesthandler.DeviceRequestHandler;
 import com.barbeque.response.device.DeviceResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
+import com.barbeque.util.EmailService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -23,64 +30,31 @@ import java.sql.SQLException;
 @Path("/device")
 public class DeviceService {
     @POST
-    @Path("/create")
+    @Path("/verify")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addDevice(DeviceRequest deviceRequest) {
-        DeviceRequestBO deviceRequestBO = new DeviceRequestBO();
-        MessageResponse messageResponse = new MessageResponse();
-
-        deviceRequestBO.setAndroidVersion(deviceRequest.getAndroidVersion());
-        deviceRequestBO.setInstallationDate(deviceRequest.getInstallationDate());
-        deviceRequestBO.setModel(deviceRequest.getModel());
-        deviceRequestBO.setSerialNo(deviceRequest.getSerialNo());
-
-        try {
-            if(!DeviceDAO.getDeviceBySerialNo( deviceRequestBO.getSerialNo())) {
-                DeviceRequestHandler deviceRequestHandler = new DeviceRequestHandler();
-                int deviceId = deviceRequestHandler.addDevice(deviceRequestBO);
-
-                if (deviceId > 0) {
-                    return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(deviceId));
-
-                } else {
-                    return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
-                }
-            }else {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Device already exist with same serial number.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
-        }
-    }
-
-    @POST
-    @Path("/install")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response updateDevice(UpdateDeviceRequest deviceRequest) {
+    public Response verifyDevice(UpdateDeviceRequest deviceRequest) {
         UpdateDeviceRequestBO deviceRequestBO = new UpdateDeviceRequestBO();
         MessageResponse messageResponse = new MessageResponse();
 
-        deviceRequestBO.setAndroidVersion(deviceRequest.getAndroidVersion());
-        deviceRequestBO.setId(deviceRequest.getId());
-        deviceRequestBO.setInstallationDate(deviceRequest.getInstallationDate());
-        deviceRequestBO.setModel(deviceRequest.getModel());
+        deviceRequestBO.setAndroidDeviceId(deviceRequest.getAndroidDeviceId());
+        deviceRequestBO.setInstallationId(deviceRequest.getInstallationId());
+        deviceRequestBO.setOtp(deviceRequest.getOtp());
+        deviceRequestBO.setStoreId(deviceRequest.getStoreId());
+        deviceRequestBO.setFingerprint(deviceRequest.getFingerprint());
 
         try {
             DeviceRequestHandler deviceRequestHandler = new DeviceRequestHandler();
-            Boolean isCreate = deviceRequestHandler.installDevice(deviceRequestBO);
-            if (isCreate) {
-                return ResponseGenerator.generateSuccessResponse(messageResponse, "Device updated successfully.");
 
+            if(DeviceDAO.getValidOtp(deviceRequestBO.getInstallationId(),deviceRequestBO.getOtp())>0) {
+                int id = deviceRequestHandler.verifyDevice(deviceRequestBO);
+                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
             } else {
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
-
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid otp.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to verify the device.");
         }
     }
 
@@ -129,19 +103,34 @@ public class DeviceService {
     }
 
 
-    @GET
-    @Path("/validate/{serial_no}")
+    @POST
+    @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceList(@PathParam("serial_no") String serialNo) {
+    public Response registerDevice(RegisterRequest registerRequest) throws OutletNotFoundException {
         DeviceRequestHandler deviceRequestHandler = new DeviceRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
+
+        RegisterRequestBO registerRequestBO = new RegisterRequestBO();
+        registerRequestBO.setAndroidDeviceId(registerRequest.getAndroidDeviceId());
+        registerRequestBO.setInstallationId(registerRequest.getInstallationId());
+        registerRequestBO.setStoreId(registerRequest.getStoreId());
+
+        OutletDTO outletDTO = null;
         try {
-            int id = deviceRequestHandler.getValidDevice(serialNo);
-            if(id > 0) {
-                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
-            }else{
-                return ResponseGenerator.generateFailureResponse(messageResponse,"This device doesn't support this app.");
+            int otp = DeviceDAO.getValidOtp(registerRequestBO.getInstallationId(),0);
+            outletDTO = OutletDAO.getOutletByStoreId(registerRequestBO.getStoreId());
+            if(otp == 0) {
+                if (outletDTO != null) {
+                    deviceRequestHandler.getValidDevice(registerRequestBO, outletDTO.getId());
+                    return ResponseGenerator.generateSuccessResponse(messageResponse, "Otp is send to registered email id");
+                } else {
+                    return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid store id.");
+                }
+            }else {
+                UpdateSettingsDTO updateSettingsDTO = OutletDAO.getSetting(outletDTO.getId());
+                EmailService.sendOtp(updateSettingsDTO.getPocEmail(),updateSettingsDTO.getPocName(),otp);
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Otp is send to registered email id");
             }
         }catch (SQLException e){
             e.printStackTrace();

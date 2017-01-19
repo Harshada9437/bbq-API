@@ -10,6 +10,10 @@ public class ConfigProperties {
     public static String db_host;
     public static String db_port;
     public static String db_name;
+    public static String smtp_name;
+    public static String smtp_host;
+    public static String smtp_password;
+    public static String smtp_from;
     public static String db_username;
     public static String db_password;
 
@@ -33,6 +37,10 @@ public class ConfigProperties {
             db_host = prop.getProperty("db_host");
             db_port = prop.getProperty("db_port");
             db_name = prop.getProperty("db_name");
+            smtp_host = prop.getProperty("smtp_host");
+            smtp_from = prop.getProperty("smtp_from");
+            smtp_name = prop.getProperty("smtp_name");
+            smtp_password = prop.getProperty("smtp_password");
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

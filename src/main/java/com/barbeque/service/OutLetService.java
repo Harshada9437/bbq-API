@@ -62,9 +62,14 @@ public class OutLetService {
     @Path("/updateSettings/{outlet_id}")
     public Response updateSettings(UpdateSettingsRequest updateSettingsRequest, @PathParam("outlet_id") int outletId) throws Exception {
         UpdateSettingsRequestBO updateSettingsRequestBO = new UpdateSettingsRequestBO();
+
         updateSettingsRequestBO.setMobileNoLength(updateSettingsRequest.getMobileNoLength());
         updateSettingsRequestBO.setBannerUrl(updateSettingsRequest.getBannerUrl());
         updateSettingsRequestBO.setTableNoRange(updateSettingsRequest.getTableNoRange());
+        updateSettingsRequestBO.setPocName(updateSettingsRequest.getPocName());
+        updateSettingsRequestBO.setPocMobile(updateSettingsRequest.getPocMobile());
+        updateSettingsRequestBO.setPocEmail(updateSettingsRequest.getPocEmail());
+
         MessageResponse assignoutletResponse = new MessageResponse();
         OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         try {

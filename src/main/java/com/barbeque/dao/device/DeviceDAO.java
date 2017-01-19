@@ -2,7 +2,7 @@ package com.barbeque.dao.device;
 
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.DeviceDTO;
-import com.barbeque.dto.request.TableDTO;
+import com.barbeque.dto.request.RegisterDTO;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
@@ -13,42 +13,43 @@ import java.util.List;
  * Created by System-2 on 1/17/2017.
  */
 public class DeviceDAO {
-    public Integer addDevice(DeviceDTO deviceDTO) throws SQLException {
+    public Integer verifyDevice(DeviceDTO deviceDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO devices(serial_no, android_version, model, installation_date) values (?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO devices(installation_id, android_device_id, store_id, fingerprint) values (?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            preparedStatement = connection.prepareStatement(query.toString());
+                expireDeviceOtp(deviceDTO.getOtp(),deviceDTO.getInstallationId(),0,connection);
+                preparedStatement = connection.prepareStatement(query.toString());
 
-            preparedStatement.setString(parameterIndex++, deviceDTO.getSerialNo());
-            preparedStatement.setString(parameterIndex++, deviceDTO.getAndroidVersion());
-            preparedStatement.setString(parameterIndex++, deviceDTO.getModel());
-            preparedStatement.setString(parameterIndex++, deviceDTO.getInstallationDate());
+                preparedStatement.setString(parameterIndex++, deviceDTO.getInstallationId());
+                preparedStatement.setString(parameterIndex++, deviceDTO.getAndroidDeviceId());
+                preparedStatement.setString(parameterIndex++, deviceDTO.getStoreId());
+                preparedStatement.setString(parameterIndex++, deviceDTO.getFingerprint());
 
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                connection.commit();
-            } else {
-                connection.rollback();
-            }
-
-            try {
-                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    id = generatedKeys.getInt(1);
+                int i = preparedStatement.executeUpdate();
+                if (i > 0) {
+                    connection.commit();
                 } else {
-                    throw new SQLException(
-                            "Creating device failed, no ID obtained.");
+                    connection.rollback();
                 }
-            } catch (SQLException e) {
-                connection.rollback();
-                e.printStackTrace();
-                throw e;
-            }
+
+                try {
+                    ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        id = generatedKeys.getInt(1);
+                    } else {
+                        throw new SQLException(
+                                "Creating device failed, no ID obtained.");
+                    }
+                } catch (SQLException e) {
+                    connection.rollback();
+                    e.printStackTrace();
+                    throw e;
+                }
         } catch (SQLException sqlException) {
             connection.rollback();
             sqlException.printStackTrace();
@@ -82,10 +83,10 @@ public class DeviceDAO {
                 DeviceDTO deviceDTO = new DeviceDTO();
                 date = "";
                 deviceDTO.setId(resultSet.getInt("id"));
-                deviceDTO.setAndroidVersion(resultSet.getString("android_version"));
+                deviceDTO.setAndroidDeviceId(resultSet.getString("android_version"));
                 deviceDTO.setInstallationDate(resultSet.getString("installation_date"));
-                deviceDTO.setModel(resultSet.getString("model"));
-                deviceDTO.setSerialNo(resultSet.getString("serial_no"));
+                deviceDTO.setFingerprint(resultSet.getString("model"));
+                deviceDTO.setInstallationId(resultSet.getString("serial_no"));
                 deviceDTO.setStatus(resultSet.getString("status"));
                 if(resultSet.getTimestamp("created_on") != null){
                      date = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on"));
@@ -108,21 +109,33 @@ public class DeviceDAO {
         return deviceList;
     }
 
-    public Integer getValidDevice(String serialNo) throws SQLException {
+    public Boolean getValidDevice(RegisterDTO registerDTO,int otp) throws SQLException {
         Connection connection = null;
-        Statement statement = null;
-        int id = 0;
+        PreparedStatement statement = null;
+        Boolean isCreate = Boolean.FALSE;
         try {
-
+            int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
-            statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT id FROM devices where serial_no=\"" + serialNo + "\" and status=\"" + "A" + "\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            connection.setAutoCommit(false);
 
-            while (resultSet.next()) {
-               id = resultSet.getInt("id");
+            statement = connection.prepareStatement("INSERT INTO device_otp_map(android_device_id,installation_id,store_id,otp,isExpired) values(?,?,?,?,?)");
+
+            statement.setString(parameterIndex++, registerDTO.getAndroidDeviceId());
+            statement.setString(parameterIndex++, registerDTO.getInstallationId());
+            statement.setString(parameterIndex++, registerDTO.getStoreId());
+            statement.setInt(parameterIndex++, otp);
+            statement.setString(parameterIndex++, "NO");
+
+            int i = statement.executeUpdate();
+
+            if (i > 0) {
+                connection.commit();
+                expireDeviceOtp(otp,registerDTO.getInstallationId(),1,connection);
+                isCreate = Boolean.TRUE;
+            } else {
+                connection.rollback();
             }
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         } finally {
@@ -133,48 +146,32 @@ public class DeviceDAO {
                 e.printStackTrace();
             }
         }
-        return id;
+        return isCreate;
     }
 
-    public Boolean installDevice(DeviceDTO deviceDTO) throws SQLException {
-        boolean isCreated = false;
+    private Boolean expireDeviceOtp(int otp, String installationId,int time,Connection connection) throws SQLException {
         PreparedStatement preparedStatement = null;
-        Connection connection = null;
+        String where = "";
+        Boolean isCreate = Boolean.FALSE;
         try {
-            int parameterIndex = 1;
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
+
+            if(time > 0){
+                where = " and timest < (NOW() + INTERVAL 30 MINUTE)";
+            }
             preparedStatement = connection
-                    .prepareStatement("UPDATE devices SET android_version =?, " +
-                            "model=?, installation_date = ? WHERE id =?");
+                    .prepareStatement("UPDATE device_otp_map SET isExpired=\"" + "YES" + "\" WHERE otp=" + otp + " and installation_id=\""
+                                     + installationId +  "\"" + where);
 
-            preparedStatement.setString(parameterIndex++, deviceDTO.getAndroidVersion());
-
-            preparedStatement.setString(parameterIndex++, deviceDTO.getModel());
-
-            preparedStatement.setString(parameterIndex++, deviceDTO.getInstallationDate());
-
-            preparedStatement.setInt(parameterIndex++, deviceDTO.getId());
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
-                connection.commit();
-                isCreated = Boolean.TRUE;
-            } else {
-                connection.rollback();
+                isCreate = Boolean.TRUE;
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             throw sqlException;
-        } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-        return isCreated;
+        return isCreate;
     }
 
     public Boolean updateDevice(DeviceDTO deviceDTO) throws SQLException {
@@ -213,20 +210,26 @@ public class DeviceDAO {
         return isCreated;
     }
 
-    public static Boolean getDeviceBySerialNo(String serialNo) throws SQLException {
+    public static int getValidOtp(String installationId,int otp) throws SQLException {
         Connection connection = null;
         Statement statement = null;
-        Boolean isExist = Boolean.FALSE;
+        int otp1=0;
+        String where="";
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
+            if(otp>0){
+                where = " and otp=" + otp;
+            }
             StringBuilder query = new StringBuilder(
-                    "SELECT * FROM devices where serial_no =\"").append(serialNo).append("\"");
+                    "SELECT isExpired,otp FROM device_otp_map where installation_id =\"").append(installationId).append("\"").append(where);
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
             while (resultSet.next()) {
-                isExist = Boolean.TRUE;
+                if(resultSet.getString("isExpired").equals("NO")) {
+                    otp1 = resultSet.getInt("otp");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -239,6 +242,38 @@ public class DeviceDAO {
                 e.printStackTrace();
             }
         }
-        return isExist;
+        return otp1;
+    }
+
+    public static DeviceDTO getDevice(int deviceId) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        DeviceDTO deviceDTO = new DeviceDTO();
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT * FROM devices where id =" + deviceId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+               deviceDTO.setStoreId(resultSet.getString("store_id"));
+               deviceDTO.setInstallationId(resultSet.getString("installation_id"));
+               deviceDTO.setStatus(resultSet.getString("status"));
+               deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
+               deviceDTO.setAndroidDeviceId(resultSet.getString("installation_date"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return deviceDTO;
     }
 }
