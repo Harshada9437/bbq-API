@@ -21,7 +21,34 @@ public class OutletDTO
     private String  bannerUrl;
     private String  templateName;
     private String posStoreId;
+    private String pocEmail;
+    private String pocName;
+    private String pocMobile;
     private int templateId;
+
+    public String getPocEmail() {
+        return pocEmail;
+    }
+
+    public void setPocEmail(String pocEmail) {
+        this.pocEmail = pocEmail;
+    }
+
+    public String getPocName() {
+        return pocName;
+    }
+
+    public void setPocName(String pocName) {
+        this.pocName = pocName;
+    }
+
+    public String getPocMobile() {
+        return pocMobile;
+    }
+
+    public void setPocMobile(String pocMobile) {
+        this.pocMobile = pocMobile;
+    }
 
     public String getTableNoRange() {
         return tableNoRange;
@@ -147,7 +174,6 @@ public class OutletDTO
         if (templateId != outletDTO.templateId) return false;
         if (outletDesc != null ? !outletDesc.equals(outletDTO.outletDesc) : outletDTO.outletDesc != null) return false;
         if (shortDesc != null ? !shortDesc.equals(outletDTO.shortDesc) : outletDTO.shortDesc != null) return false;
-        if (posStoreId != null ? !posStoreId.equals(outletDTO.posStoreId) : outletDTO.posStoreId != null) return false;
         if (clusterName != null ? !clusterName.equals(outletDTO.clusterName) : outletDTO.clusterName != null)
             return false;
         if (regionName != null ? !regionName.equals(outletDTO.regionName) : outletDTO.regionName != null) return false;
@@ -157,8 +183,12 @@ public class OutletDTO
         if (tableNoRange != null ? !tableNoRange.equals(outletDTO.tableNoRange) : outletDTO.tableNoRange != null)
             return false;
         if (bannerUrl != null ? !bannerUrl.equals(outletDTO.bannerUrl) : outletDTO.bannerUrl != null) return false;
-        return templateName != null ? templateName.equals(outletDTO.templateName) : outletDTO.templateName == null;
-
+        if (templateName != null ? !templateName.equals(outletDTO.templateName) : outletDTO.templateName != null)
+            return false;
+        if (posStoreId != null ? !posStoreId.equals(outletDTO.posStoreId) : outletDTO.posStoreId != null) return false;
+        if (pocEmail != null ? !pocEmail.equals(outletDTO.pocEmail) : outletDTO.pocEmail != null) return false;
+        if (pocName != null ? !pocName.equals(outletDTO.pocName) : outletDTO.pocName != null) return false;
+        return pocMobile != null ? pocMobile.equals(outletDTO.pocMobile) : outletDTO.pocMobile == null;
     }
 
     @Override
@@ -179,6 +209,9 @@ public class OutletDTO
         result = 31 * result + (bannerUrl != null ? bannerUrl.hashCode() : 0);
         result = 31 * result + (templateName != null ? templateName.hashCode() : 0);
         result = 31 * result + (posStoreId != null ? posStoreId.hashCode() : 0);
+        result = 31 * result + (pocEmail != null ? pocEmail.hashCode() : 0);
+        result = 31 * result + (pocName != null ? pocName.hashCode() : 0);
+        result = 31 * result + (pocMobile != null ? pocMobile.hashCode() : 0);
         result = 31 * result + templateId;
         return result;
     }
@@ -202,6 +235,9 @@ public class OutletDTO
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", templateName='" + templateName + '\'' +
                 ", posStoreId='" + posStoreId + '\'' +
+                ", pocEmail='" + pocEmail + '\'' +
+                ", pocName='" + pocName + '\'' +
+                ", pocMobile='" + pocMobile + '\'' +
                 ", templateId=" + templateId +
                 '}';
     }

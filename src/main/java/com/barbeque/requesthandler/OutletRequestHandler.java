@@ -96,6 +96,9 @@ public class OutletRequestHandler {
         outletResponse.setTemplateName(outletDTO.getTemplateName());
         outletResponse.setTemplateId(outletDTO.getTemplateId());
         outletResponse.setTableNoRange(outletDTO.getTableNoRange());
+        outletResponse.setPocName(outletDTO.getPocName());
+        outletResponse.setPocEmail(outletDTO.getPocEmail());
+        outletResponse.setPocMobile(outletDTO.getPocMobile());
 
         return outletResponse;
     }

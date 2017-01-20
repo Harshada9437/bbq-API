@@ -26,6 +26,14 @@ public class DeviceResponse {
         this.feedbackDate = feedbackDate;
     }
 
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
     public int getId() {
         return id;
     }
@@ -87,6 +95,7 @@ public class DeviceResponse {
         return "DeviceResponse{" +
                 "id=" + id +
                 ", feedbackId=" + feedbackId +
+                ", storeId='" + storeId + '\'' +
                 ", installationId='" + installationId + '\'' +
                 ", fingerprint='" + fingerprint + '\'' +
                 ", androidDeviceId='" + androidDeviceId + '\'' +

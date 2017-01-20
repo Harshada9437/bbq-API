@@ -9,6 +9,9 @@ public class OutletResponseList implements GenericResponse
 {
     private int id;
     private String outletDesc;
+    private String pocName;
+    private String pocMobile;
+    private String pocEmail;
     private String shortDesc;
     private int clusterId;
     private String clusterName;
@@ -26,6 +29,30 @@ public class OutletResponseList implements GenericResponse
     private String  bannerUrl;
     private String posStoreId;
     private int templateId;
+
+    public String getPocName() {
+        return pocName;
+    }
+
+    public void setPocName(String pocName) {
+        this.pocName = pocName;
+    }
+
+    public String getPocMobile() {
+        return pocMobile;
+    }
+
+    public void setPocMobile(String pocMobile) {
+        this.pocMobile = pocMobile;
+    }
+
+    public String getPocEmail() {
+        return pocEmail;
+    }
+
+    public void setPocEmail(String pocEmail) {
+        this.pocEmail = pocEmail;
+    }
 
     public String getTableNoRange() {
         return tableNoRange;
@@ -174,6 +201,9 @@ public class OutletResponseList implements GenericResponse
                 ", templateName='" + templateName + '\'' +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", posStoreId='" + posStoreId + '\'' +
+                ", pocName='" + pocName + '\'' +
+                ", pocMobile='" + pocMobile + '\'' +
+                ", pocEmail='" + pocEmail + '\'' +
                 ", templateId=" + templateId +
                 '}';
     }
