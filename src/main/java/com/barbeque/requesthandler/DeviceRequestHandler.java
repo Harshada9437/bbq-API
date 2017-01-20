@@ -10,6 +10,7 @@ import com.barbeque.dto.UpdateSettingsDTO;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.dto.request.RegisterDTO;
 import com.barbeque.response.device.DeviceResponse;
+import com.barbeque.util.DateUtil;
 import com.barbeque.util.EmailService;
 
 import java.security.NoSuchAlgorithmException;
@@ -81,7 +82,18 @@ public class DeviceRequestHandler {
 
     public Integer verifyDevice(UpdateDeviceRequestBO deviceRequestBO) throws SQLException {
         DeviceDAO deviceDAO=new DeviceDAO();
-        int id = deviceDAO.verifyDevice(buildUpdateDtofromBo(deviceRequestBO));
+        DeviceDTO deviceDTO = deviceDAO.getDeviceByInstallationId(deviceRequestBO.getInstallationId());
+        int id = -1;
+        if(deviceDTO.getId() > 0){
+            id = deviceDTO.getId();
+            deviceDTO.setFingerprint(deviceRequestBO.getFingerprint());
+            deviceDTO.setAndroidDeviceId(deviceRequestBO.getAndroidDeviceId());
+            deviceDTO.setStoreId(deviceRequestBO.getStoreId());
+            deviceDTO.setInstallationDate(DateUtil.getCurrentServerTime());
+            deviceDAO.updateDevice(deviceDTO);
+        } else {
+            id = deviceDAO.verifyDevice(buildUpdateDtofromBo(deviceRequestBO));
+        }
         return id;
     }
 

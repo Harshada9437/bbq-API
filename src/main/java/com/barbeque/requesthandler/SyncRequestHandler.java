@@ -1,10 +1,9 @@
 package com.barbeque.requesthandler;
 
-import com.barbeque.dao.Sync.ClusterDAO;
-import com.barbeque.dao.Sync.CompanyDAO;
-import com.barbeque.dao.Sync.GroupDAO;
-import com.barbeque.dao.Sync.RegionDAO;
+import com.barbeque.dao.Sync.*;
 import com.barbeque.dao.outlet.OutletDAO;
+import com.barbeque.dto.VersionInfoDTO;
+import com.barbeque.response.util.VersionInfoResponse;
 import com.barbeque.sync.*;
 
 import java.sql.SQLException;
@@ -14,6 +13,17 @@ import java.util.List;
  * Created by System-2 on 1/9/2017.
  */
 public class SyncRequestHandler {
+
+    public VersionInfoResponse getAndroidVersion() throws SQLException{
+        VersionInfoResponse versionInfoResponse = new VersionInfoResponse();
+        VersionDAO versionDAO = new VersionDAO();
+        VersionInfoDTO versionInfoDTO = versionDAO.getAndroidVersion();
+        versionInfoResponse.setVersionCode(versionInfoDTO.getVersionCode());
+        versionInfoResponse.setVersionNumber(versionInfoDTO.getVersionNumber());
+        return  versionInfoResponse;
+    }
+
+
     public void syncData(Data data) throws SQLException {
         List<Group> groups = data.getGroups();
         List<Integer> oldGroup = GroupDAO.getGroups();

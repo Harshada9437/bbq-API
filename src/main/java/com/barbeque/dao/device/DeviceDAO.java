@@ -16,7 +16,7 @@ public class DeviceDAO {
     public Integer verifyDevice(DeviceDTO deviceDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO devices(installation_id, android_device_id, store_id, fingerprint) values (?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO devices(installation_id, android_device_id, store_id, fingerprint, installation_date) values (?,?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -29,6 +29,7 @@ public class DeviceDAO {
                 preparedStatement.setString(parameterIndex++, deviceDTO.getAndroidDeviceId());
                 preparedStatement.setString(parameterIndex++, deviceDTO.getStoreId());
                 preparedStatement.setString(parameterIndex++, deviceDTO.getFingerprint());
+                preparedStatement.setString(parameterIndex++, DateUtil.getCurrentServerTime());
 
                 int i = preparedStatement.executeUpdate();
                 if (i > 0) {
@@ -63,6 +64,40 @@ public class DeviceDAO {
             }
         }
         return id;
+    }
+
+    public DeviceDTO getDeviceByInstallationId(String installId) throws SQLException {
+
+        DeviceDTO deviceDTO = new DeviceDTO();
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            String query = "select * from devices where installation_id='" + installId + "'";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                deviceDTO.setId(resultSet.getInt("id"));
+                deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
+                deviceDTO.setInstallationDate(resultSet.getString("installation_date"));
+                deviceDTO.setFingerprint(resultSet.getString("fingerprint"));
+                deviceDTO.setInstallationId(resultSet.getString("installation_id"));
+                deviceDTO.setStoreId(resultSet.getString("store_id"));
+                deviceDTO.setStatus(resultSet.getString("status"));
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return deviceDTO;
     }
 
     public List<DeviceDTO> getDeviceList() throws SQLException {
@@ -184,8 +219,9 @@ public class DeviceDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE devices SET status =? WHERE id =?");
+                    .prepareStatement("UPDATE devices SET installation_date=?, status =? WHERE id =?");
 
+            preparedStatement.setString(parameterIndex++, deviceDTO.getInstallationDate());
             preparedStatement.setString(parameterIndex++, deviceDTO.getStatus());
 
             preparedStatement.setInt(parameterIndex++, deviceDTO.getId());
