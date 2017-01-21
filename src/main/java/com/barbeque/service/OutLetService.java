@@ -43,7 +43,7 @@ public class OutLetService {
             Boolean isCreate=Boolean.FALSE;
             List<TempDTO> tempDTOs = null;
             tempDTOs= TemplateDAO.getTemplateByOutletId(outletId);
-                if (tempDTOs == null) {
+                if (tempDTOs == null || tempDTOs.size()>0) {
                      isCreate = outletRequestHandler.assignTemplate(assignTemplateRequestBO, outletId);
                 }
             if(isCreate){
@@ -79,6 +79,7 @@ public class OutLetService {
                 return ResponseGenerator.generateFailureResponse(assignoutletResponse, "update setting Failed");
             }
         } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
             return ResponseGenerator.generateFailureResponse(assignoutletResponse, "update setting Failed");
         }
 

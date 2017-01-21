@@ -431,7 +431,7 @@ public class OutletDAO {
     public static UpdateSettingsDTO getSetting(int outletId) {
         Connection connection = null;
         Statement statement = null;
-        UpdateSettingsDTO updateSettingsDTO = new UpdateSettingsDTO();
+        UpdateSettingsDTO updateSettingsDTO = null;
         try {
 
             connection = new ConnectionHandler().getConnection();
@@ -441,6 +441,7 @@ public class OutletDAO {
                     .trim());
 
             while (resultSet.next()) {
+                updateSettingsDTO = new UpdateSettingsDTO();
                 updateSettingsDTO.setPocEmail(resultSet.getString("poc_email"));
                 updateSettingsDTO.setPocName(resultSet.getString("poc_name"));
                 updateSettingsDTO.setPocMobile(resultSet.getString("poc_mobile"));
