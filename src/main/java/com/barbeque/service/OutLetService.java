@@ -40,16 +40,12 @@ public class OutLetService {
         MessageResponse assignoutletResponse = new MessageResponse();
         OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         try {
-            Boolean isCreate=Boolean.FALSE;
-            List<TempDTO> tempDTOs = null;
-            tempDTOs= TemplateDAO.getTemplateByOutletId(outletId);
-                if (tempDTOs == null || tempDTOs.size()>0) {
-                     isCreate = outletRequestHandler.assignTemplate(assignTemplateRequestBO, outletId);
-                }
-            if(isCreate){
+            List<TempDTO> tempDTOs = TemplateDAO.getTemplateByOutletId(outletId);
+            if (tempDTOs.size() == 0) {
+                outletRequestHandler.assignTemplate(assignTemplateRequestBO, outletId);
                 return ResponseGenerator.generateSuccessResponse(assignoutletResponse, "Templates are assigned");
-            }else {
-                return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template assignment Failed");
+            } else {
+                return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template is already assigned to this outlet.");
             }
         } catch (SQLException sqlException) {
             return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template assignment Failed");
