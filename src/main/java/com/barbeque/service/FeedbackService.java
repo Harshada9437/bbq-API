@@ -1,12 +1,15 @@
 package com.barbeque.service;
 
+import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
+import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
 import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
+import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
@@ -77,18 +80,46 @@ public class FeedbackService {
         }
     }
 
-    @GET
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getfeedbackList() throws Exception {
+    public Response getfeedbackList(FeedbackListRequest feedbackListRequest) throws Exception {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
-        Boolean isCreated = feedbackRequestHandler.getfeedbackList();
+        FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
+        try {
+            feedbackListRequestBO.setFromDate(feedbackListRequest.getFromDate());
+            feedbackListRequestBO.setToDate(feedbackListRequest.getToDate());
+            Boolean isCreated = feedbackRequestHandler.getfeedbackList(feedbackListRequestBO);
         if(isCreated) {
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Successfully downloaded.");
         }else {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve the list");
         }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve the list");
+        }
     }
+
+  /*  @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/list")
+    public Response getfeedbackList(FeedbackListRequest feedbackListRequest) throws SQLException {
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+        FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
+        try {
+            feedbackListRequestBO.setFromDate(feedbackListRequest.getFromDate());
+            feedbackListRequestBO.setToDate(feedbackListRequest.getToDate());
+            FeedbackResponseList feedbackResponse = new FeedbackResponseList();
+            feedbackResponse.setFeedbacks(feedbackRequestHandler.getfeedbackList(feedbackListRequestBO));
+            return ResponseGenerator.generateSuccessResponse(feedbackResponse, "Successfully retrieved.");
+        }catch(SQLException e){
+            e.printStackTrace();
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve the list");
+        }
+    }*/
 }

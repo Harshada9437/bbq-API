@@ -3,6 +3,7 @@ package com.barbeque.dto.request;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ public class FeedbackRequestDTO {
     private int id;
     private int customerId;
     private int deviceId;
-    private String createdOn;
+    private Timestamp createdOn;
     private String modifiedOn;
     private int outletId;
     private String date;
@@ -120,11 +121,11 @@ public class FeedbackRequestDTO {
         this.customerId = customerId;
     }
 
-    public String getCreatedOn() {
+    public Timestamp getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(String createdOn) {
+    public void setCreatedOn(Timestamp createdOn) {
         this.createdOn = createdOn;
     }
 

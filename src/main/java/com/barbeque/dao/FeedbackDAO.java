@@ -1,12 +1,14 @@
 package com.barbeque.dao;
 
+import com.barbeque.dto.request.FeedbackListDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by System-2 on 12/13/2016.
@@ -144,7 +146,7 @@ public class FeedbackDAO {
         return isCreated;
     }
 
-    public List<FeedbackRequestDTO> getfeedbackList() throws SQLException {
+    public List<FeedbackRequestDTO> getfeedbackList(FeedbackListDTO feedbackListDTO) throws SQLException {
         List<FeedbackRequestDTO> feedbackList = new ArrayList<FeedbackRequestDTO>();
         Connection connection = null;
         Statement statement = null;
@@ -158,14 +160,13 @@ public class FeedbackDAO {
                     "left join outlet o on fh.outlet_id = o.id\n" +
                     "left join question_bank q on q.id = f.question_id\n" +
                     "left join customer c on c.id = fh.customer_id\n" +
-                    "left join question_answer_link a on a.answer_id = f.answer_id\n" ;
+                    "left join question_answer_link a on a.answer_id = f.answer_id\n";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
                 feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
+                feedbackRequestDTO.setCreatedOn(resultSet.getTimestamp("created_on"));
                 feedbackRequestDTO.setCustomerId(resultSet.getInt("customer_id"));
-                String createDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on"));
-                feedbackRequestDTO.setCreatedOn(createDate);
                 feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
                 feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
                 feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));

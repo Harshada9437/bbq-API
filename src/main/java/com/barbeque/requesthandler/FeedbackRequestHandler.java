@@ -1,21 +1,24 @@
 package com.barbeque.requesthandler;
 
+import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dto.request.AnswerDTO;
+import com.barbeque.dto.request.FeedbackListDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackResponse;
+import com.barbeque.util.DateUtil;
 import com.barbeque.xlxFiles.ExcelCreator;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * Created by user on 10/18/2016.
@@ -93,39 +96,56 @@ public class FeedbackRequestHandler {
         return feedbackRequestDTO;
     }
 
-    public Boolean getfeedbackList() {
+    public Boolean getfeedbackList(FeedbackListRequestBO feedbackListRequestBO) throws SQLException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         Boolean isCreated = Boolean.FALSE;
         List<FeedbackResponse> feedbackList = new ArrayList<FeedbackResponse>();
-        try {
-            List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList();
+
+            List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList(buildFeedbackDTO(feedbackListRequestBO));
 
             for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
-                FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
-                        feedbackRequestDTO.getCustomerId(),
-                        feedbackRequestDTO.getCreatedOn(),
-                        feedbackRequestDTO.getOutletId(),
-                        feedbackRequestDTO.getDate(),
-                        feedbackRequestDTO.getAnswerDesc(),
-                        feedbackRequestDTO.getAnswerText(),
-                        feedbackRequestDTO.getQuestionDesc(),
-                        feedbackRequestDTO.getRating(),
-                        feedbackRequestDTO.getAnswerId(),
-                        feedbackRequestDTO.getQuestionId(),
-                        feedbackRequestDTO.getTableNo(),
-                        feedbackRequestDTO.getBillNo(),
-                        feedbackRequestDTO.getCustomerName(),
-                        feedbackRequestDTO.getOutletDesc(),
-                        feedbackRequestDTO.getMobileNo());
+                Timestamp r = feedbackRequestDTO.getCreatedOn();
+                Calendar now = Calendar.getInstance();
+                now.setTime(r);
+                TimeZone timeZoneR = now.getTimeZone();
+                TimeZone tz1 = TimeZone.getTimeZone("GMT");
+                long timeDifference = tz1.getRawOffset() - timeZoneR.getRawOffset() + tz1.getDSTSavings() - timeZoneR.getDSTSavings();
+                r.setTime(r.getTime() + timeDifference);
+                Timestamp from = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
+                Timestamp to = DateUtil.getTimeStampFromString(feedbackListRequestBO.getToDate());
+                if (r.after(from) && r.before(to)) {
+                    String createDate = DateUtil.getDateStringFromTimeStamp(r);
+                    FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
+                            feedbackRequestDTO.getCustomerId(),
+                            createDate,
+                            feedbackRequestDTO.getOutletId(),
+                            feedbackRequestDTO.getDate(),
+                            feedbackRequestDTO.getAnswerDesc(),
+                            feedbackRequestDTO.getAnswerText(),
+                            feedbackRequestDTO.getQuestionDesc(),
+                            feedbackRequestDTO.getRating(),
+                            feedbackRequestDTO.getAnswerId(),
+                            feedbackRequestDTO.getQuestionId(),
+                            feedbackRequestDTO.getTableNo(),
+                            feedbackRequestDTO.getBillNo(),
+                            feedbackRequestDTO.getCustomerName(),
+                            feedbackRequestDTO.getOutletDesc(),
+                            feedbackRequestDTO.getMobileNo());
 
-                feedbackList.add(feedbackResponse);
+                    feedbackList.add(feedbackResponse);
+                }
+                ExcelCreator.getExcelSheet(feedbackList);
+                isCreated = Boolean.TRUE;
             }
-            ExcelCreator.getExcelSheet(feedbackList);
-            isCreated = Boolean.TRUE;
-        } catch (SQLException sq) {
-            sq.printStackTrace();
-        }
-
         return isCreated;
+    }
+
+    private FeedbackListDTO buildFeedbackDTO(FeedbackListRequestBO feedbackListRequestBO) {
+        FeedbackListDTO feedbackListDTO = new FeedbackListDTO();
+
+        feedbackListDTO.setFromDate(feedbackListRequestBO.getFromDate());
+        feedbackListDTO.setToDate(feedbackListRequestBO.getToDate());
+
+        return feedbackListDTO;
     }
 }
