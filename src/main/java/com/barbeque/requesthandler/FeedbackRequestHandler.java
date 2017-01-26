@@ -105,8 +105,8 @@ public class FeedbackRequestHandler {
             Calendar now = Calendar.getInstance();
             now.setTime(r);
             TimeZone timeZoneR = now.getTimeZone();
-            TimeZone tz1 = TimeZone.getTimeZone("GMT");
-            long timeDifference = tz1.getRawOffset() - timeZoneR.getRawOffset() + tz1.getDSTSavings() - timeZoneR.getDSTSavings();
+            TimeZone tz1 = TimeZone.getTimeZone("IST");
+            long timeDifference = tz1.getRawOffset() - timeZoneR.getRawOffset();
             r.setTime(r.getTime() + timeDifference);
             Timestamp from = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
             Timestamp to = DateUtil.getTimeStampFromString(feedbackListRequestBO.getToDate());
