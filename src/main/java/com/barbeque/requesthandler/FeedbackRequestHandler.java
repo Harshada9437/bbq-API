@@ -28,13 +28,11 @@ public class FeedbackRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         int customerId = 0;
 
-        String mobile=feedbackRequestBO.getCustomer().getPhoneNo();
+        String mobile = feedbackRequestBO.getCustomer().getPhoneNo();
         customerId = CustomerDAO.getValidationForPhoneNumber(mobile);
-        if (customerId == 0)
-        {
+        if (customerId == 0) {
             customerId = createCustomer(feedbackRequestBO.getCustomer());
-        }
-        else {
+        } else {
             UpdateCustomerRequestBO updateCustomerRequestBO = new UpdateCustomerRequestBO();
             updateCustomerRequestBO.setId(customerId);
             updateCustomerRequestBO.setName(feedbackRequestBO.getCustomer().getName());
@@ -65,11 +63,10 @@ public class FeedbackRequestHandler {
         return feedbackRequestDTO;
     }
 
-    public int createCustomer(CreateCustomer createCustomer)throws SQLException
-    {
+    public int createCustomer(CreateCustomer createCustomer) throws SQLException {
 
-        CustomerDAO customerDAO=new CustomerDAO();
-        int id = customerDAO.addCustomer(createCustomer.getLocality(),createCustomer.getName(),createCustomer.getPhoneNo(),createCustomer.getEmailId(),createCustomer.getDob(),createCustomer.getDoa());
+        CustomerDAO customerDAO = new CustomerDAO();
+        int id = customerDAO.addCustomer(createCustomer.getLocality(), createCustomer.getName(), createCustomer.getPhoneNo(), createCustomer.getEmailId(), createCustomer.getDob(), createCustomer.getDoa());
         return id;
 
     }
@@ -101,42 +98,44 @@ public class FeedbackRequestHandler {
         Boolean isCreated = Boolean.FALSE;
         List<FeedbackResponse> feedbackList = new ArrayList<FeedbackResponse>();
 
-            List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList(buildFeedbackDTO(feedbackListRequestBO));
+        List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList(buildFeedbackDTO(feedbackListRequestBO));
 
-            for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
-                Timestamp r = feedbackRequestDTO.getCreatedOn();
-                Calendar now = Calendar.getInstance();
-                now.setTime(r);
-                TimeZone timeZoneR = now.getTimeZone();
-                TimeZone tz1 = TimeZone.getTimeZone("GMT");
-                long timeDifference = tz1.getRawOffset() - timeZoneR.getRawOffset() + tz1.getDSTSavings() - timeZoneR.getDSTSavings();
-                r.setTime(r.getTime() + timeDifference);
-                Timestamp from = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
-                Timestamp to = DateUtil.getTimeStampFromString(feedbackListRequestBO.getToDate());
-                if (r.after(from) && r.before(to)) {
-                    String createDate = DateUtil.getDateStringFromTimeStamp(r);
-                    FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
-                            feedbackRequestDTO.getCustomerId(),
-                            createDate,
-                            feedbackRequestDTO.getOutletId(),
-                            feedbackRequestDTO.getDate(),
-                            feedbackRequestDTO.getAnswerDesc(),
-                            feedbackRequestDTO.getAnswerText(),
-                            feedbackRequestDTO.getQuestionDesc(),
-                            feedbackRequestDTO.getRating(),
-                            feedbackRequestDTO.getAnswerId(),
-                            feedbackRequestDTO.getQuestionId(),
-                            feedbackRequestDTO.getTableNo(),
-                            feedbackRequestDTO.getBillNo(),
-                            feedbackRequestDTO.getCustomerName(),
-                            feedbackRequestDTO.getOutletDesc(),
-                            feedbackRequestDTO.getMobileNo());
-
-                    feedbackList.add(feedbackResponse);
-                }
-                ExcelCreator.getExcelSheet(feedbackList);
-                isCreated = Boolean.TRUE;
+        for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
+            Timestamp r = feedbackRequestDTO.getCreatedOn();
+            Calendar now = Calendar.getInstance();
+            now.setTime(r);
+            TimeZone timeZoneR = now.getTimeZone();
+            TimeZone tz1 = TimeZone.getTimeZone("GMT");
+            long timeDifference = tz1.getRawOffset() - timeZoneR.getRawOffset() + tz1.getDSTSavings() - timeZoneR.getDSTSavings();
+            r.setTime(r.getTime() + timeDifference);
+            Timestamp from = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
+            Timestamp to = DateUtil.getTimeStampFromString(feedbackListRequestBO.getToDate());
+            if (r.after(from) && r.before(to)) {
+                String createDate = DateUtil.getDateStringFromTimeStamp(r);
+                FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
+                        feedbackRequestDTO.getCustomerId(),
+                        createDate,
+                        feedbackRequestDTO.getOutletId(),
+                        feedbackRequestDTO.getDate(),
+                        feedbackRequestDTO.getAnswerDesc(),
+                        feedbackRequestDTO.getAnswerText(),
+                        feedbackRequestDTO.getQuestionDesc(),
+                        feedbackRequestDTO.getRating(),
+                        feedbackRequestDTO.getAnswerId(),
+                        feedbackRequestDTO.getQuestionId(),
+                        feedbackRequestDTO.getTableNo(),
+                        feedbackRequestDTO.getBillNo(),
+                        feedbackRequestDTO.getCustomerName(),
+                        feedbackRequestDTO.getOutletDesc(),
+                        feedbackRequestDTO.getMobileNo());
+                feedbackList.add(feedbackResponse);
             }
+        }
+        if (feedbackList.size() > 0) {
+            ExcelCreator.getExcelSheet(feedbackList);
+            isCreated = Boolean.TRUE;
+        }
+
         return isCreated;
     }
 
