@@ -13,7 +13,7 @@ public class FeedbackRequestDTO {
     private int id;
     private int customerId;
     private int deviceId;
-    private Timestamp createdOn;
+    private Timestamp feedbackDate;
     private String modifiedOn;
     private int outletId;
     private String date;
@@ -121,12 +121,12 @@ public class FeedbackRequestDTO {
         this.customerId = customerId;
     }
 
-    public Timestamp getCreatedOn() {
-        return createdOn;
+    public Timestamp getFeedbackDate() {
+        return feedbackDate;
     }
 
-    public void setCreatedOn(Timestamp createdOn) {
-        this.createdOn = createdOn;
+    public void setFeedbackDate(Timestamp feedbackDate) {
+        this.feedbackDate = feedbackDate;
     }
 
     public String getModifiedOn() {
@@ -216,7 +216,7 @@ public class FeedbackRequestDTO {
         if (questionId != that.questionId) return false;
         if (rating != that.rating) return false;
         if (weightage != that.weightage) return false;
-        if (createdOn != null ? !createdOn.equals(that.createdOn) : that.createdOn != null) return false;
+        if (feedbackDate != null ? !feedbackDate.equals(that.feedbackDate) : that.feedbackDate != null) return false;
         if (modifiedOn != null ? !modifiedOn.equals(that.modifiedOn) : that.modifiedOn != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (feedbacks != null ? !feedbacks.equals(that.feedbacks) : that.feedbacks != null) return false;
@@ -236,7 +236,7 @@ public class FeedbackRequestDTO {
         int result = id;
         result = 31 * result + customerId;
         result = 31 * result + deviceId;
-        result = 31 * result + (createdOn != null ? createdOn.hashCode() : 0);
+        result = 31 * result + (feedbackDate != null ? feedbackDate.hashCode() : 0);
         result = 31 * result + (modifiedOn != null ? modifiedOn.hashCode() : 0);
         result = 31 * result + outletId;
         result = 31 * result + (date != null ? date.hashCode() : 0);
@@ -262,7 +262,7 @@ public class FeedbackRequestDTO {
         return "FeedbackRequestDTO{" +
                 "id=" + id +
                 ", customerId=" + customerId +
-                ", createdOn='" + createdOn + '\'' +
+                ", feedbackDate='" + feedbackDate + '\'' +
                 ", modifiedOn='" + modifiedOn + '\'' +
                 ", outletId=" + outletId +
                 ", deviceId=" + deviceId +

@@ -4,12 +4,10 @@ import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.customer.CustomerDAO;
-import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.FeedbackListDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
-import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.util.DateUtil;
@@ -17,7 +15,6 @@ import com.barbeque.xlxFiles.ExcelCreator;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -101,20 +98,9 @@ public class FeedbackRequestHandler {
         List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList(buildFeedbackDTO(feedbackListRequestBO));
 
         for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
-            Timestamp r = feedbackRequestDTO.getCreatedOn();
-            Calendar now = Calendar.getInstance();
-            now.setTime(r);
-            TimeZone timeZoneR = now.getTimeZone();
-            TimeZone tz1 = TimeZone.getTimeZone("IST");
-            long timeDifference = tz1.getRawOffset() - timeZoneR.getRawOffset();
-            r.setTime(r.getTime() + timeDifference);
-            Timestamp from = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
-            Timestamp to = DateUtil.getTimeStampFromString(feedbackListRequestBO.getToDate());
-            if (r.after(from) && r.before(to)) {
-                String createDate = DateUtil.getDateStringFromTimeStamp(r);
                 FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
                         feedbackRequestDTO.getCustomerId(),
-                        createDate,
+                        DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
                         feedbackRequestDTO.getOutletId(),
                         feedbackRequestDTO.getDate(),
                         feedbackRequestDTO.getAnswerDesc(),
@@ -129,7 +115,7 @@ public class FeedbackRequestHandler {
                         feedbackRequestDTO.getOutletDesc(),
                         feedbackRequestDTO.getMobileNo());
                 feedbackList.add(feedbackResponse);
-            }
+
         }
         if (feedbackList.size() > 0) {
             ExcelCreator.getExcelSheet(feedbackList);

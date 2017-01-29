@@ -6,8 +6,6 @@ import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -154,18 +152,20 @@ public class FeedbackDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            String query = "select f.*, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,fh.table_no,fh.bill_no\n" +
+            String query = "select f.*, fh.date as feedback_date, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,fh.table_no,fh.bill_no\n" +
                     "from feedback f\n" +
                     "left join feedback_head fh on fh.id=f.feedback_id\n" +
                     "left join outlet o on fh.outlet_id = o.id\n" +
                     "left join question_bank q on q.id = f.question_id\n" +
                     "left join customer c on c.id = fh.customer_id\n" +
-                    "left join question_answer_link a on a.answer_id = f.answer_id\n";
+                    "left join question_answer_link a on a.answer_id = f.answer_id\n"+
+                    "where fh.date >= '" + feedbackListDTO.getFromDate() + "' AND fh.date <='" +
+                    feedbackListDTO.getToDate() + "'";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
                 feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
-                feedbackRequestDTO.setCreatedOn(resultSet.getTimestamp("created_on"));
+                feedbackRequestDTO.setFeedbackDate(resultSet.getTimestamp("feedback_date"));
                 feedbackRequestDTO.setCustomerId(resultSet.getInt("customer_id"));
                 feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
                 feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
@@ -194,4 +194,6 @@ public class FeedbackDAO {
         }
         return feedbackList;
     }
+
+
 }
