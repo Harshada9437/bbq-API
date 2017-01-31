@@ -33,7 +33,15 @@ public class FeedbackRequestDTO {
     private String email;
     private String dob;
     private String doa;
+    private String locality;
 
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
 
     public String getEmail() {
         return email;
@@ -259,6 +267,7 @@ public class FeedbackRequestDTO {
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (dob != null ? !dob.equals(that.dob) : that.dob != null) return false;
         if (doa != null ? !doa.equals(that.doa) : that.doa != null) return false;
+        if (locality != null ? !locality.equals(that.locality) : that.locality != null) return false;
         return customer != null ? customer.equals(that.customer) : that.customer == null;
     }
 
@@ -287,6 +296,7 @@ public class FeedbackRequestDTO {
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (doa != null ? doa.hashCode() : 0);
+        result = 31 * result + (locality != null ? locality.hashCode() : 0);
         result = 31 * result + (customer != null ? customer.hashCode() : 0);
         return result;
     }
@@ -317,6 +327,7 @@ public class FeedbackRequestDTO {
                 ", email='" + email + '\'' +
                 ", dob='" + dob + '\'' +
                 ", doa='" + doa + '\'' +
+                ", locality='" + locality + '\'' +
                 ", customer=" + customer +
                 '}';
     }

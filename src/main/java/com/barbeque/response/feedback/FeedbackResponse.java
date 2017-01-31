@@ -22,6 +22,11 @@ public class FeedbackResponse {
     private String email;
     private String dob;
     private String doa;
+    private String locality;
+
+    public String getLocality() {
+        return locality;
+    }
 
     public String getEmail() {
         return email;
@@ -55,9 +60,13 @@ public class FeedbackResponse {
         return mobileNo;
     }
 
-    public int getId() {return id;}
+    public int getId() {
+        return id;
+    }
 
-    public int getOutletId() {return outletId;}
+    public int getOutletId() {
+        return outletId;
+    }
 
     public List<FeedbackDetails> getFeedbacks() {
         return feedbacks;
@@ -67,13 +76,19 @@ public class FeedbackResponse {
         this.feedbacks = feedbacks;
     }
 
-    public String getTableNo() {return tableNo;}
+    public String getTableNo() {
+        return tableNo;
+    }
 
-    public String getBillNo() {return billNo;}
+    public String getBillNo() {
+        return billNo;
+    }
 
-    public String getFeedbackDate() {return feedbackDate;}
+    public String getFeedbackDate() {
+        return feedbackDate;
+    }
 
-    public FeedbackResponse(int id, int customerId, String feedbackDate, String date, int outletId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo,String email,String dob,String doa) {
+    public FeedbackResponse(int id, int customerId, String feedbackDate, String date, int outletId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo, String email, String dob, String doa, String locality) {
         this.id = id;
         this.customerId = customerId;
         this.feedbackDate = feedbackDate;
@@ -87,6 +102,7 @@ public class FeedbackResponse {
         this.email = email;
         this.dob = dob;
         this.doa = doa;
+        this.locality = locality;
     }
 
     @Override
@@ -106,6 +122,7 @@ public class FeedbackResponse {
                 ", email='" + email + '\'' +
                 ", dob='" + dob + '\'' +
                 ", doa='" + doa + '\'' +
+                ", locality='" + locality + '\'' +
                 '}';
     }
 }

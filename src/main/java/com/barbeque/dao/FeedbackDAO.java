@@ -172,7 +172,7 @@ public class FeedbackDAO {
                     where1 += " and fh.outlet_id IN(" + ids + ")";
             }
 
-            String query = "select fh.id,fh.date as feedback_date,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.email_id,c.dob,c.doa,c.phone_no,fh.table_no,fh.bill_no\n" +
+            String query = "select fh.id,fh.date as feedback_date,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.email_id,c.dob,c.doa,c.phone_no,c.locality,fh.table_no,fh.bill_no\n" +
                     "from feedback_head fh\n" +
                     "left join outlet o on fh.outlet_id = o.id\n" +
                     "left join customer c on c.id = fh.customer_id\n" +
@@ -196,6 +196,7 @@ public class FeedbackDAO {
                 feedbackRequestDTO.setEmail(resultSet.getString("email_id"));
                 feedbackRequestDTO.setDob(resultSet.getString("dob"));
                 feedbackRequestDTO.setDoa(resultSet.getString("doa"));
+                feedbackRequestDTO.setLocality(resultSet.getString("locality"));
                 feedbackRequestDTO.setFeedbacks(getfeedback(feedbackRequestDTO.getId(),connection));
                 feedbackList.add(feedbackRequestDTO);
                 fId = feedbackRequestDTO.getId();

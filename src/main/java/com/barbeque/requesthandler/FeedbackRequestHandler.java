@@ -111,7 +111,9 @@ public class FeedbackRequestHandler {
                     feedbackRequestDTO.getMobileNo(),
                     feedbackRequestDTO.getEmail(),
                     feedbackRequestDTO.getDob(),
-                    feedbackRequestDTO.getDoa());
+                    feedbackRequestDTO.getDoa(),
+                    feedbackRequestDTO.getLocality()
+                    );
             feedbackResponse.setFeedbacks(feedbackRequestDTO.getFeedbacks());
             feedbackList.add(feedbackResponse);
         }
