@@ -1,13 +1,15 @@
+/*
 package com.barbeque.xlxFiles;
 
+*/
 /**
  * Created by System-2 on 1/7/2017.
- */
+ *//*
+
 import  java.io.*;
 import java.util.List;
 
 import com.barbeque.config.ConfigProperties;
-import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.FeedbackResponse;
 import  org.apache.poi.hssf.usermodel.HSSFSheet;
 import  org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,7 +19,9 @@ public class ExcelCreator {
         public static void getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs)
         {
             String filename = ConfigProperties.app_path +"/feedback/Feedbacks.xls";
-        /*    String filename = "D:/Feedbacks.xls";*/
+     */
+/*       String filename = "D:/Feedbacks.xls";*//*
+
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet sheet = workbook.createSheet("FirstSheet");
 
@@ -49,7 +53,7 @@ public class ExcelCreator {
                     row.createCell(8).setCellValue(feedbackRequestDTO.getAnswerDesc());
                     row.createCell(9).setCellValue(feedbackRequestDTO.getAnswerText());
                     row.createCell(10).setCellValue(feedbackRequestDTO.getRating());
-                    row.createCell(11).setCellValue(feedbackRequestDTO.getCreatedOn());
+                    row.createCell(11).setCellValue(feedbackRequestDTO.getFeedbackDate());
                     i++;
             }
 
@@ -74,3 +78,4 @@ public class ExcelCreator {
         }
 }
 
+*/

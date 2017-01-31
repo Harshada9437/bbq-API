@@ -30,6 +30,34 @@ public class FeedbackRequestDTO {
     private String questionDesc;
     private int rating;
     private int weightage;
+    private String email;
+    private String dob;
+    private String doa;
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getDoa() {
+        return doa;
+    }
+
+    public void setDoa(String doa) {
+        this.doa = doa;
+    }
 
     public int getDeviceId() {
         return deviceId;
@@ -228,6 +256,9 @@ public class FeedbackRequestDTO {
         if (answerText != null ? !answerText.equals(that.answerText) : that.answerText != null) return false;
         if (answerDesc != null ? !answerDesc.equals(that.answerDesc) : that.answerDesc != null) return false;
         if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
+        if (email != null ? !email.equals(that.email) : that.email != null) return false;
+        if (dob != null ? !dob.equals(that.dob) : that.dob != null) return false;
+        if (doa != null ? !doa.equals(that.doa) : that.doa != null) return false;
         return customer != null ? customer.equals(that.customer) : that.customer == null;
     }
 
@@ -253,6 +284,9 @@ public class FeedbackRequestDTO {
         result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
         result = 31 * result + rating;
         result = 31 * result + weightage;
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (dob != null ? dob.hashCode() : 0);
+        result = 31 * result + (doa != null ? doa.hashCode() : 0);
         result = 31 * result + (customer != null ? customer.hashCode() : 0);
         return result;
     }
@@ -262,10 +296,10 @@ public class FeedbackRequestDTO {
         return "FeedbackRequestDTO{" +
                 "id=" + id +
                 ", customerId=" + customerId +
-                ", feedbackDate='" + feedbackDate + '\'' +
+                ", deviceId=" + deviceId +
+                ", feedbackDate=" + feedbackDate +
                 ", modifiedOn='" + modifiedOn + '\'' +
                 ", outletId=" + outletId +
-                ", deviceId=" + deviceId +
                 ", date='" + date + '\'' +
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
@@ -280,6 +314,9 @@ public class FeedbackRequestDTO {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
                 ", weightage=" + weightage +
+                ", email='" + email + '\'' +
+                ", dob='" + dob + '\'' +
+                ", doa='" + doa + '\'' +
                 ", customer=" + customer +
                 '}';
     }

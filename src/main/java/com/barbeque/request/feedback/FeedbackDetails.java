@@ -5,11 +5,29 @@ package com.barbeque.request.feedback;
  */
 public class FeedbackDetails {
     private int questionId;
+    private char questionType;
     private int answerId;
     private String answerText;
     private String answerDesc;
     private String questionDesc;
     private int rating;
+    private String feedbackDate;
+
+    public char getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(char questionType) {
+        this.questionType = questionType;
+    }
+
+    public String getFeedbackDate() {
+        return feedbackDate;
+    }
+
+    public void setFeedbackDate(String feedbackDate) {
+        this.feedbackDate = feedbackDate;
+    }
 
     public String getAnswerDesc() {
         return answerDesc;
@@ -63,11 +81,13 @@ public class FeedbackDetails {
     public String toString() {
         return "FeedbackDetails{" +
                 "questionId=" + questionId +
+                ", questionType='" + questionType + '\'' +
                 ", answerId=" + answerId +
                 ", answerText='" + answerText + '\'' +
                 ", answerDesc='" + answerDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
+                ", feedbackDate='" + feedbackDate + '\'' +
                 '}';
     }
 }
