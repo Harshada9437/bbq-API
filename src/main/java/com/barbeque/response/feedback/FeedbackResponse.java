@@ -11,7 +11,6 @@ public class FeedbackResponse {
     private int id;
     private int customerId;
     private String feedbackDate;
-    private String date;
     private int outletId;
     private List<FeedbackDetails> feedbacks;
     private String tableNo;
@@ -42,10 +41,6 @@ public class FeedbackResponse {
 
     public int getCustomerId() {
         return customerId;
-    }
-
-    public String getDate() {
-        return date;
     }
 
     public String getCustomerName() {
@@ -88,16 +83,15 @@ public class FeedbackResponse {
         return feedbackDate;
     }
 
-    public FeedbackResponse(int id, int customerId, String feedbackDate, String date, int outletId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo, String email, String dob, String doa, String locality) {
+    public FeedbackResponse(int id, String feedbackDate, int outletId, String tableNo, String billNo, String outletDesc,int customerId, String customerName, String mobileNo, String email, String dob, String doa, String locality) {
         this.id = id;
-        this.customerId = customerId;
         this.feedbackDate = feedbackDate;
-        this.date = date;
         this.outletId = outletId;
         this.tableNo = tableNo;
         this.billNo = billNo;
-        this.customerName = customerName;
         this.outletDesc = outletDesc;
+        this.customerId = customerId;
+        this.customerName = customerName;
         this.mobileNo = mobileNo;
         this.email = email;
         this.dob = dob;
@@ -111,7 +105,6 @@ public class FeedbackResponse {
                 "id=" + id +
                 ", customerId=" + customerId +
                 ", feedbackDate='" + feedbackDate + '\'' +
-                ", date='" + date + '\'' +
                 ", outletId=" + outletId +
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +

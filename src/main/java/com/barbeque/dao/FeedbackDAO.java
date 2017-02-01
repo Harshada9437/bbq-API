@@ -145,63 +145,67 @@ public class FeedbackDAO {
         return isCreated;
     }
 
-    public List<FeedbackRequestDTO> getfeedbackList(FeedbackListDTO feedbackListDTO) throws SQLException {
+    public List<FeedbackRequestDTO> getfeedbackList1(FeedbackListDTO feedbackListDTO) throws SQLException {
         List<FeedbackRequestDTO> feedbackList = new ArrayList<FeedbackRequestDTO>();
         Connection connection = null;
         Statement statement = null;
         String where1 = "",ids="";
-        int fId=0;
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
 
             if (feedbackListDTO.getTableNo() != null && !feedbackListDTO.getTableNo().equals("")) {
-                    where1 = " and fh.table_no=\"" + feedbackListDTO.getTableNo() + "\"";
+                where1 = " and fh.table_no=\"" + feedbackListDTO.getTableNo() + "\"";
             }
             if (feedbackListDTO.getOutletId() != null && feedbackListDTO.getOutletId().size() > 0) {
-                    int i = 1;
-                    for (Integer id : feedbackListDTO.getOutletId()) {
-                        if (i == 1) {
-                            ids = String.valueOf(id);
-                        } else {
-                            ids = ids + "," + String.valueOf(id);
-                        }
-                        i++;
+                int i = 1;
+                for (Integer id : feedbackListDTO.getOutletId()) {
+                    if (i == 1) {
+                        ids = String.valueOf(id);
+                    } else {
+                        ids = ids + "," + String.valueOf(id);
                     }
-                    where1 += " and fh.outlet_id IN(" + ids + ")";
+                    i++;
+                }
+                where1 += " and fh.outlet_id IN(" + ids + ")";
             }
-
-            String query = "select fh.id,fh.date as feedback_date,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.email_id,c.dob,c.doa,c.phone_no,c.locality,fh.table_no,fh.bill_no\n" +
-                    "from feedback_head fh\n" +
+            String query = "select f.*, fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
+                    "from feedback f\n" +
+                    "left join feedback_head fh on fh.id=f.feedback_id\n" +
                     "left join outlet o on fh.outlet_id = o.id\n" +
+                    "left join question_bank q on q.id = f.question_id\n" +
                     "left join customer c on c.id = fh.customer_id\n" +
+                    "left join question_answer_link a on a.answer_id = f.answer_id\n"+
                     "where fh.date >= '" + feedbackListDTO.getFromDate() + "' AND fh.date <='" +
                     feedbackListDTO.getToDate() + "'" + where1;
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
-                if (fId == resultSet.getInt("id")){
-                    break;
-                }
-                feedbackRequestDTO.setId(resultSet.getInt("id"));
+                feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
                 feedbackRequestDTO.setFeedbackDate(resultSet.getTimestamp("feedback_date"));
                 feedbackRequestDTO.setCustomerId(resultSet.getInt("customer_id"));
-                feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
-                feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
-                feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));
                 feedbackRequestDTO.setCustomerName(resultSet.getString("name"));
                 feedbackRequestDTO.setMobileNo(resultSet.getString("phone_no"));
-                feedbackRequestDTO.setOutletDesc(resultSet.getString("outlet_desc"));
                 feedbackRequestDTO.setEmail(resultSet.getString("email_id"));
                 feedbackRequestDTO.setDob(resultSet.getString("dob"));
                 feedbackRequestDTO.setDoa(resultSet.getString("doa"));
                 feedbackRequestDTO.setLocality(resultSet.getString("locality"));
-                feedbackRequestDTO.setFeedbacks(getfeedback(feedbackRequestDTO.getId(),connection));
+                feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
+                feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
+                feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));
+                feedbackRequestDTO.setOutletDesc(resultSet.getString("outlet_desc"));
+                feedbackRequestDTO.setAnswerId(resultSet.getInt("answer_id"));
+                feedbackRequestDTO.setRating(resultSet.getInt("rating"));
+                feedbackRequestDTO.setQuestionId(resultSet.getInt("question_id"));
+                feedbackRequestDTO.setAnswerText(resultSet.getString("answer_text"));
+                feedbackRequestDTO.setQuestionDesc(resultSet.getString("question_desc"));
+                feedbackRequestDTO.setAnswerDesc(resultSet.getString("answer_desc"));
+                feedbackRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
+                feedbackRequestDTO.setWeightage(resultSet.getInt("weightage"));
                 feedbackList.add(feedbackRequestDTO);
-                fId = feedbackRequestDTO.getId();
             }
-        }catch (SQLException sqlException) {
+        } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             throw sqlException;
         } finally {
@@ -213,39 +217,5 @@ public class FeedbackDAO {
             }
         }
         return feedbackList;
-    }
-
-    public static List<FeedbackDetails>getfeedback(int id,Connection connection)throws SQLException {
-        Statement statement = null;
-        List<FeedbackDetails> answerDTOS = new ArrayList<FeedbackDetails>();
-        try {
-            statement = connection.createStatement();
-            String query = "select f.created_on,f.question_id,f.answer_id,f.answer_text,f.rating,q.question_type,q.question_desc,a.answer_desc\n" +
-                    " from feedback f\n" +
-                    "left join feedback_head fh\n" +
-                    "on f.feedback_id = fh.id\n" +
-                    "left join question_bank q\n" +
-                    "on f.question_id = q.id\n" +
-                    "left join question_answer_link a\n" +
-                    "on f.answer_id = a.answer_id\n" +
-                    "where f.feedback_id=" +id;
-            ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()) {
-                FeedbackDetails answerDTO = new FeedbackDetails();
-                answerDTO.setAnswerId(resultSet.getInt("answer_id"));
-                answerDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
-                answerDTO.setRating(resultSet.getInt("rating"));
-                answerDTO.setQuestionId(resultSet.getInt("question_id"));
-                answerDTO.setAnswerText(resultSet.getString("answer_text"));
-                answerDTO.setQuestionDesc(resultSet.getString("question_desc"));
-                answerDTO.setAnswerDesc(resultSet.getString("answer_desc"));
-                answerDTO.setFeedbackDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on")));
-                answerDTOS.add(answerDTO);
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            throw sqlException;
-        }
-        return  answerDTOS;
     }
 }

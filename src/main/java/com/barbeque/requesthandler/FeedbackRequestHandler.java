@@ -12,10 +12,8 @@ import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.util.DateUtil;
-/*import com.barbeque.xlxFiles.ExcelCreator;*/
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -91,38 +89,70 @@ public class FeedbackRequestHandler {
         return feedbackRequestDTO;
     }
 
-    public List<FeedbackResponse> getfeedbackList(FeedbackListRequestBO feedbackListRequestBO) throws SQLException {
+    public List<FeedbackResponse> getfeedbackList1(FeedbackListRequestBO feedbackListRequestBO) throws SQLException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
 
-        List<FeedbackResponse> feedbackList = new ArrayList<FeedbackResponse>();
-
-        List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList(buildFeedbackDTO(feedbackListRequestBO));
-
+        List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList1(buildFeedbackDTO(feedbackListRequestBO));
+        List<FeedbackResponse> uniqueList = new ArrayList<FeedbackResponse>();
+        List<Integer> uniqueIds = new ArrayList<Integer>();
         for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
-            FeedbackResponse feedbackResponse = new FeedbackResponse(feedbackRequestDTO.getId(),
-                    feedbackRequestDTO.getCustomerId(),
-                    DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
-                    feedbackRequestDTO.getDate(),
-                    feedbackRequestDTO.getOutletId(),
-                    feedbackRequestDTO.getTableNo(),
-                    feedbackRequestDTO.getBillNo(),
-                    feedbackRequestDTO.getCustomerName(),
-                    feedbackRequestDTO.getOutletDesc(),
-                    feedbackRequestDTO.getMobileNo(),
-                    feedbackRequestDTO.getEmail(),
-                    feedbackRequestDTO.getDob(),
-                    feedbackRequestDTO.getDoa(),
-                    feedbackRequestDTO.getLocality()
-                    );
-            feedbackResponse.setFeedbacks(feedbackRequestDTO.getFeedbacks());
-            feedbackList.add(feedbackResponse);
-        }
-      /*  if (feedbackList.size() > 0) {
-            ExcelCreator.getExcelSheet(feedbackList);
-            isCreated = Boolean.TRUE;
-        }*/
+            if (!uniqueIds.contains(feedbackRequestDTO.getId())) {
+                FeedbackResponse feedbackResp = new FeedbackResponse(feedbackRequestDTO.getId(),
+                        DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
+                        feedbackRequestDTO.getOutletId(),
+                        feedbackRequestDTO.getTableNo(),
+                        feedbackRequestDTO.getBillNo(),
+                        feedbackRequestDTO.getOutletDesc(),
+                        feedbackRequestDTO.getCustomerId(),
+                        feedbackRequestDTO.getCustomerName(),
+                        feedbackRequestDTO.getMobileNo(),
+                        feedbackRequestDTO.getEmail(),
+                        feedbackRequestDTO.getDob(),
+                        feedbackRequestDTO.getDoa(),
+                        feedbackRequestDTO.getLocality());
+                List<FeedbackDetails> newAnswerList = new ArrayList<FeedbackDetails>();
+                FeedbackDetails answer = new FeedbackDetails();
+                answer.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
+                answer.setAnswerText(feedbackRequestDTO.getAnswerText());
+                answer.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
+                answer.setRating(feedbackRequestDTO.getRating());
+                answer.setAnswerId(feedbackRequestDTO.getAnswerId());
+                answer.setQuestionId(feedbackRequestDTO.getQuestionId());
+                answer.setQuestionType(feedbackRequestDTO.getQuestionType());
+                answer.setWeightage(feedbackRequestDTO.getWeightage());
+                newAnswerList.add(answer);
+                feedbackResp.setFeedbacks(newAnswerList);
 
-        return feedbackList;
+                uniqueIds.add(feedbackRequestDTO.getId());
+                uniqueList.add(feedbackResp);
+            } else {
+                FeedbackResponse existingResp = getResponseFromList(uniqueList, feedbackRequestDTO.getId());
+                if (existingResp != null) {
+                    List<FeedbackDetails> curAnswerList = existingResp.getFeedbacks();
+                    FeedbackDetails answer = new FeedbackDetails();
+                    answer.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
+                    answer.setAnswerText(feedbackRequestDTO.getAnswerText());
+                    answer.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
+                    answer.setRating(feedbackRequestDTO.getRating());
+                    answer.setAnswerId(feedbackRequestDTO.getAnswerId());
+                    answer.setQuestionId(feedbackRequestDTO.getQuestionId());
+                    answer.setQuestionType(feedbackRequestDTO.getQuestionType());
+                    answer.setWeightage(feedbackRequestDTO.getWeightage());
+                    curAnswerList.add(answer);
+                }
+            }
+        }
+
+        return uniqueList;
+    }
+
+    private FeedbackResponse getResponseFromList(List<FeedbackResponse> list, int id) {
+        for (int i = 0; i < list.size(); i++) {
+            if (id == list.get(i).getId()) {
+                return list.get(i);
+            }
+        }
+        return null;
     }
 
     private FeedbackListDTO buildFeedbackDTO(FeedbackListRequestBO feedbackListRequestBO) {

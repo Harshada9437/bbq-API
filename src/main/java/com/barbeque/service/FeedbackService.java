@@ -9,6 +9,7 @@ import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
 import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
+import com.barbeque.response.feedback.FeedbackDetailsResponseList;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackResponseList;
 import com.barbeque.response.util.MessageResponse;
@@ -93,7 +94,7 @@ public class FeedbackService {
             feedbackListRequestBO.setOutletId(feedbackListRequest.getOutletId());
             feedbackListRequestBO.setTableNo(feedbackListRequest.getTableNo());
             FeedbackResponseList feedbackResponse = new FeedbackResponseList();
-            feedbackResponse.setFeedbacks(feedbackRequestHandler.getfeedbackList(feedbackListRequestBO));
+            feedbackResponse.setFeedbacks(feedbackRequestHandler.getfeedbackList1(feedbackListRequestBO));
             return ResponseGenerator.generateSuccessResponse(feedbackResponse, "Successfully retrieved.");
         }catch(SQLException e){
             e.printStackTrace();

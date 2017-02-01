@@ -10,6 +10,7 @@ import java.util.List;
  * Created by user on 10/18/2016.
  */
 public class FeedbackRequestDTO {
+    private char questionType;
     private int id;
     private int customerId;
     private int deviceId;
@@ -34,6 +35,14 @@ public class FeedbackRequestDTO {
     private String dob;
     private String doa;
     private String locality;
+
+    public char getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(char questionType) {
+        this.questionType = questionType;
+    }
 
     public String getLocality() {
         return locality;
@@ -244,6 +253,7 @@ public class FeedbackRequestDTO {
 
         FeedbackRequestDTO that = (FeedbackRequestDTO) o;
 
+        if (questionType != that.questionType) return false;
         if (id != that.id) return false;
         if (customerId != that.customerId) return false;
         if (deviceId != that.deviceId) return false;
@@ -273,7 +283,8 @@ public class FeedbackRequestDTO {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = (int) questionType;
+        result = 31 * result + id;
         result = 31 * result + customerId;
         result = 31 * result + deviceId;
         result = 31 * result + (feedbackDate != null ? feedbackDate.hashCode() : 0);
@@ -304,7 +315,8 @@ public class FeedbackRequestDTO {
     @Override
     public String toString() {
         return "FeedbackRequestDTO{" +
-                "id=" + id +
+                "questionType=" + questionType +
+                ", id=" + id +
                 ", customerId=" + customerId +
                 ", deviceId=" + deviceId +
                 ", feedbackDate=" + feedbackDate +

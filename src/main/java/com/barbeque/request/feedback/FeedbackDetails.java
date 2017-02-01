@@ -5,6 +5,7 @@ package com.barbeque.request.feedback;
  */
 public class FeedbackDetails {
     private int questionId;
+    private int weightage;
     private char questionType;
     private int answerId;
     private String answerText;
@@ -12,6 +13,14 @@ public class FeedbackDetails {
     private String questionDesc;
     private int rating;
     private String feedbackDate;
+
+    public int getWeightage() {
+        return weightage;
+    }
+
+    public void setWeightage(int weightage) {
+        this.weightage = weightage;
+    }
 
     public char getQuestionType() {
         return questionType;
@@ -83,6 +92,7 @@ public class FeedbackDetails {
                 "questionId=" + questionId +
                 ", questionType='" + questionType + '\'' +
                 ", answerId=" + answerId +
+                ", weightage=" + weightage +
                 ", answerText='" + answerText + '\'' +
                 ", answerDesc='" + answerDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
