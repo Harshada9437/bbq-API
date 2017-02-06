@@ -16,6 +16,8 @@ public class ConfigProperties {
     public static String smtp_from;
     public static String db_username;
     public static String db_password;
+    public static String campaign;
+    public static String senderId;
     public static String authkey;
 
 
@@ -44,6 +46,8 @@ public class ConfigProperties {
             smtp_name = prop.getProperty("smtp_name");
             smtp_password = prop.getProperty("smtp_password");
             authkey = prop.getProperty("authkey");
+            campaign = prop.getProperty("campaign");
+            senderId = prop.getProperty("senderId");
 
 
         } catch (IOException ex) {

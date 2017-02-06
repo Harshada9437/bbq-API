@@ -14,19 +14,10 @@ public class QueResponse {
     private String questionDesc;
     private char questionType;
     private int parentAnswerId;
-    private String threshold;
     private int parentQuestionId;
     private int answerSymbol;
     private List<AnswerResponseList> options;
     private int priority;
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
-    }
 
     public int getPriority() {
         return priority;
@@ -109,7 +100,6 @@ public class QueResponse {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", questionType=" + questionType +
                 ", parentAnswerId=" + parentAnswerId +
-                ", threshold='" + threshold +  '\'' +
                 ", parentQuestionId=" + parentQuestionId +
                 ", answerSymbol=" + answerSymbol +
                 ", options=" + options +

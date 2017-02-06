@@ -28,8 +28,9 @@ import java.util.Locale;
 public class SendSms {
     //Your authentication key
     private static final String authkey = ConfigProperties.authkey;
+    private static final String campaign = ConfigProperties.campaign;
+    private static final String senderId = ConfigProperties.senderId;
     //Sender ID,While using route4 sender id should be 6 characters long.
-    private static final String senderId = "BARBEQ";
     //define route
     private static final String route = "4";
 
@@ -69,6 +70,7 @@ public class SendSms {
             sbPostData.append("&message=" + encoded_message);
             sbPostData.append("&route=" + route);
             sbPostData.append("&sender=" + senderId);
+            sbPostData.append("&campaign=" + campaign);
             try {
                 //final string
                 mainUrl = sbPostData.toString();

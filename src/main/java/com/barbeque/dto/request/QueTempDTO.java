@@ -15,19 +15,10 @@ public class QueTempDTO {
     private String questionDesc;
     private char questionType;
     private int parentAnswerId;
-    private String threshold;
     private int parentQuestionId;
     private int answerSymbol;
     private List<AnswerResponseList> options;
     private int priority;
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
-    }
 
     public int getTempId() {
         return tempId;
@@ -129,7 +120,6 @@ public class QueTempDTO {
         if (parentQuestionDesc != null ? !parentQuestionDesc.equals(that.parentQuestionDesc) : that.parentQuestionDesc != null)
             return false;
         if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
-        if (threshold != null ? !threshold.equals(that.threshold) : that.threshold != null) return false;
         return options != null ? options.equals(that.options) : that.options == null;
     }
 
@@ -142,7 +132,6 @@ public class QueTempDTO {
         result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
         result = 31 * result + (int) questionType;
         result = 31 * result + parentAnswerId;
-        result = 31 * result + (threshold != null ? threshold.hashCode() : 0);
         result = 31 * result + parentQuestionId;
         result = 31 * result + answerSymbol;
         result = 31 * result + (options != null ? options.hashCode() : 0);
@@ -160,7 +149,6 @@ public class QueTempDTO {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", questionType=" + questionType +
                 ", parentAnswerId=" + parentAnswerId +
-                ", threshold='" + threshold + '\'' +
                 ", parentQuestionId=" + parentQuestionId +
                 ", answerSymbol=" + answerSymbol +
                 ", options=" + options +

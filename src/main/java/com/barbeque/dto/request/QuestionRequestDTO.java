@@ -7,17 +7,8 @@ public class QuestionRequestDTO {
     private String questionDesc;
     private char questionType;
     private int parentAnswerId;
-    private String threshold;
     private int parentQuestionId;
     private int answerSymbol;
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
-    }
 
     public String getParentAnswerDesc() {return parentAnswerDesc;}
 
@@ -91,8 +82,7 @@ public class QuestionRequestDTO {
             return false;
         if (parentQuestionDesc != null ? !parentQuestionDesc.equals(that.parentQuestionDesc) : that.parentQuestionDesc != null)
             return false;
-        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
-        return threshold != null ? threshold.equals(that.threshold) : that.threshold == null;
+        return questionDesc != null ? questionDesc.equals(that.questionDesc) : that.questionDesc == null;
     }
 
     @Override
@@ -103,7 +93,6 @@ public class QuestionRequestDTO {
         result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
         result = 31 * result + (int) questionType;
         result = 31 * result + parentAnswerId;
-        result = 31 * result + (threshold != null ? threshold.hashCode() : 0);
         result = 31 * result + parentQuestionId;
         result = 31 * result + answerSymbol;
         return result;
@@ -118,7 +107,6 @@ public class QuestionRequestDTO {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", questionType=" + questionType +
                 ", parentAnswerId=" + parentAnswerId +
-                ", threshold='" + threshold + '\'' +
                 ", parentQuestionId=" + parentQuestionId +
                 ", answerSymbol=" + answerSymbol +
                 '}';
