@@ -8,6 +8,15 @@ public class OptionsList
     private String label;
     private int rating;
     private int weightage;
+    private String threshold;
+
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
+    }
 
     public int getWeightage() {return weightage;}
 
@@ -35,6 +44,7 @@ public class OptionsList
                 "label='" + label + '\'' +
                 ", rating=" + rating +
                 ", weightage=" + weightage +
+                ", threshold='" + threshold + '\'' +
                 '}';
     }
 }

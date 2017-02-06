@@ -3,15 +3,22 @@ package com.barbeque.requesthandler;
 import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.dao.FeedbackDAO;
+import com.barbeque.dao.Sync.VersionDAO;
+import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
-import com.barbeque.dto.request.FeedbackListDTO;
-import com.barbeque.dto.request.FeedbackRequestDTO;
+import com.barbeque.dao.outlet.OutletDAO;
+import com.barbeque.dao.question.QuestionDAO;
+import com.barbeque.dto.UpdateSettingsDTO;
+import com.barbeque.dto.VersionInfoDTO;
+import com.barbeque.dto.request.*;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
+import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.util.DateUtil;
+import com.barbeque.util.SendSms;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -20,9 +27,9 @@ import java.util.*;
  * Created by user on 10/18/2016.
  */
 public class FeedbackRequestHandler {
-    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException {
+    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException, QuestionNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
-        int customerId = 0;
+        int customerId;
 
         String mobile = feedbackRequestBO.getCustomer().getPhoneNo();
         customerId = CustomerDAO.getValidationForPhoneNumber(mobile);
@@ -42,6 +49,27 @@ public class FeedbackRequestHandler {
         }
 
         int id = feedbackDAO.addFeedback(buildFeedbackRequestDTOFromBO(feedbackRequestBO), customerId);
+        List<FeedbackDetails> feedbacks = FeedbackDAO.getfeedback(id);
+        Boolean isExist=Boolean.FALSE;
+        for (FeedbackDetails feedbackDetails : feedbacks) {
+            AnswerDTO answerDTO = AnswerDAO.getAnswerById(feedbackDetails.getAnswerId());
+            QuestionRequestDTO questionRequestDTO = QuestionDAO.getQuestionById(feedbackDetails.getQuestionId());
+            if (answerDTO.getThreshold() != null && !answerDTO.getThreshold().equals("") ) {
+                if ((questionRequestDTO.getQuestionType() == '2' || questionRequestDTO.getQuestionType() == '3') && feedbackDetails.getRating() != 0 && feedbackDetails.getRating() <= Integer.parseInt(answerDTO.getThreshold()))
+                {
+                    isExist = Boolean.TRUE;
+                    break;
+                }
+                if ((questionRequestDTO.getQuestionType() == '1' || questionRequestDTO.getQuestionType() == '5'|| questionRequestDTO.getQuestionType() == '6') && answerDTO.getThreshold().equals("1")){
+                    isExist = Boolean.TRUE;
+                    break;
+                }
+            }
+        }
+        if (isExist) {
+            SettingRequestDTO settingRequestDTO = VersionDAO.fetchSettings();
+            SendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate());
+        }
         return id;
     }
 
@@ -68,7 +96,7 @@ public class FeedbackRequestHandler {
     }
 
     public Boolean updateFeedback(UpdateFeedbackRequestBO updateFeedbackRequestBO) throws SQLException {
-        Boolean isProcessed = Boolean.FALSE;
+        Boolean isProcessed;
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         try {
             isProcessed = feedbackDAO.updateQuestion(buildDTOFromBO(updateFeedbackRequestBO));

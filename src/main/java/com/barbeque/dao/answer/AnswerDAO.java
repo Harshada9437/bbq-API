@@ -12,10 +12,10 @@ import java.util.List;
  * Created by System-2 on 12/15/2016.
  */
 public class AnswerDAO {
-    public Integer createAnswer(int queId,String ans, int rating, int weightage) throws SQLException {
+    public Integer createAnswer(int queId, String ans, int rating, int weightage, String threshold) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO question_answer_link(question_id , answer_desc, rating, weightage) values (?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO question_answer_link(question_id , answer_desc, rating, weightage,threshold) values (?,?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -31,6 +31,8 @@ public class AnswerDAO {
                     rating);
             preparedStatement.setInt(parameterIndex++,
                     weightage);
+ preparedStatement.setString(parameterIndex++,
+                    threshold);
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -67,7 +69,7 @@ public class AnswerDAO {
         return id;
     }
 
-    public List<AnswerDTO> getAnswer(int questionId) throws SQLException, QuestionNotFoundException {
+    public  List<AnswerDTO> getAnswer(int questionId) throws SQLException, QuestionNotFoundException {
         Connection connection = null;
         Statement statement = null;
         List<AnswerDTO> answerDTOs = new ArrayList<AnswerDTO>();
@@ -75,7 +77,7 @@ public class AnswerDAO {
 
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT qa.question_id,qa.weightage,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
+            StringBuilder query = new StringBuilder("SELECT qa.threshold,qa.question_id,qa.weightage,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
                     " FROM question_answer_link qa\n" +
                     " left join question_bank qb\n" +
                     " ON\n" +
@@ -90,6 +92,7 @@ public class AnswerDAO {
                 answerDTO.setId(resultSet.getInt("answer_id"));
                 answerDTO.setWeightage(resultSet.getInt("weightage"));
                 answerDTO.setAnswerText(resultSet.getString("answer_desc"));
+                answerDTO.setThreshold(resultSet.getString("threshold"));
                 answerDTO.setRating(resultSet.getInt("rating"));
                 index++;
                 answerDTOs.add(answerDTO);
@@ -110,7 +113,47 @@ public class AnswerDAO {
         return answerDTOs;
     }
 
-    public Boolean updateAnswer(int id, String label, int rating,int weightage) throws SQLException {
+    public  static AnswerDTO getAnswerById(int ansId) throws SQLException, QuestionNotFoundException {
+        Connection connection = null;
+        Statement statement = null;
+        AnswerDTO answerDTO = new AnswerDTO();
+        try {
+
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT qa.threshold,qa.question_id,qa.weightage,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
+                    " FROM question_answer_link qa\n" +
+                    " left join question_bank qb\n" +
+                    " ON\n" +
+                    " qa.question_id=qb.id\n" +
+                    " where qa.answer_id="+ansId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            int index = 1;
+            while (resultSet.next()) {
+                answerDTO.setQuestionId(resultSet.getInt("question_id"));
+                answerDTO.setId(resultSet.getInt("answer_id"));
+                answerDTO.setWeightage(resultSet.getInt("weightage"));
+                answerDTO.setAnswerText(resultSet.getString("answer_desc"));
+                answerDTO.setThreshold(resultSet.getString("threshold"));
+                answerDTO.setRating(resultSet.getInt("rating"));
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return answerDTO;
+    }
+
+    public Boolean updateAnswer(int id, String label, int rating, int weightage, String threshold) throws SQLException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -119,13 +162,15 @@ public class AnswerDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE question_answer_link SET weightage=?, answer_desc =?, rating =? WHERE answer_id =?");
+                    .prepareStatement("UPDATE question_answer_link SET weightage=?, answer_desc =?, rating =?, threshold=? WHERE answer_id =?");
 
             preparedStatement.setInt(parameterIndex++, weightage);
 
             preparedStatement.setString(parameterIndex++, label);
 
             preparedStatement.setInt(parameterIndex++, rating);
+
+            preparedStatement.setString(parameterIndex++, threshold);
 
             preparedStatement.setInt(parameterIndex++, id);
 

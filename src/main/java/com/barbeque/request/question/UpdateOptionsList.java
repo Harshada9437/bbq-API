@@ -6,8 +6,17 @@ package com.barbeque.request.question;
 public class UpdateOptionsList {
     private int answer_id;
     private String answerDesc;
+    private String threshold;
     private int rating;
     private int weightage;
+
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
+    }
 
     public int getWeightage() {
         return weightage;
@@ -46,6 +55,7 @@ public class UpdateOptionsList {
         return "UpdateOptionsList{" +
                 "answer_id=" + answer_id +
                 ", answerDesc='" + answerDesc + '\'' +
+                ", threshold='" + threshold + '\'' +
                 ", rating=" + rating +
                 ", weightage=" + weightage +
                 '}';

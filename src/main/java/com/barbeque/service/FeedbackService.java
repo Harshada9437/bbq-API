@@ -9,8 +9,6 @@ import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
 import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
-import com.barbeque.response.feedback.FeedbackDetailsResponseList;
-import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
@@ -29,7 +27,7 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/create")
-    public Response addFeedback(FeedbackRequest feedbackRequest) throws SQLException {
+    public Response addFeedback(FeedbackRequest feedbackRequest) {
         FeedbackRequestBO feedbackRequestBO = new FeedbackRequestBO();
         feedbackRequestBO.setOutletId(feedbackRequest.getOutletId());
         feedbackRequestBO.setDeviceId(feedbackRequest.getDeviceId());
@@ -49,8 +47,8 @@ public class FeedbackService {
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Inactive device.");
             }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "feedback creation failed.");
         }
     }

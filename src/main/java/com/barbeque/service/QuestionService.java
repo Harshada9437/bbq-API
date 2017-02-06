@@ -74,7 +74,6 @@ public class QuestionService {
         updateQueRequestBO.setAnswerSymbol(updateQueRequest.getAnswerSymbol());
         updateQueRequestBO.setAnswerOption(updateQueRequest.getAnswerOption());
 
-
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {

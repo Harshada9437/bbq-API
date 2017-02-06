@@ -146,7 +146,7 @@ public class QuestionDAO {
         return isCreated;
     }
 
-    public QuestionRequestDTO getQuestionById(int id) throws SQLException, QuestionNotFoundException {
+    public static QuestionRequestDTO getQuestionById(int id) throws SQLException, QuestionNotFoundException {
         Connection connection = null;
         Statement statement = null;
         QuestionRequestDTO questionRequestDTO = new QuestionRequestDTO();

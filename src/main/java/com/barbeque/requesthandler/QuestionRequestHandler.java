@@ -87,9 +87,9 @@ public class QuestionRequestHandler {
         for (int i = 0; i < answerOption.size(); i++) {
             UpdateOptionsList optionItem = answerOption.get(i);
             if (!isAnswerInDB(optionItem.getAnswer_id(), savedList)) {
-                answerDAO.createAnswer(queId, optionItem.getAnswerDesc(), optionItem.getRating(), optionItem.getWeightage());
+                answerDAO.createAnswer(queId, optionItem.getAnswerDesc(), optionItem.getRating(), optionItem.getWeightage(), optionItem.getThreshold());
             } else {
-                answerDAO.updateAnswer(optionItem.getAnswer_id(), optionItem.getAnswerDesc(), optionItem.getRating(), optionItem.getWeightage());
+                answerDAO.updateAnswer(optionItem.getAnswer_id(), optionItem.getAnswerDesc(), optionItem.getRating(), optionItem.getWeightage(), optionItem.getThreshold());
             }
             isCreated = true;
         }
@@ -172,7 +172,7 @@ public class QuestionRequestHandler {
             OptionsList optionsList = new OptionsList();
             optionsList = asnwerListIterator.next();
 
-            ansId = answerDAO.createAnswer(id, optionsList.getLabel(), optionsList.getRating(), optionsList.getWeightage());
+            ansId = answerDAO.createAnswer(id, optionsList.getLabel(), optionsList.getRating(), optionsList.getWeightage(), optionsList.getThreshold());
             ansIds.add(ansId);
         }
 
@@ -196,7 +196,7 @@ public class QuestionRequestHandler {
         while (answerDTOIterator.hasNext()) {
             AnswerDTO answerDTO = answerDTOIterator.next();
             AnswerResponseList answerResponseList = new AnswerResponseList(answerDTO.getAnswerText(),
-                    answerDTO.getRating(), answerDTO.getId(), answerDTO.getWeightage());
+                    answerDTO.getRating(), answerDTO.getId(), answerDTO.getWeightage(),answerDTO.getThreshold());
             answerResponseLists.add(answerResponseList);
         }
         return answerResponseLists;

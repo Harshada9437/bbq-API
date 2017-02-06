@@ -6,6 +6,15 @@ package com.barbeque.dto;
 public class VersionInfoDTO {
     private int versionCode;
     private String versionNumber;
+    private String smsTemplate;
+
+    public String getSmsTemplate() {
+        return smsTemplate;
+    }
+
+    public void setSmsTemplate(String smsTemplate) {
+        this.smsTemplate = smsTemplate;
+    }
 
     public int getVersionCode() {
         return versionCode;
@@ -31,13 +40,16 @@ public class VersionInfoDTO {
         VersionInfoDTO that = (VersionInfoDTO) o;
 
         if (versionCode != that.versionCode) return false;
-        return versionNumber != null ? versionNumber.equals(that.versionNumber) : that.versionNumber == null;
+        if (versionNumber != null ? !versionNumber.equals(that.versionNumber) : that.versionNumber != null)
+            return false;
+        return smsTemplate != null ? smsTemplate.equals(that.smsTemplate) : that.smsTemplate == null;
     }
 
     @Override
     public int hashCode() {
         int result = versionCode;
         result = 31 * result + (versionNumber != null ? versionNumber.hashCode() : 0);
+        result = 31 * result + (smsTemplate != null ? smsTemplate.hashCode() : 0);
         return result;
     }
 
@@ -46,6 +58,7 @@ public class VersionInfoDTO {
         return "VersionInfoDTO{" +
                 "versionCode=" + versionCode +
                 ", versionNumber='" + versionNumber + '\'' +
+                ", smsTemplate='" + smsTemplate + '\'' +
                 '}';
     }
 }

@@ -20,7 +20,7 @@ public class GetQuestionResponse implements GenericResponse
     private int answerSymbol;
     private List<AnswerResponseList> options;
     private String messageType;
-    private Object message;
+    private String message;
 
     public List<AnswerResponseList> getOptions() {
         return options;
@@ -90,13 +90,11 @@ public class GetQuestionResponse implements GenericResponse
         return messageType;
     }
 
-    public Object getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Object message) {
-        this.message = message;
-    }
+
 
     @Override
     public void setMessageType(String messageType) {

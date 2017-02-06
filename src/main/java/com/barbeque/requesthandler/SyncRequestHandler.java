@@ -1,8 +1,11 @@
 package com.barbeque.requesthandler;
 
+import com.barbeque.bo.SettingRequestBO;
 import com.barbeque.dao.Sync.*;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dto.VersionInfoDTO;
+import com.barbeque.dto.request.SettingRequestDTO;
+import com.barbeque.response.user.SettingResponse;
 import com.barbeque.response.util.VersionInfoResponse;
 import com.barbeque.sync.*;
 
@@ -74,5 +77,20 @@ public class SyncRequestHandler {
                         OutletDAO.createOutlet(outlet);
                     }
             }
+    }
+
+    public Boolean saveSetting(SettingRequestBO settingRequestBO) throws SQLException {
+        SettingRequestDTO settingRequestDTO = new SettingRequestDTO();
+        settingRequestDTO.setSmsTemplate(settingRequestBO.getSmsTemplate());
+        Boolean isProcessed = VersionDAO.saveSetting(settingRequestDTO);
+        return  isProcessed;
+    }
+
+    public SettingResponse fetchSettings() throws SQLException {
+        SettingResponse settingResponse = new SettingResponse();
+        VersionDAO versionDAO = new VersionDAO();
+        SettingRequestDTO settingRequestDTO = versionDAO.fetchSettings();
+        settingResponse.setSmsTemplate(settingRequestDTO.getSmsTemplate());
+        return  settingResponse;
     }
 }

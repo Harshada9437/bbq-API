@@ -43,4 +43,14 @@ public class VersionInfoResponse implements GenericResponse {
     public void setMessageType(String messageType) {
         this.messageType = messageType;
     }
+
+    @Override
+    public String toString() {
+        return "VersionInfoResponse{" +
+                "versionCode=" + versionCode +
+                ", versionNumber='" + versionNumber + '\'' +
+                ", message='" + message + '\'' +
+                ", messageType='" + messageType + '\'' +
+                '}';
+    }
 }

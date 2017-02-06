@@ -9,8 +9,17 @@ public class AnswerDTO {
     private String answerText;
     private String answerDesc;
     private String questionDesc;
+    private String threshold;
     private int rating;
     private int weightage;
+
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
+    }
 
     public String getAnswerDesc() {
         return answerDesc;
@@ -80,6 +89,7 @@ public class AnswerDTO {
         if (rating != answerDTO.rating) return false;
         if (weightage != answerDTO.weightage) return false;
         if (answerText != null ? !answerText.equals(answerDTO.answerText) : answerDTO.answerText != null) return false;
+        if (threshold != null ? !threshold.equals(answerDTO.threshold) : answerDTO.threshold != null) return false;
         if (answerDesc != null ? !answerDesc.equals(answerDTO.answerDesc) : answerDTO.answerDesc != null) return false;
         return questionDesc != null ? questionDesc.equals(answerDTO.questionDesc) : answerDTO.questionDesc == null;
     }
@@ -91,6 +101,7 @@ public class AnswerDTO {
         result = 31 * result + (answerText != null ? answerText.hashCode() : 0);
         result = 31 * result + (answerDesc != null ? answerDesc.hashCode() : 0);
         result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
+        result = 31 * result + (threshold != null ? threshold.hashCode() : 0);
         result = 31 * result + rating;
         result = 31 * result + weightage;
         return result;
@@ -104,6 +115,7 @@ public class AnswerDTO {
                 ", answerText='" + answerText + '\'' +
                 ", answerDesc='" + answerDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
+                ", threshold='" + threshold + '\'' +
                 ", rating=" + rating +
                 ", weightage=" + weightage +
                 '}';

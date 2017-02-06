@@ -9,12 +9,19 @@ public class AnswerResponseList
     private int rating;
     private int weightage;
     private int answer_id;
+    private String threshold;
 
-    public AnswerResponseList(String answerDesc, int rating, int answer_id,int weightage) {
+    public AnswerResponseList(String answerDesc, int rating, int answer_id,int weightage, String threshold) {
         this.answerDesc = answerDesc;
         this.rating = rating;
         this.answer_id = answer_id;
         this.weightage = weightage;
+        this.threshold = threshold;
+
+    }
+
+    public String getThreshold() {
+        return threshold;
     }
 
     public int getWeightage() {
@@ -55,7 +62,8 @@ public class AnswerResponseList
         if (rating != that.rating) return false;
         if (weightage != that.weightage) return false;
         if (answer_id != that.answer_id) return false;
-        return answerDesc != null ? answerDesc.equals(that.answerDesc) : that.answerDesc == null;
+        if (answerDesc != null ? !answerDesc.equals(that.answerDesc) : that.answerDesc != null) return false;
+        return threshold != null ? threshold.equals(that.threshold) : that.threshold == null;
     }
 
     @Override
@@ -64,6 +72,7 @@ public class AnswerResponseList
         result = 31 * result + rating;
         result = 31 * result + weightage;
         result = 31 * result + answer_id;
+        result = 31 * result + (threshold != null ? threshold.hashCode() : 0);
         return result;
     }
 
@@ -74,6 +83,7 @@ public class AnswerResponseList
                 ", rating=" + rating +
                 ", weightage=" + weightage +
                 ", answer_id=" + answer_id +
+                ", threshold='" + threshold + '\'' +
                 '}';
     }
 }

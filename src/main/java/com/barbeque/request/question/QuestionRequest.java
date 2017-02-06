@@ -14,25 +14,45 @@ public class QuestionRequest {
     private int answerSymbol;
     public List<OptionsList> answerOption;
 
-    public String getQuestionDesc() {return questionDesc;}
+    public String getQuestionDesc() {
+        return questionDesc;
+    }
 
-    public void setQuestionDesc(String questionDesc) {this.questionDesc = questionDesc;}
+    public void setQuestionDesc(String questionDesc) {
+        this.questionDesc = questionDesc;
+    }
 
-    public char getQuestionType() {return questionType;}
+    public char getQuestionType() {
+        return questionType;
+    }
 
-    public void setQuestionType(char questionType) {this.questionType = questionType;}
+    public void setQuestionType(char questionType) {
+        this.questionType = questionType;
+    }
 
-    public int getParentAnswerId() {return parentAnswerId;}
+    public int getParentAnswerId() {
+        return parentAnswerId;
+    }
 
-    public void setParentAnswerId(int parentAnswerId) {this.parentAnswerId = parentAnswerId;}
+    public void setParentAnswerId(int parentAnswerId) {
+        this.parentAnswerId = parentAnswerId;
+    }
 
-    public int getParentQuestionId() {return parentQuestionId;}
+    public int getParentQuestionId() {
+        return parentQuestionId;
+    }
 
-    public void setParentQuestionId(int parentQuestionId) {this.parentQuestionId = parentQuestionId;}
+    public void setParentQuestionId(int parentQuestionId) {
+        this.parentQuestionId = parentQuestionId;
+    }
 
-    public int getAnswerSymbol() {return answerSymbol;}
+    public int getAnswerSymbol() {
+        return answerSymbol;
+    }
 
-    public void setAnswerSymbol(int answerSymbol) {this.answerSymbol = answerSymbol;}
+    public void setAnswerSymbol(int answerSymbol) {
+        this.answerSymbol = answerSymbol;
+    }
 
     public List<OptionsList> getAnswerOption() {
         return answerOption;

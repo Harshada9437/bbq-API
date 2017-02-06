@@ -62,7 +62,7 @@ public class QueTempDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             TemplateDAO.getTemplateById(templateId);
-            StringBuilder query = new StringBuilder(" SELECT q.id,q.question_desc,q.question_type,q.parent_answer_id, a.answer_desc as parent_answer_desc,\n" +
+            StringBuilder query = new StringBuilder(" SELECT q.id,q.threshold,q.question_desc,q.question_type,q.parent_answer_id, a.answer_desc as parent_answer_desc,\n" +
                     " q.parent_question_id,(select question_desc from question_bank where id = q.parent_question_id) as\n" +
                     "parent_question_desc, q.answer_symbol,m.priority FROM \n" +
                     "template_question_link m\n" +
@@ -79,6 +79,7 @@ public class QueTempDAO {
                 queTempDTO.setQueId(resultSet.getInt("id"));
                 queTempDTO.setAnswerSymbol(resultSet.getInt("answer_symbol"));
                 queTempDTO.setParentAnswerId(resultSet.getInt("parent_answer_id"));
+                queTempDTO.setThreshold(resultSet.getString("threshold"));
                 queTempDTO.setParentQuestionId(resultSet.getInt("parent_question_id"));
                 queTempDTO.setQuestionDesc(resultSet.getString("question_desc"));
                 queTempDTO.setParentQuestionDesc(resultSet.getString("parent_question_desc"));

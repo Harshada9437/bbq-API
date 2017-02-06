@@ -73,6 +73,7 @@ public class TemplateRequestHandler {
             queResponse.setParentQuestionDesc(queTempDTO.getParentQuestionDesc());
             queResponse.setParentAnswerDesc(queTempDTO.getParentAnswerDesc());
             queResponse.setQuestionType(queTempDTO.getQuestionType());
+            queResponse.setThreshold(queTempDTO.getThreshold());
             queResponse.setOptions(QuestionRequestHandler.getAnswer(queTempDTO.getQueId()));
             queResponse.setPriority(queTempDTO.getPriority());
             queResponses.add(queResponse);

@@ -66,7 +66,6 @@ public class UpdateQueRequestBO {
         if (answerSymbol != that.answerSymbol) return false;
         if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
         return answerOption != null ? answerOption.equals(that.answerOption) : that.answerOption == null;
-
     }
 
     @Override
