@@ -9,6 +9,7 @@ import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dto.UpdateSettingsDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
+import com.barbeque.dto.request.SmsSettingDTO;
 
 
 import java.io.BufferedReader;
@@ -19,19 +20,11 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 public class SendSms {
-    //Your authentication key
-    private static final String authkey = ConfigProperties.authkey;
-    private static final String campaign = ConfigProperties.campaign;
-    private static final String senderId = ConfigProperties.senderId;
-    //Sender ID,While using route4 sender id should be 6 characters long.
-    //define route
+
     private static final String route = "4";
 
     //Prepare Url
@@ -46,19 +39,28 @@ public class SendSms {
     private static final StringBuilder sbPostData = new StringBuilder(mainUrl);
 
 
-    public static Boolean sendThresholdSms(int id, String msg) {
+    public static Boolean sendThresholdSms(int id, String msg, SmsSettingDTO smsSettingDTO) {
         Boolean isProcessed = Boolean.FALSE;
         try {
+
+            String authkey = smsSettingDTO.getApi();
+            String campaign = smsSettingDTO.getCampaign();
+            String senderId = smsSettingDTO.getSenderId();
+            String countryCode = smsSettingDTO.getCountryCode();
+
+            String url = UrlFormatter.shorten(ConfigProperties.url) + "/" + id;
+
             FeedbackRequestDTO feedback = FeedbackDAO.getfeedbackById(id);
 
             UpdateSettingsDTO dto = OutletDAO.getSetting(feedback.getOutletId());
             //Your message to send, Add URL encoding here.
 
             String message = msg.replace("%cn%",feedback.getCustomerName());
-            message=message.replace("%mn%",dto.getPocName());
+            message=message.replace("%mn%",dto.getMgrName());
             message=message.replace("%ce%",feedback.getEmail());
             message=message.replace("%cm%",feedback.getMobileNo());
             message=message.replace("%tn%",feedback.getTableNo());
+            message=message.replace("%url%",url);
             String date = format(feedback.getFeedbackDate(),"dd-MMM-yyyy HH:mm:ss");
             message=message.replace("%fd%",date);
 
@@ -66,11 +68,12 @@ public class SendSms {
             String encoded_message = URLEncoder.encode(message);
 
             sbPostData.append("authkey=" + authkey);
-            sbPostData.append("&mobiles=" + dto.getPocMobile());
+            sbPostData.append("&mobiles=" + dto.getMgrMobile());
             sbPostData.append("&message=" + encoded_message);
             sbPostData.append("&route=" + route);
             sbPostData.append("&sender=" + senderId);
             sbPostData.append("&campaign=" + campaign);
+            sbPostData.append("&country=" + countryCode);
             try {
                 //final string
                 mainUrl = sbPostData.toString();

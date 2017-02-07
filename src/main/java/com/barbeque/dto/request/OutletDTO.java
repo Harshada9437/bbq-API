@@ -25,6 +25,42 @@ public class OutletDTO
     private String pocName;
     private String pocMobile;
     private int templateId;
+    private String mgrEmail;
+    private String mgrName;
+    private String mgrMobile;
+    private int smsGatewayId;
+
+    public String getMgrEmail() {
+        return mgrEmail;
+    }
+
+    public void setMgrEmail(String mgrEmail) {
+        this.mgrEmail = mgrEmail;
+    }
+
+    public String getMgrName() {
+        return mgrName;
+    }
+
+    public void setMgrName(String mgrName) {
+        this.mgrName = mgrName;
+    }
+
+    public String getMgrMobile() {
+        return mgrMobile;
+    }
+
+    public void setMgrMobile(String mgrMobile) {
+        this.mgrMobile = mgrMobile;
+    }
+
+    public int getSmsGatewayId() {
+        return smsGatewayId;
+    }
+
+    public void setSmsGatewayId(int smsGatewayId) {
+        this.smsGatewayId = smsGatewayId;
+    }
 
     public String getPocEmail() {
         return pocEmail;
@@ -172,6 +208,7 @@ public class OutletDTO
         if (groupId != outletDTO.groupId) return false;
         if (mobileNoLength != outletDTO.mobileNoLength) return false;
         if (templateId != outletDTO.templateId) return false;
+        if (smsGatewayId != outletDTO.smsGatewayId) return false;
         if (outletDesc != null ? !outletDesc.equals(outletDTO.outletDesc) : outletDTO.outletDesc != null) return false;
         if (shortDesc != null ? !shortDesc.equals(outletDTO.shortDesc) : outletDTO.shortDesc != null) return false;
         if (clusterName != null ? !clusterName.equals(outletDTO.clusterName) : outletDTO.clusterName != null)
@@ -188,7 +225,10 @@ public class OutletDTO
         if (posStoreId != null ? !posStoreId.equals(outletDTO.posStoreId) : outletDTO.posStoreId != null) return false;
         if (pocEmail != null ? !pocEmail.equals(outletDTO.pocEmail) : outletDTO.pocEmail != null) return false;
         if (pocName != null ? !pocName.equals(outletDTO.pocName) : outletDTO.pocName != null) return false;
-        return pocMobile != null ? pocMobile.equals(outletDTO.pocMobile) : outletDTO.pocMobile == null;
+        if (pocMobile != null ? !pocMobile.equals(outletDTO.pocMobile) : outletDTO.pocMobile != null) return false;
+        if (mgrEmail != null ? !mgrEmail.equals(outletDTO.mgrEmail) : outletDTO.mgrEmail != null) return false;
+        if (mgrName != null ? !mgrName.equals(outletDTO.mgrName) : outletDTO.mgrName != null) return false;
+        return mgrMobile != null ? mgrMobile.equals(outletDTO.mgrMobile) : outletDTO.mgrMobile == null;
     }
 
     @Override
@@ -213,6 +253,10 @@ public class OutletDTO
         result = 31 * result + (pocName != null ? pocName.hashCode() : 0);
         result = 31 * result + (pocMobile != null ? pocMobile.hashCode() : 0);
         result = 31 * result + templateId;
+        result = 31 * result + (mgrEmail != null ? mgrEmail.hashCode() : 0);
+        result = 31 * result + (mgrName != null ? mgrName.hashCode() : 0);
+        result = 31 * result + (mgrMobile != null ? mgrMobile.hashCode() : 0);
+        result = 31 * result + smsGatewayId;
         return result;
     }
 
@@ -239,6 +283,10 @@ public class OutletDTO
                 ", pocName='" + pocName + '\'' +
                 ", pocMobile='" + pocMobile + '\'' +
                 ", templateId=" + templateId +
+                ", mgrEmail='" + mgrEmail + '\'' +
+                ", mgrName='" + mgrName + '\'' +
+                ", mgrMobile='" + mgrMobile + '\'' +
+                ", smsGatewayId=" + smsGatewayId +
                 '}';
     }
 }

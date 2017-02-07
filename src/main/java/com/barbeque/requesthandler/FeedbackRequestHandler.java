@@ -2,7 +2,9 @@ package com.barbeque.requesthandler;
 
 import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
+import com.barbeque.config.ConfigProperties;
 import com.barbeque.dao.FeedbackDAO;
+import com.barbeque.dao.Sync.SmsDAO;
 import com.barbeque.dao.Sync.VersionDAO;
 import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
@@ -19,6 +21,7 @@ import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.util.DateUtil;
 import com.barbeque.util.SendSms;
+import com.barbeque.util.UrlFormatter;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -51,14 +54,19 @@ public class FeedbackRequestHandler {
         int id = feedbackDAO.addFeedback(buildFeedbackRequestDTOFromBO(feedbackRequestBO), customerId);
         List<FeedbackDetails> feedbacks = FeedbackDAO.getfeedback(id);
         Boolean isExist=Boolean.FALSE;
+        UpdateSettingsDTO setting = OutletDAO.getSetting(feedbackRequestBO.getOutletId());
         for (FeedbackDetails feedbackDetails : feedbacks) {
             AnswerDTO answerDTO = AnswerDAO.getAnswerById(feedbackDetails.getAnswerId());
             QuestionRequestDTO questionRequestDTO = QuestionDAO.getQuestionById(feedbackDetails.getQuestionId());
-            if (answerDTO.getThreshold() != null && !answerDTO.getThreshold().equals("") ) {
-                if ((questionRequestDTO.getQuestionType() == '2' || questionRequestDTO.getQuestionType() == '3') && feedbackDetails.getRating() != 0 && feedbackDetails.getRating() <= Integer.parseInt(answerDTO.getThreshold()))
+            if (setting.getSmsGatewayId()!=null && !setting.getSmsGatewayId().equals("") && answerDTO.getThreshold() != null && !answerDTO.getThreshold().equals("") ) {
+                if ((questionRequestDTO.getQuestionType() == '2' || questionRequestDTO.getQuestionType() == '3') && feedbackDetails.getRating() != 0 )
                 {
-                    isExist = Boolean.TRUE;
-                    break;
+                    int ans = answerDTO.getRating()/answerDTO.getWeightage();
+                    int weightage = feedbackDetails.getRating()/ans;
+                    if(weightage <= Integer.parseInt(answerDTO.getThreshold())) {
+                        isExist = Boolean.TRUE;
+                        break;
+                    }
                 }
                 if ((questionRequestDTO.getQuestionType() == '1' || questionRequestDTO.getQuestionType() == '5'|| questionRequestDTO.getQuestionType() == '6') && answerDTO.getThreshold().equals("1")){
                     isExist = Boolean.TRUE;
@@ -67,8 +75,9 @@ public class FeedbackRequestHandler {
             }
         }
         if (isExist) {
-            SettingRequestDTO settingRequestDTO = VersionDAO.fetchSettings();
-            SendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate());
+            SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+            SmsSettingDTO smsSettingDTO = SmsDAO.fetchSmsSettingsById(setting.getSmsGatewayId());
+            SendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(),smsSettingDTO);
         }
         return id;
     }

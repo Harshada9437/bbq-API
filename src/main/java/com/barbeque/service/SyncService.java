@@ -2,9 +2,13 @@ package com.barbeque.service;
 
 
 import com.barbeque.bo.SettingRequestBO;
+import com.barbeque.bo.SmsSettingRequestBO;
 import com.barbeque.request.user.SettingRequest;
+import com.barbeque.request.user.SmsSettingRequest;
 import com.barbeque.requesthandler.SyncRequestHandler;
 import com.barbeque.response.user.SettingResponse;
+import com.barbeque.response.user.SmsSettingResponse;
+import com.barbeque.response.user.SmsSettingResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.response.util.VersionInfoResponse;
@@ -90,6 +94,46 @@ public class SyncService {
         try {
             settingResponse = syncRequestHandler.fetchSettings();
             return ResponseGenerator.generateSuccessResponse(settingResponse, "Message template");
+        } catch (SQLException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving details.");
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/saveSmsSettings")
+    public Response saveSmsSettings(SmsSettingRequest settingRequest) throws Exception {
+        SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
+        SmsSettingRequestBO settingRequestBO = new SmsSettingRequestBO();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            settingRequestBO.setApi(settingRequest.getApi());
+            settingRequestBO.setSenderId(settingRequest.getSenderId());
+            settingRequestBO.setCampaign(settingRequest.getCampaign());
+            settingRequestBO.setCountryCode(settingRequest.getCountryCode());
+            int id = syncRequestHandler.saveSmsSettings(settingRequestBO);
+            if(id > 0) {
+                return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
+            }else{
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
+            }
+        } catch (SQLException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
+        }
+    }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/fetchSmsSettings")
+    public Response fetchSmsSettings() throws Exception {
+        SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
+        SmsSettingResponseList settingResponse = new SmsSettingResponseList();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            settingResponse.setSmsSettings(syncRequestHandler.fetchSmsSettings());
+            return ResponseGenerator.generateSuccessResponse(settingResponse, "Message settings");
         } catch (SQLException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving details.");
         }

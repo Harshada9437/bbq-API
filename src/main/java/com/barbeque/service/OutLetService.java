@@ -65,6 +65,10 @@ public class OutLetService {
         updateSettingsRequestBO.setPocName(updateSettingsRequest.getPocName());
         updateSettingsRequestBO.setPocMobile(updateSettingsRequest.getPocMobile());
         updateSettingsRequestBO.setPocEmail(updateSettingsRequest.getPocEmail());
+        updateSettingsRequestBO.setMgrEmail(updateSettingsRequest.getMgrEmail());
+        updateSettingsRequestBO.setMgrMobile(updateSettingsRequest.getMgrMobile());
+        updateSettingsRequestBO.setMgrName(updateSettingsRequest.getMgrName());
+        updateSettingsRequestBO.setSmsGatewayId(updateSettingsRequest.getSmsGatewayId());
 
         MessageResponse assignoutletResponse = new MessageResponse();
         OutletRequestHandler outletRequestHandler = new OutletRequestHandler();

@@ -8,7 +8,11 @@ import com.barbeque.response.util.GenericResponse;
 public class OutletResponseList implements GenericResponse
 {
     private int id;
+    private int smsGatewayId;
     private String outletDesc;
+    private String mgrName;
+    private String mgrMobile;
+    private String mgrEmail;
     private String pocName;
     private String pocMobile;
     private String pocEmail;
@@ -29,6 +33,38 @@ public class OutletResponseList implements GenericResponse
     private String  bannerUrl;
     private String posStoreId;
     private int templateId;
+
+    public int getSmsGatewayId() {
+        return smsGatewayId;
+    }
+
+    public void setSmsGatewayId(int smsGatewayId) {
+        this.smsGatewayId = smsGatewayId;
+    }
+
+    public String getMgrName() {
+        return mgrName;
+    }
+
+    public void setMgrName(String mgrName) {
+        this.mgrName = mgrName;
+    }
+
+    public String getMgrMobile() {
+        return mgrMobile;
+    }
+
+    public void setMgrMobile(String mgrMobile) {
+        this.mgrMobile = mgrMobile;
+    }
+
+    public String getMgrEmail() {
+        return mgrEmail;
+    }
+
+    public void setMgrEmail(String mgrEmail) {
+        this.mgrEmail = mgrEmail;
+    }
 
     public String getPocName() {
         return pocName;
@@ -184,7 +220,14 @@ public class OutletResponseList implements GenericResponse
     public String toString() {
         return "OutletResponseList{" +
                 "id=" + id +
+                ", smsGatewayId=" + smsGatewayId +
                 ", outletDesc='" + outletDesc + '\'' +
+                ", mgrName='" + mgrName + '\'' +
+                ", mgrMobile='" + mgrMobile + '\'' +
+                ", mgrEmail='" + mgrEmail + '\'' +
+                ", pocName='" + pocName + '\'' +
+                ", pocMobile='" + pocMobile + '\'' +
+                ", pocEmail='" + pocEmail + '\'' +
                 ", shortDesc='" + shortDesc + '\'' +
                 ", clusterId=" + clusterId +
                 ", clusterName='" + clusterName + '\'' +
@@ -201,9 +244,6 @@ public class OutletResponseList implements GenericResponse
                 ", templateName='" + templateName + '\'' +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", posStoreId='" + posStoreId + '\'' +
-                ", pocName='" + pocName + '\'' +
-                ", pocMobile='" + pocMobile + '\'' +
-                ", pocEmail='" + pocEmail + '\'' +
                 ", templateId=" + templateId +
                 '}';
     }

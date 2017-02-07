@@ -1,15 +1,19 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.bo.SettingRequestBO;
+import com.barbeque.bo.SmsSettingRequestBO;
 import com.barbeque.dao.Sync.*;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dto.VersionInfoDTO;
 import com.barbeque.dto.request.SettingRequestDTO;
+import com.barbeque.dto.request.SmsSettingDTO;
 import com.barbeque.response.user.SettingResponse;
+import com.barbeque.response.user.SmsSettingResponse;
 import com.barbeque.response.util.VersionInfoResponse;
 import com.barbeque.sync.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,15 +86,40 @@ public class SyncRequestHandler {
     public Boolean saveSetting(SettingRequestBO settingRequestBO) throws SQLException {
         SettingRequestDTO settingRequestDTO = new SettingRequestDTO();
         settingRequestDTO.setSmsTemplate(settingRequestBO.getSmsTemplate());
-        Boolean isProcessed = VersionDAO.saveSetting(settingRequestDTO);
+        Boolean isProcessed = SmsDAO.saveSetting(settingRequestDTO);
         return  isProcessed;
     }
 
     public SettingResponse fetchSettings() throws SQLException {
         SettingResponse settingResponse = new SettingResponse();
-        VersionDAO versionDAO = new VersionDAO();
-        SettingRequestDTO settingRequestDTO = versionDAO.fetchSettings();
+        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
         settingResponse.setSmsTemplate(settingRequestDTO.getSmsTemplate());
         return  settingResponse;
+    }
+
+    public Integer saveSmsSettings(SmsSettingRequestBO settingRequestBO) throws SQLException {
+        SmsSettingDTO settingRequestDTO = new SmsSettingDTO();
+        settingRequestDTO.setApi(settingRequestBO.getApi());
+        settingRequestDTO.setSenderId(settingRequestBO.getSenderId());
+        settingRequestDTO.setCampaign(settingRequestBO.getCampaign());
+        settingRequestDTO.setCountryCode(settingRequestBO.getCountryCode());
+        Integer id = SmsDAO.saveSmsSettings(settingRequestDTO);
+        return  id;
+    }
+
+    public List<SmsSettingResponse> fetchSmsSettings() throws SQLException {
+        List<SmsSettingResponse> responses = new ArrayList<SmsSettingResponse>();
+        List<SmsSettingDTO> smsSettingDTO = SmsDAO.fetchSmsSettings();
+
+        for(SmsSettingDTO dto : smsSettingDTO) {
+            SmsSettingResponse response = new SmsSettingResponse(
+                    dto.getId(),
+                    dto.getApi(),
+                    dto.getSenderId(),
+                    dto.getCampaign(),
+                    dto.getCountryCode());
+            responses.add(response);
+        }
+        return  responses;
     }
 }

@@ -99,6 +99,10 @@ public class OutletRequestHandler {
         outletResponse.setPocName(outletDTO.getPocName());
         outletResponse.setPocEmail(outletDTO.getPocEmail());
         outletResponse.setPocMobile(outletDTO.getPocMobile());
+        outletResponse.setSmsGatewayId(outletDTO.getSmsGatewayId());
+        outletResponse.setMgrName(outletDTO.getMgrName());
+        outletResponse.setMgrMobile(outletDTO.getMgrMobile());
+        outletResponse.setMgrEmail(outletDTO.getMgrEmail());
 
         return outletResponse;
     }
@@ -134,6 +138,10 @@ public class OutletRequestHandler {
         updateSettingsDTO.setPocName(updateSettingsRequestBO.getPocName());
         updateSettingsDTO.setPocMobile(updateSettingsRequestBO.getPocMobile());
         updateSettingsDTO.setPocEmail(updateSettingsRequestBO.getPocEmail());
+        updateSettingsDTO.setMgrEmail(updateSettingsRequestBO.getMgrEmail());
+        updateSettingsDTO.setMgrMobile(updateSettingsRequestBO.getMgrMobile());
+        updateSettingsDTO.setMgrName(updateSettingsRequestBO.getMgrName());
+        updateSettingsDTO.setSmsGatewayId(updateSettingsRequestBO.getSmsGatewayId());
         return updateSettingsDTO;
     }
 }

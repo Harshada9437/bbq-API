@@ -5,11 +5,47 @@ package com.barbeque.request.outlet;
  */
 public class UpdateSettingsRequest {
     private int mobileNoLength;
+    private int smsGatewayId;
     private String bannerUrl;
     private String tableNoRange;
     private String pocName;
     private String pocMobile;
     private String pocEmail;
+    private String mgrName;
+    private String mgrMobile;
+    private String mgrEmail;
+
+    public int getSmsGatewayId() {
+        return smsGatewayId;
+    }
+
+    public void setSmsGatewayId(int smsGatewayId) {
+        this.smsGatewayId = smsGatewayId;
+    }
+
+    public String getMgrName() {
+        return mgrName;
+    }
+
+    public void setMgrName(String mgrName) {
+        this.mgrName = mgrName;
+    }
+
+    public String getMgrMobile() {
+        return mgrMobile;
+    }
+
+    public void setMgrMobile(String mgrMobile) {
+        this.mgrMobile = mgrMobile;
+    }
+
+    public String getMgrEmail() {
+        return mgrEmail;
+    }
+
+    public void setMgrEmail(String mgrEmail) {
+        this.mgrEmail = mgrEmail;
+    }
 
     public String getPocName() {
         return pocName;
@@ -63,21 +99,29 @@ public class UpdateSettingsRequest {
         UpdateSettingsRequest that = (UpdateSettingsRequest) o;
 
         if (mobileNoLength != that.mobileNoLength) return false;
+        if (smsGatewayId != that.smsGatewayId) return false;
         if (bannerUrl != null ? !bannerUrl.equals(that.bannerUrl) : that.bannerUrl != null) return false;
         if (tableNoRange != null ? !tableNoRange.equals(that.tableNoRange) : that.tableNoRange != null) return false;
         if (pocName != null ? !pocName.equals(that.pocName) : that.pocName != null) return false;
         if (pocMobile != null ? !pocMobile.equals(that.pocMobile) : that.pocMobile != null) return false;
-        return pocEmail != null ? pocEmail.equals(that.pocEmail) : that.pocEmail == null;
+        if (pocEmail != null ? !pocEmail.equals(that.pocEmail) : that.pocEmail != null) return false;
+        if (mgrName != null ? !mgrName.equals(that.mgrName) : that.mgrName != null) return false;
+        if (mgrMobile != null ? !mgrMobile.equals(that.mgrMobile) : that.mgrMobile != null) return false;
+        return mgrEmail != null ? mgrEmail.equals(that.mgrEmail) : that.mgrEmail == null;
     }
 
     @Override
     public int hashCode() {
         int result = mobileNoLength;
+        result = 31 * result + smsGatewayId;
         result = 31 * result + (bannerUrl != null ? bannerUrl.hashCode() : 0);
         result = 31 * result + (tableNoRange != null ? tableNoRange.hashCode() : 0);
         result = 31 * result + (pocName != null ? pocName.hashCode() : 0);
         result = 31 * result + (pocMobile != null ? pocMobile.hashCode() : 0);
         result = 31 * result + (pocEmail != null ? pocEmail.hashCode() : 0);
+        result = 31 * result + (mgrName != null ? mgrName.hashCode() : 0);
+        result = 31 * result + (mgrMobile != null ? mgrMobile.hashCode() : 0);
+        result = 31 * result + (mgrEmail != null ? mgrEmail.hashCode() : 0);
         return result;
     }
 
@@ -85,11 +129,15 @@ public class UpdateSettingsRequest {
     public String toString() {
         return "UpdateSettingsRequest{" +
                 "mobileNoLength=" + mobileNoLength +
+                ", smsGatewayId=" + smsGatewayId +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", tableNoRange='" + tableNoRange + '\'' +
                 ", pocName='" + pocName + '\'' +
                 ", pocMobile='" + pocMobile + '\'' +
                 ", pocEmail='" + pocEmail + '\'' +
+                ", mgrName='" + mgrName + '\'' +
+                ", mgrMobile='" + mgrMobile + '\'' +
+                ", mgrEmail='" + mgrEmail + '\'' +
                 '}';
     }
 }
