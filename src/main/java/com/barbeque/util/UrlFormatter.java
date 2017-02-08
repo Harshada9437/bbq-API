@@ -3,46 +3,50 @@ package com.barbeque.util;
 /**
  * Created by System-2 on 2/7/2017.
  */
-import java.io.BufferedReader;
+import com.google.gson.Gson;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.util.HashMap;
 
 public  class UrlFormatter {
+    private static final String GOOGLE_URL_SHORT_API = "https://www.googleapis.com/urlshortener/v1/url";
+    private static final String GOOGLE_API_KEY = "AIzaSyCUBhr1cshE8K92fAD__ATlWFvzb0jumYQ";
 
-    public static String shorten(String longUrl) {
+    public static String shortenUrl(String longUrl){
+
         if (longUrl == null) {
             return longUrl;
+        }else if(!longUrl.startsWith("http://") && !longUrl.startsWith("https://")){
+            longUrl = "http://"+longUrl;
         }
-
         try {
-            URL url = new URL("http://goo.gl/api/url");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("User-Agent", "toolbar");
+            String json = "{\"longUrl\": \""+longUrl+"\"}";
+            String apiURL = GOOGLE_URL_SHORT_API+"?key="+GOOGLE_API_KEY;
 
-            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-            writer.write("url=" + URLEncoder.encode(longUrl, "UTF-8"));
-            writer.close();
+            HttpPost postRequest = new HttpPost(apiURL);
+            postRequest.setHeader("Content-Type", "application/json");
+            postRequest.setEntity(new StringEntity(json, "UTF-8"));
 
-            BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = rd.readLine()) != null) {
-                sb.append(line + '\n');
-            }
-            String json = sb.toString();
-            return json.substring(json.indexOf("http"), json.indexOf("\"", json.indexOf("http")));
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpResponse response = httpClient.execute(postRequest);
+            String responseText = EntityUtils.toString(response.getEntity());
+
+            Gson gson = new Gson();
+            @SuppressWarnings("unchecked")
+            HashMap<String, String> res = gson.fromJson(responseText, HashMap.class);
+
+            return res.get("id");
+
         } catch (MalformedURLException e) {
-            return longUrl;
+            return "error";
         } catch (IOException e) {
-            return longUrl;
+            return "error";
         }
     }
-
 }

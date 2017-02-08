@@ -324,4 +324,63 @@ public class FeedbackDAO {
         }
         return feedbackRequestDTO;
     }
+
+    public static List<FeedbackRequestDTO> getFeedbacksList(int id) throws SQLException {
+        List<FeedbackRequestDTO>  feedbackRequestDTOs = new ArrayList<FeedbackRequestDTO>();
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+
+            String query = "select f.*,fh.device_id,a.threshold, fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
+                    "from feedback f\n" +
+                    "left join feedback_head fh on fh.id=f.feedback_id\n" +
+                    "left join outlet o on fh.outlet_id = o.id\n" +
+                    "left join question_bank q on q.id = f.question_id\n" +
+                    "left join customer c on c.id = fh.customer_id\n" +
+                    "left join question_answer_link a on a.answer_id = f.answer_id\n" +
+                    "where fh.id=" + id;
+            ResultSet resultSet = statement.executeQuery(query);
+            int rowCount = 0;
+            while (resultSet.next()) {
+                FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
+                feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
+                feedbackRequestDTO.setFeedbackDate(resultSet.getTimestamp("feedback_date"));
+                feedbackRequestDTO.setCustomerId(resultSet.getInt("customer_id"));
+                feedbackRequestDTO.setCustomerName(resultSet.getString("name"));
+                feedbackRequestDTO.setMobileNo(resultSet.getString("phone_no"));
+                feedbackRequestDTO.setEmail(resultSet.getString("email_id"));
+                feedbackRequestDTO.setDob(resultSet.getString("dob"));
+                feedbackRequestDTO.setDoa(resultSet.getString("doa"));
+                feedbackRequestDTO.setLocality(resultSet.getString("locality"));
+                feedbackRequestDTO.setOutletId(resultSet.getInt("outlet_id"));
+                feedbackRequestDTO.setTableNo(resultSet.getString("table_no"));
+                feedbackRequestDTO.setBillNo(resultSet.getString("bill_no"));
+                feedbackRequestDTO.setOutletDesc(resultSet.getString("outlet_desc"));
+                feedbackRequestDTO.setAnswerId(resultSet.getInt("answer_id"));
+                feedbackRequestDTO.setRating(resultSet.getInt("rating"));
+                feedbackRequestDTO.setQuestionId(resultSet.getInt("question_id"));
+                feedbackRequestDTO.setAnswerText(resultSet.getString("answer_text"));
+                feedbackRequestDTO.setQuestionDesc(resultSet.getString("question_desc"));
+                feedbackRequestDTO.setAnswerDesc(resultSet.getString("answer_desc"));
+                feedbackRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
+                feedbackRequestDTO.setWeightage(resultSet.getInt("weightage"));
+                feedbackRequestDTO.setThreshold(resultSet.getString("threshold"));
+                feedbackRequestDTO.setDeviceId(resultSet.getInt("device_id"));
+                feedbackRequestDTOs.add(feedbackRequestDTO);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return feedbackRequestDTOs;
+    }
 }

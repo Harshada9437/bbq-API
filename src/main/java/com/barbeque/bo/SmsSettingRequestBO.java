@@ -5,9 +5,18 @@ package com.barbeque.bo;
  */
 public class SmsSettingRequestBO {
     private String api;
+    private String name;
     private String senderId;
     private String campaign;
     private String countryCode;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getApi() {
         return api;
@@ -49,6 +58,7 @@ public class SmsSettingRequestBO {
         SmsSettingRequestBO that = (SmsSettingRequestBO) o;
 
         if (api != null ? !api.equals(that.api) : that.api != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (senderId != null ? !senderId.equals(that.senderId) : that.senderId != null) return false;
         if (campaign != null ? !campaign.equals(that.campaign) : that.campaign != null) return false;
         return countryCode != null ? countryCode.equals(that.countryCode) : that.countryCode == null;
@@ -58,6 +68,7 @@ public class SmsSettingRequestBO {
     public int hashCode() {
         int result = api != null ? api.hashCode() : 0;
         result = 31 * result + (senderId != null ? senderId.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (campaign != null ? campaign.hashCode() : 0);
         result = 31 * result + (countryCode != null ? countryCode.hashCode() : 0);
         return result;
@@ -68,6 +79,7 @@ public class SmsSettingRequestBO {
         return "SmsSettingRequestBO{" +
                 "api='" + api + '\'' +
                 ", senderId='" + senderId + '\'' +
+                ", name='" + name + '\'' +
                 ", campaign='" + campaign + '\'' +
                 ", countryCode='" + countryCode + '\'' +
                 '}';

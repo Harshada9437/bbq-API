@@ -2,16 +2,13 @@ package com.barbeque.requesthandler;
 
 import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
-import com.barbeque.config.ConfigProperties;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.Sync.SmsDAO;
-import com.barbeque.dao.Sync.VersionDAO;
 import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dao.question.QuestionDAO;
 import com.barbeque.dto.UpdateSettingsDTO;
-import com.barbeque.dto.VersionInfoDTO;
 import com.barbeque.dto.request.*;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
@@ -23,7 +20,6 @@ import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.util.DateUtil;
 import com.barbeque.util.SendSms;
-import com.barbeque.util.UrlFormatter;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -159,6 +155,7 @@ public class FeedbackRequestHandler {
                 answer.setQuestionId(feedbackRequestDTO.getQuestionId());
                 answer.setQuestionType(feedbackRequestDTO.getQuestionType());
                 answer.setWeightage(feedbackRequestDTO.getWeightage());
+                answer.setThreshold(feedbackRequestDTO.getThreshold());
                 newAnswerList.add(answer);
                 feedbackResp.setFeedbacks(newAnswerList);
 
@@ -177,6 +174,7 @@ public class FeedbackRequestHandler {
                     answer.setQuestionId(feedbackRequestDTO.getQuestionId());
                     answer.setQuestionType(feedbackRequestDTO.getQuestionType());
                     answer.setWeightage(feedbackRequestDTO.getWeightage());
+                    answer.setThreshold(feedbackRequestDTO.getThreshold());
                     curAnswerList.add(answer);
                 }
             }
@@ -206,45 +204,75 @@ public class FeedbackRequestHandler {
     }
 
     public FeedbackByIdResponse getfeedbackById(int id) throws SQLException, FeedbackNotFoundException {
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
-        FeedbackByIdResponse feedbackByIdResponse = new FeedbackByIdResponse();
-        try {
-            feedbackByIdResponse = buildFeedbackDTOFromBO(FeedbackDAO.getfeedbackById(id));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        FeedbackByIdResponse feedbackByIdResponse = buildResponseFromDTO(FeedbackDAO.getFeedbacksList(id));
         return feedbackByIdResponse;
     }
 
-    public FeedbackByIdResponse buildFeedbackDTOFromBO(FeedbackRequestDTO feedbackRequestDTO) throws SQLException, FeedbackNotFoundException
+    public FeedbackByIdResponse buildResponseFromDTO(List<FeedbackRequestDTO> feedbackRequestDTOs) throws SQLException, FeedbackNotFoundException
     {
-        FeedbackByIdResponse feedbackByIdResponse = new FeedbackByIdResponse();
-        feedbackByIdResponse.setQuestionType(feedbackRequestDTO.getQuestionType());
-        feedbackByIdResponse.setId(feedbackRequestDTO.getId());
-        feedbackByIdResponse.setCustomerId(feedbackRequestDTO.getCustomerId());
-        feedbackByIdResponse.setDeviceId(feedbackRequestDTO.getDeviceId());
-        feedbackByIdResponse.setFeedbackDate(DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()));
-        feedbackByIdResponse.setModifiedOn(feedbackRequestDTO.getModifiedOn());
-        feedbackByIdResponse.setOutletId(feedbackRequestDTO.getOutletId());
-        feedbackByIdResponse.setDate(feedbackRequestDTO.getDate());
-        feedbackByIdResponse.setFeedbacks(feedbackRequestDTO.getFeedbacks());
-        feedbackByIdResponse.setTableNo(feedbackRequestDTO.getTableNo());
-        feedbackByIdResponse.setBillNo(feedbackRequestDTO.getBillNo());
-        feedbackByIdResponse.setOutletDesc(feedbackRequestDTO.getOutletDesc());
-        feedbackByIdResponse.setCustomerName(feedbackRequestDTO.getCustomerName());
-        feedbackByIdResponse.setMobileNo(feedbackRequestDTO.getMobileNo());
-        feedbackByIdResponse.setAnswerId(feedbackRequestDTO.getAnswerId());
-        feedbackByIdResponse.setQuestionId(feedbackRequestDTO.getQuestionId());
-        feedbackByIdResponse.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
-        feedbackByIdResponse.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
-        feedbackByIdResponse.setRating(feedbackRequestDTO.getRating());
-        feedbackByIdResponse.setWeightage(feedbackRequestDTO.getWeightage());
-        feedbackByIdResponse.setEmail(feedbackRequestDTO.getEmail());
-        feedbackByIdResponse.setDob(feedbackRequestDTO.getDob());
-        feedbackByIdResponse.setDoa(feedbackRequestDTO.getDoa());
-        feedbackByIdResponse.setLocality(feedbackRequestDTO.getLocality());
+        FeedbackByIdResponse feedbackResp=null;
+        List<FeedbackByIdResponse> uniqueList = new ArrayList<FeedbackByIdResponse>();
+        List<Integer> uniqueIds = new ArrayList<Integer>();
+        for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOs) {
+            if (!uniqueIds.contains(feedbackRequestDTO.getId())) {
+                 feedbackResp = new FeedbackByIdResponse(feedbackRequestDTO.getQuestionType(),
+                        feedbackRequestDTO.getId(),
+                        feedbackRequestDTO.getDeviceId(),
+                        DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
+                        feedbackRequestDTO.getOutletId(),
+                        feedbackRequestDTO.getTableNo(),
+                        feedbackRequestDTO.getBillNo(),
+                        feedbackRequestDTO.getCustomerId(),
+                        feedbackRequestDTO.getCustomerName(),
+                        feedbackRequestDTO.getMobileNo(),
+                        feedbackRequestDTO.getEmail(),
+                        feedbackRequestDTO.getDob(),
+                        feedbackRequestDTO.getDoa(),
+                        feedbackRequestDTO.getLocality(),
+                        feedbackRequestDTO.getOutletDesc());
+                List<FeedbackDetails> newAnswerList = new ArrayList<FeedbackDetails>();
+                FeedbackDetails answer = new FeedbackDetails();
+                answer.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
+                answer.setAnswerText(feedbackRequestDTO.getAnswerText());
+                answer.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
+                answer.setRating(feedbackRequestDTO.getRating());
+                answer.setAnswerId(feedbackRequestDTO.getAnswerId());
+                answer.setQuestionId(feedbackRequestDTO.getQuestionId());
+                answer.setQuestionType(feedbackRequestDTO.getQuestionType());
+                answer.setWeightage(feedbackRequestDTO.getWeightage());
+                newAnswerList.add(answer);
+                feedbackResp.setFeedbacks(newAnswerList);
 
-        return feedbackByIdResponse;
+                uniqueIds.add(feedbackRequestDTO.getId());
+            } else {
+                FeedbackByIdResponse existingResp = getResponseFromList1(uniqueList, feedbackRequestDTO.getId());
+                if (existingResp != null) {
+                    List<FeedbackDetails> curAnswerList = existingResp.getFeedbacks();
+                    FeedbackDetails answer = new FeedbackDetails();
+                    answer.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
+                    answer.setAnswerText(feedbackRequestDTO.getAnswerText());
+                    answer.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
+                    answer.setRating(feedbackRequestDTO.getRating());
+                    answer.setAnswerId(feedbackRequestDTO.getAnswerId());
+                    answer.setQuestionId(feedbackRequestDTO.getQuestionId());
+                    answer.setQuestionType(feedbackRequestDTO.getQuestionType());
+                    answer.setWeightage(feedbackRequestDTO.getWeightage());
+                    curAnswerList.add(answer);
+                }
+            }
+        }
 
+        return feedbackResp;
+    }
+
+
+    private FeedbackByIdResponse getResponseFromList1(List<FeedbackByIdResponse> list, int id) {
+        for (int i = 0; i < list.size(); i++) {
+            if (id == list.get(i).getId()) {
+                return list.get(i);
+            }
+        }
+        return null;
     }
 }

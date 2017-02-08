@@ -7,12 +7,14 @@ public class SmsSettingResponse {
     private int id;
     private String api;
     private String senderId;
+    private String name;
     private String campaign;
     private String countryCode;
 
-    public SmsSettingResponse(int id, String api, String senderId, String campaign, String countryCode) {
+    public SmsSettingResponse(int id, String api,String name, String senderId, String campaign, String countryCode) {
         this.id = id;
         this.api = api;
+        this.name = name;
         this.senderId = senderId;
         this.campaign = campaign;
         this.countryCode = countryCode;
@@ -24,6 +26,10 @@ public class SmsSettingResponse {
 
     public String getApi() {
         return api;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getSenderId() {
@@ -43,6 +49,7 @@ public class SmsSettingResponse {
         return "SmsSettingResponse{" +
                 "id=" + id +
                 ", api='" + api + '\'' +
+                ", name='" + name + '\'' +
                 ", senderId='" + senderId + '\'' +
                 ", campaign='" + campaign + '\'' +
                 ", countryCode='" + countryCode + '\'' +

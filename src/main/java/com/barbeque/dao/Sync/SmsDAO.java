@@ -92,12 +92,13 @@ public class SmsDAO {
 
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            statement = connection.prepareStatement("INSERT INTO sms_gateway_mstr(api,sender_id,campaign,country_code) VALUES(?,?,?,?)");
+            statement = connection.prepareStatement("INSERT INTO sms_gateway_mstr(api,sender_id,campaign,country_code,name) VALUES(?,?,?,?,?)");
 
             statement.setString(parameterIndex++,settingRequestDTO.getApi());
             statement.setString(parameterIndex++,settingRequestDTO.getSenderId());
             statement.setString(parameterIndex++,settingRequestDTO.getCampaign());
             statement.setString(parameterIndex++,settingRequestDTO.getCountryCode());
+            statement.setString(parameterIndex++,settingRequestDTO.getName());
 
             int i = statement.executeUpdate();
             if (i > 0) {
@@ -151,6 +152,7 @@ public class SmsDAO {
             while (resultSet.next()) {
                 SmsSettingDTO settingRequestDTO = new SmsSettingDTO();
                 settingRequestDTO.setId(resultSet.getInt("id"));
+                settingRequestDTO.setName(resultSet.getString("name"));
                 settingRequestDTO.setApi(resultSet.getString("api"));
                 settingRequestDTO.setSenderId(resultSet.getString("sender_id"));
                 settingRequestDTO.setCampaign(resultSet.getString("campaign"));
@@ -186,6 +188,7 @@ public class SmsDAO {
 
             while (resultSet.next()) {
                 smsSettingDTO.setId(resultSet.getInt("id"));
+                smsSettingDTO.setName(resultSet.getString("name"));
                 smsSettingDTO.setApi(resultSet.getString("api"));
                 smsSettingDTO.setSenderId(resultSet.getString("sender_id"));
                 smsSettingDTO.setCampaign(resultSet.getString("campaign"));
@@ -204,5 +207,104 @@ public class SmsDAO {
             }
         }
         return smsSettingDTO;
+    }
+
+    public static Boolean getSettingsByName(String name) throws SQLException {
+        Boolean isProcessed = Boolean.FALSE;
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("select * from sms_gateway_mstr where name=\"" + name + "\"");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+
+
+            while (resultSet.next()) {
+                isProcessed=Boolean.TRUE;
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isProcessed;
+    }
+
+    public static void updateSmsSettings(SmsSettingDTO settingRequestDTO) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        int id = 0;
+        try{
+            int parameterIndex = 1;
+
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.prepareStatement("UPDATE sms_gateway_mstr SET  api=?,sender_id=?,campaign=?,country_code=?,name=? WHERE id=?");
+
+            statement.setString(parameterIndex++,settingRequestDTO.getApi());
+            statement.setString(parameterIndex++,settingRequestDTO.getSenderId());
+            statement.setString(parameterIndex++,settingRequestDTO.getCampaign());
+            statement.setString(parameterIndex++,settingRequestDTO.getCountryCode());
+            statement.setString(parameterIndex++,settingRequestDTO.getName());
+            statement.setInt(parameterIndex++,settingRequestDTO.getId());
+
+            int i = statement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        }catch (SQLException e){
+            connection.rollback();
+            e.printStackTrace();
+            throw e;
+        }finally {
+            try {
+                statement.close();
+                connection.close();
+            }catch (SQLException sq){
+                sq.printStackTrace();
+                throw sq;
+            }
+        }
+    }
+
+    public static Boolean getSettingsByUpdateName(String name,int id) throws SQLException {
+        Boolean isProcessed = Boolean.FALSE;
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("select * from sms_gateway_mstr where id<>" + id +" and name=\"" + name + "\"");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+
+
+            while (resultSet.next()) {
+                isProcessed=Boolean.TRUE;
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isProcessed;
     }
 }

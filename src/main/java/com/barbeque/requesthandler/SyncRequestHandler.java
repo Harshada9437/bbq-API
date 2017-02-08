@@ -2,6 +2,7 @@ package com.barbeque.requesthandler;
 
 import com.barbeque.bo.SettingRequestBO;
 import com.barbeque.bo.SmsSettingRequestBO;
+import com.barbeque.bo.UpdateSettingRequestBO;
 import com.barbeque.dao.Sync.*;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dto.VersionInfoDTO;
@@ -103,6 +104,7 @@ public class SyncRequestHandler {
         settingRequestDTO.setSenderId(settingRequestBO.getSenderId());
         settingRequestDTO.setCampaign(settingRequestBO.getCampaign());
         settingRequestDTO.setCountryCode(settingRequestBO.getCountryCode());
+        settingRequestDTO.setName(settingRequestBO.getName());
         Integer id = SmsDAO.saveSmsSettings(settingRequestDTO);
         return  id;
     }
@@ -115,11 +117,23 @@ public class SyncRequestHandler {
             SmsSettingResponse response = new SmsSettingResponse(
                     dto.getId(),
                     dto.getApi(),
+                    dto.getName(),
                     dto.getSenderId(),
                     dto.getCampaign(),
                     dto.getCountryCode());
             responses.add(response);
         }
         return  responses;
+    }
+
+    public void updateSmsSettings(UpdateSettingRequestBO settingRequestBO) throws SQLException{
+        SmsSettingDTO settingRequestDTO = new SmsSettingDTO();
+        settingRequestDTO.setApi(settingRequestBO.getApi());
+        settingRequestDTO.setSenderId(settingRequestBO.getSenderId());
+        settingRequestDTO.setCampaign(settingRequestBO.getCampaign());
+        settingRequestDTO.setCountryCode(settingRequestBO.getCountryCode());
+        settingRequestDTO.setName(settingRequestBO.getName());
+        settingRequestDTO.setId(settingRequestBO.getId());
+        SmsDAO.updateSmsSettings(settingRequestDTO);
     }
 }

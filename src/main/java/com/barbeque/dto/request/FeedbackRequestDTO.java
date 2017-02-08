@@ -32,9 +32,18 @@ public class FeedbackRequestDTO {
     private int rating;
     private int weightage;
     private String email;
+    private String threshold;
     private String dob;
     private String doa;
     private String locality;
+
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
+    }
 
     public char getQuestionType() {
         return questionType;
@@ -275,6 +284,7 @@ public class FeedbackRequestDTO {
         if (answerDesc != null ? !answerDesc.equals(that.answerDesc) : that.answerDesc != null) return false;
         if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
+        if (threshold != null ? !threshold.equals(that.threshold) : that.threshold != null) return false;
         if (dob != null ? !dob.equals(that.dob) : that.dob != null) return false;
         if (doa != null ? !doa.equals(that.doa) : that.doa != null) return false;
         if (locality != null ? !locality.equals(that.locality) : that.locality != null) return false;
@@ -305,6 +315,7 @@ public class FeedbackRequestDTO {
         result = 31 * result + rating;
         result = 31 * result + weightage;
         result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (threshold != null ? threshold.hashCode() : 0);
         result = 31 * result + (dob != null ? dob.hashCode() : 0);
         result = 31 * result + (doa != null ? doa.hashCode() : 0);
         result = 31 * result + (locality != null ? locality.hashCode() : 0);
@@ -327,6 +338,7 @@ public class FeedbackRequestDTO {
                 ", tableNo='" + tableNo + '\'' +
                 ", billNo='" + billNo + '\'' +
                 ", customerName='" + customerName + '\'' +
+                ", threshold='" + threshold + '\'' +
                 ", outletDesc='" + outletDesc + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
                 ", answerId=" + answerId +

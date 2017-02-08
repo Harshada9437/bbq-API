@@ -9,10 +9,19 @@ public class FeedbackDetails {
     private char questionType;
     private int answerId;
     private String answerText;
+    private String threshold;
     private String answerDesc;
     private String questionDesc;
     private int rating;
     private String feedbackDate;
+
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
+    }
 
     public int getWeightage() {
         return weightage;
@@ -94,6 +103,7 @@ public class FeedbackDetails {
                 ", answerId=" + answerId +
                 ", weightage=" + weightage +
                 ", answerText='" + answerText + '\'' +
+                ", threshold='" + threshold + '\'' +
                 ", answerDesc='" + answerDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +

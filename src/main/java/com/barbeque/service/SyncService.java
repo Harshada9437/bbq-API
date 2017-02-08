@@ -3,8 +3,11 @@ package com.barbeque.service;
 
 import com.barbeque.bo.SettingRequestBO;
 import com.barbeque.bo.SmsSettingRequestBO;
+import com.barbeque.bo.UpdateSettingRequestBO;
+import com.barbeque.dao.Sync.SmsDAO;
 import com.barbeque.request.user.SettingRequest;
 import com.barbeque.request.user.SmsSettingRequest;
+import com.barbeque.request.user.UpdateSettingRequest;
 import com.barbeque.requesthandler.SyncRequestHandler;
 import com.barbeque.response.user.SettingResponse;
 import com.barbeque.response.user.SmsSettingResponse;
@@ -112,16 +115,44 @@ public class SyncService {
             settingRequestBO.setSenderId(settingRequest.getSenderId());
             settingRequestBO.setCampaign(settingRequest.getCampaign());
             settingRequestBO.setCountryCode(settingRequest.getCountryCode());
-            int id = syncRequestHandler.saveSmsSettings(settingRequestBO);
-            if(id > 0) {
+            settingRequestBO.setName(settingRequest.getName());
+            if(!SmsDAO.getSettingsByName(settingRequestBO.getName())) {
+                int id = syncRequestHandler.saveSmsSettings(settingRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(id));
             }else{
-                return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Name already exist.");
             }
         } catch (SQLException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
         }
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/updateSmsSettings")
+    public Response updateSmsSettings(UpdateSettingRequest settingRequest) throws Exception {
+        SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
+        UpdateSettingRequestBO settingRequestBO = new UpdateSettingRequestBO();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            settingRequestBO.setApi(settingRequest.getApi());
+            settingRequestBO.setId(settingRequest.getId());
+            settingRequestBO.setSenderId(settingRequest.getSenderId());
+            settingRequestBO.setCampaign(settingRequest.getCampaign());
+            settingRequestBO.setCountryCode(settingRequest.getCountryCode());
+            settingRequestBO.setName(settingRequest.getName());
+            if(!SmsDAO.getSettingsByUpdateName(settingRequestBO.getName(),settingRequestBO.getId())) {
+                syncRequestHandler.updateSmsSettings(settingRequestBO);
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "settings are updated.");
+            }else{
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Name already exist.");
+            }
+        } catch (SQLException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
+        }
+    }
+
 
     @GET
     @Consumes(MediaType.APPLICATION_JSON)

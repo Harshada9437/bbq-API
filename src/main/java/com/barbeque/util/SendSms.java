@@ -10,6 +10,7 @@ import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dto.UpdateSettingsDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.dto.request.SmsSettingDTO;
+import com.barbeque.exceptions.FeedbackNotFoundException;
 
 
 import java.io.BufferedReader;
@@ -39,66 +40,62 @@ public class SendSms {
     private static final StringBuilder sbPostData = new StringBuilder(mainUrl);
 
 
-    public static Boolean sendThresholdSms(int id, String msg, SmsSettingDTO smsSettingDTO) {
+    public static Boolean sendThresholdSms(int id, String msg, SmsSettingDTO smsSettingDTO) throws FeedbackNotFoundException {
         Boolean isProcessed = Boolean.FALSE;
+
+        String authkey = smsSettingDTO.getApi();
+        String campaign = smsSettingDTO.getCampaign();
+        String senderId = smsSettingDTO.getSenderId();
+        String countryCode = smsSettingDTO.getCountryCode();
+
+        String url = UrlFormatter.shortenUrl(ConfigProperties.url+ "/" + id) ;
+
+        FeedbackRequestDTO feedback = FeedbackDAO.getfeedbackById(id);
+
+        UpdateSettingsDTO dto = OutletDAO.getSetting(feedback.getOutletId());
+        //Your message to send, Add URL encoding here.
+
+        String message = msg.replace("%cn%",feedback.getCustomerName());
+        message=message.replace("%mn%",dto.getMgrName());
+        message=message.replace("%ce%",feedback.getEmail());
+        message=message.replace("%cm%",feedback.getMobileNo());
+        message=message.replace("%tn%",feedback.getTableNo());
+        message=message.replace("%url%",url);
+        String date = format(feedback.getFeedbackDate(),"dd-MMM-yyyy HH:mm:ss");
+        message=message.replace("%fd%",date);
+
+        //encoding message
+        String encoded_message = URLEncoder.encode(message);
+
+        sbPostData.append("authkey=" + authkey);
+        sbPostData.append("&mobiles=" + dto.getMgrMobile());
+        sbPostData.append("&message=" + encoded_message);
+        sbPostData.append("&route=" + route);
+        sbPostData.append("&sender=" + senderId);
+        sbPostData.append("&campaign=" + campaign);
+        sbPostData.append("&country=" + countryCode);
         try {
+            //final string
+            mainUrl = sbPostData.toString();
+            //prepare connection
+            myURL = new URL(mainUrl);
+            myURLConnection = myURL.openConnection();
 
-            String authkey = smsSettingDTO.getApi();
-            String campaign = smsSettingDTO.getCampaign();
-            String senderId = smsSettingDTO.getSenderId();
-            String countryCode = smsSettingDTO.getCountryCode();
+            myURLConnection.connect();
 
-            String url = UrlFormatter.shorten(ConfigProperties.url) + "/" + id;
+            reader = new BufferedReader(new InputStreamReader(myURLConnection.getInputStream()));
 
-            FeedbackRequestDTO feedback = FeedbackDAO.getfeedbackById(id);
+            //reading response
+            String response;
+            while ((response = reader.readLine()) != null)
+                //print response
+                System.out.println(response);
 
-            UpdateSettingsDTO dto = OutletDAO.getSetting(feedback.getOutletId());
-            //Your message to send, Add URL encoding here.
+            //finally close connection
+            reader.close();
 
-            String message = msg.replace("%cn%",feedback.getCustomerName());
-            message=message.replace("%mn%",dto.getMgrName());
-            message=message.replace("%ce%",feedback.getEmail());
-            message=message.replace("%cm%",feedback.getMobileNo());
-            message=message.replace("%tn%",feedback.getTableNo());
-            message=message.replace("%url%",url);
-            String date = format(feedback.getFeedbackDate(),"dd-MMM-yyyy HH:mm:ss");
-            message=message.replace("%fd%",date);
-
-            //encoding message
-            String encoded_message = URLEncoder.encode(message);
-
-            sbPostData.append("authkey=" + authkey);
-            sbPostData.append("&mobiles=" + dto.getMgrMobile());
-            sbPostData.append("&message=" + encoded_message);
-            sbPostData.append("&route=" + route);
-            sbPostData.append("&sender=" + senderId);
-            sbPostData.append("&campaign=" + campaign);
-            sbPostData.append("&country=" + countryCode);
-            try {
-                //final string
-                mainUrl = sbPostData.toString();
-                //prepare connection
-                myURL = new URL(mainUrl);
-                myURLConnection = myURL.openConnection();
-
-                myURLConnection.connect();
-
-                reader = new BufferedReader(new InputStreamReader(myURLConnection.getInputStream()));
-
-                //reading response
-                String response;
-                while ((response = reader.readLine()) != null)
-                    //print response
-                    System.out.println(response);
-
-                //finally close connection
-                reader.close();
-
-                isProcessed = Boolean.TRUE;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (SQLException e) {
+            isProcessed = Boolean.TRUE;
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return isProcessed;

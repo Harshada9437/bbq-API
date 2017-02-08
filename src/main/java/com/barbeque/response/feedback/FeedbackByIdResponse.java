@@ -17,22 +17,13 @@ public class FeedbackByIdResponse implements GenericResponse
     private int customerId;
     private int deviceId;
     private String feedbackDate;
-    private String modifiedOn;
     private int outletId;
-    private String date;
     private List<FeedbackDetails> feedbacks;
     private String tableNo;
     private String billNo;
     private String customerName;
     private String outletDesc;
     private String mobileNo;
-    private int answerId;
-    private int questionId;
-    private String answerText;
-    private String answerDesc;
-    private String questionDesc;
-    private int rating;
-    private int weightage;
     private String email;
     private String dob;
     private String doa;
@@ -40,6 +31,23 @@ public class FeedbackByIdResponse implements GenericResponse
     private String message;
     private String messageType;
 
+    public FeedbackByIdResponse(char questionType, int id, int deviceId, String feedbackDate,int outletId, String tableNo, String billNo, int customerId, String customerName, String mobileNo, String email, String dob, String doa, String locality, String outletDesc) {
+        this.questionType = questionType;
+        this.id = id;
+        this.deviceId = deviceId;
+        this.feedbackDate = feedbackDate;
+        this.outletId = outletId;
+        this.tableNo = tableNo;
+        this.billNo = billNo;
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.mobileNo = mobileNo;
+        this.email = email;
+        this.dob = dob;
+        this.doa = doa;
+        this.locality = locality;
+        this.outletDesc = outletDesc;
+    }
 
     public char getQuestionType() {
         return questionType;
@@ -81,28 +89,12 @@ public class FeedbackByIdResponse implements GenericResponse
         this.feedbackDate = feedbackDate;
     }
 
-    public String getModifiedOn() {
-        return modifiedOn;
-    }
-
-    public void setModifiedOn(String modifiedOn) {
-        this.modifiedOn = modifiedOn;
-    }
-
     public int getOutletId() {
         return outletId;
     }
 
     public void setOutletId(int outletId) {
         this.outletId = outletId;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public List<FeedbackDetails> getFeedbacks() {
@@ -151,62 +143,6 @@ public class FeedbackByIdResponse implements GenericResponse
 
     public void setMobileNo(String mobileNo) {
         this.mobileNo = mobileNo;
-    }
-
-    public int getAnswerId() {
-        return answerId;
-    }
-
-    public void setAnswerId(int answerId) {
-        this.answerId = answerId;
-    }
-
-    public int getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(int questionId) {
-        this.questionId = questionId;
-    }
-
-    public String getAnswerText() {
-        return answerText;
-    }
-
-    public void setAnswerText(String answerText) {
-        this.answerText = answerText;
-    }
-
-    public String getAnswerDesc() {
-        return answerDesc;
-    }
-
-    public void setAnswerDesc(String answerDesc) {
-        this.answerDesc = answerDesc;
-    }
-
-    public String getQuestionDesc() {
-        return questionDesc;
-    }
-
-    public void setQuestionDesc(String questionDesc) {
-        this.questionDesc = questionDesc;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public int getWeightage() {
-        return weightage;
-    }
-
-    public void setWeightage(int weightage) {
-        this.weightage = weightage;
     }
 
     public String getEmail() {
@@ -271,22 +207,13 @@ public class FeedbackByIdResponse implements GenericResponse
         if (customerId != that.customerId) return false;
         if (deviceId != that.deviceId) return false;
         if (outletId != that.outletId) return false;
-        if (answerId != that.answerId) return false;
-        if (questionId != that.questionId) return false;
-        if (rating != that.rating) return false;
-        if (weightage != that.weightage) return false;
         if (!feedbackDate.equals(that.feedbackDate)) return false;
-        if (!modifiedOn.equals(that.modifiedOn)) return false;
-        if (!date.equals(that.date)) return false;
         if (!feedbacks.equals(that.feedbacks)) return false;
         if (!tableNo.equals(that.tableNo)) return false;
         if (!billNo.equals(that.billNo)) return false;
         if (!customerName.equals(that.customerName)) return false;
         if (!outletDesc.equals(that.outletDesc)) return false;
         if (!mobileNo.equals(that.mobileNo)) return false;
-        if (!answerText.equals(that.answerText)) return false;
-        if (!answerDesc.equals(that.answerDesc)) return false;
-        if (!questionDesc.equals(that.questionDesc)) return false;
         if (!email.equals(that.email)) return false;
         if (!dob.equals(that.dob)) return false;
         if (!doa.equals(that.doa)) return false;
@@ -300,22 +227,13 @@ public class FeedbackByIdResponse implements GenericResponse
         result = 31 * result + customerId;
         result = 31 * result + deviceId;
         result = 31 * result + feedbackDate.hashCode();
-        result = 31 * result + modifiedOn.hashCode();
         result = 31 * result + outletId;
-        result = 31 * result + date.hashCode();
         result = 31 * result + feedbacks.hashCode();
         result = 31 * result + tableNo.hashCode();
         result = 31 * result + billNo.hashCode();
         result = 31 * result + customerName.hashCode();
         result = 31 * result + outletDesc.hashCode();
         result = 31 * result + mobileNo.hashCode();
-        result = 31 * result + answerId;
-        result = 31 * result + questionId;
-        result = 31 * result + answerText.hashCode();
-        result = 31 * result + answerDesc.hashCode();
-        result = 31 * result + questionDesc.hashCode();
-        result = 31 * result + rating;
-        result = 31 * result + weightage;
         result = 31 * result + email.hashCode();
         result = 31 * result + dob.hashCode();
         result = 31 * result + doa.hashCode();
@@ -331,22 +249,13 @@ public class FeedbackByIdResponse implements GenericResponse
                 ", customerId=" + customerId +
                 ", deviceId=" + deviceId +
                 ", feedbackDate=" + feedbackDate +
-                ", modifiedOn='" + modifiedOn + '\'' +
                 ", outletId=" + outletId +
-                ", date='" + date + '\'' +
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
                 ", billNo='" + billNo + '\'' +
                 ", customerName='" + customerName + '\'' +
                 ", outletDesc='" + outletDesc + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
-                ", answerId=" + answerId +
-                ", questionId=" + questionId +
-                ", answerText='" + answerText + '\'' +
-                ", answerDesc='" + answerDesc + '\'' +
-                ", questionDesc='" + questionDesc + '\'' +
-                ", rating=" + rating +
-                ", weightage=" + weightage +
                 ", email='" + email + '\'' +
                 ", dob='" + dob + '\'' +
                 ", doa='" + doa + '\'' +
