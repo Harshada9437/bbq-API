@@ -196,52 +196,6 @@ public class FeedbackByIdResponse implements GenericResponse
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        FeedbackByIdResponse that = (FeedbackByIdResponse) o;
-
-        if (questionType != that.questionType) return false;
-        if (id != that.id) return false;
-        if (customerId != that.customerId) return false;
-        if (deviceId != that.deviceId) return false;
-        if (outletId != that.outletId) return false;
-        if (!feedbackDate.equals(that.feedbackDate)) return false;
-        if (!feedbacks.equals(that.feedbacks)) return false;
-        if (!tableNo.equals(that.tableNo)) return false;
-        if (!billNo.equals(that.billNo)) return false;
-        if (!customerName.equals(that.customerName)) return false;
-        if (!outletDesc.equals(that.outletDesc)) return false;
-        if (!mobileNo.equals(that.mobileNo)) return false;
-        if (!email.equals(that.email)) return false;
-        if (!dob.equals(that.dob)) return false;
-        if (!doa.equals(that.doa)) return false;
-        return locality.equals(that.locality);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) questionType;
-        result = 31 * result + id;
-        result = 31 * result + customerId;
-        result = 31 * result + deviceId;
-        result = 31 * result + feedbackDate.hashCode();
-        result = 31 * result + outletId;
-        result = 31 * result + feedbacks.hashCode();
-        result = 31 * result + tableNo.hashCode();
-        result = 31 * result + billNo.hashCode();
-        result = 31 * result + customerName.hashCode();
-        result = 31 * result + outletDesc.hashCode();
-        result = 31 * result + mobileNo.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + dob.hashCode();
-        result = 31 * result + doa.hashCode();
-        result = 31 * result + locality.hashCode();
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "FeedbackByIdResponse{" +
                 "questionType=" + questionType +

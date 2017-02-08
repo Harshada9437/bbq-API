@@ -241,10 +241,12 @@ public class FeedbackRequestHandler {
                 answer.setQuestionId(feedbackRequestDTO.getQuestionId());
                 answer.setQuestionType(feedbackRequestDTO.getQuestionType());
                 answer.setWeightage(feedbackRequestDTO.getWeightage());
+                answer.setThreshold(feedbackRequestDTO.getThreshold());
                 newAnswerList.add(answer);
                 feedbackResp.setFeedbacks(newAnswerList);
 
                 uniqueIds.add(feedbackRequestDTO.getId());
+                uniqueList.add(feedbackResp);
             } else {
                 FeedbackByIdResponse existingResp = getResponseFromList1(uniqueList, feedbackRequestDTO.getId());
                 if (existingResp != null) {
@@ -258,6 +260,7 @@ public class FeedbackRequestHandler {
                     answer.setQuestionId(feedbackRequestDTO.getQuestionId());
                     answer.setQuestionType(feedbackRequestDTO.getQuestionType());
                     answer.setWeightage(feedbackRequestDTO.getWeightage());
+                    answer.setThreshold(feedbackRequestDTO.getThreshold());
                     curAnswerList.add(answer);
                 }
             }

@@ -112,22 +112,17 @@ public class FeedbackService {
     {
         FeedbackRequestHandler feedbackRequestHandler=new FeedbackRequestHandler();
         Object response = null;
+        MessageResponse messageResponse = new MessageResponse();
         try{
             FeedbackByIdResponse feedbackByIdResponse=feedbackRequestHandler.getfeedbackById(id);
             return ResponseGenerator.generateSuccessResponse(feedbackByIdResponse, "SUCCESS");
         }catch (FeedbackNotFoundException e) {
-            MessageResponse messageResponse = new MessageResponse();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID QuestionId ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID feedback id. ");
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID feedback id. ");
         }
-        return ResponseGenerator.generateResponse(response);
     }
-
-
-
-
-
 }
 
