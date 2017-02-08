@@ -7,11 +7,8 @@ public class LoginResponseDTO {
     private String status;
     private String password;
     private String sessionId;
-
-
-    public String getSessionId() {return sessionId;}
-
-    public void setSessionId(String sessionId) {this.sessionId = sessionId;}
+    private String isActive;
+    private int roll_id;
 
     public int getId() {
         return id;
@@ -53,6 +50,30 @@ public class LoginResponseDTO {
         this.password = password;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
+
+    public int getRoll_id() {
+        return roll_id;
+    }
+
+    public void setRoll_id(int roll_id) {
+        this.roll_id = roll_id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,22 +82,25 @@ public class LoginResponseDTO {
         LoginResponseDTO that = (LoginResponseDTO) o;
 
         if (id != that.id) return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
-        if (email != null ? !email.equals(that.email) : that.email != null) return false;
-        if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        return sessionId != null ? sessionId.equals(that.sessionId) : that.sessionId == null;
-
+        if (roll_id != that.roll_id) return false;
+        if (!userName.equals(that.userName)) return false;
+        if (!email.equals(that.email)) return false;
+        if (!status.equals(that.status)) return false;
+        if (!password.equals(that.password)) return false;
+        if (!sessionId.equals(that.sessionId)) return false;
+        return isActive.equals(that.isActive);
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);
+        result = 31 * result + userName.hashCode();
+        result = 31 * result + email.hashCode();
+        result = 31 * result + status.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + sessionId.hashCode();
+        result = 31 * result + isActive.hashCode();
+        result = 31 * result + roll_id;
         return result;
     }
 
@@ -89,6 +113,8 @@ public class LoginResponseDTO {
                 ", status='" + status + '\'' +
                 ", password='" + password + '\'' +
                 ", sessionId='" + sessionId + '\'' +
+                ", isActive='" + isActive + '\'' +
+                ", roll_id='" + roll_id + '\'' +
                 '}';
     }
 }

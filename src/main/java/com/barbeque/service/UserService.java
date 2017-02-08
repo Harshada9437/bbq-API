@@ -1,11 +1,12 @@
 package com.barbeque.service;
 
+import com.barbeque.exceptions.RollNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.bo.LoginRequestBO;
 import com.barbeque.request.user.LoginRequest;
 import com.barbeque.requesthandler.UserRequestHandler;
-import com.barbeque.response.user.LoginResponse;
-import com.barbeque.response.user.LoginResponseBO;
+import com.barbeque.response.user.*;
+import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
 
 import javax.ws.rs.*;
@@ -80,4 +81,75 @@ public class UserService {
             return ResponseGenerator.generateResponse(RequestValidator.getUnautheticatedResponse());
         }*/
     }
+
+    @GET
+    @Path("/UserDetail/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public Response getuserById(@PathParam("id")int id)throws Exception {
+
+        UserRequestHandler userRequestHandler=new UserRequestHandler();
+        Object response = null;
+        try{
+           UserdetailsByIdResponse userdetailsByIdResponse=userRequestHandler.getuserById(id);
+            return ResponseGenerator.generateSuccessResponse(userdetailsByIdResponse, "SUCCESS");
+        }catch (UserNotFoundException e) {
+            MessageResponse messageResponse=new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID UserId ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ResponseGenerator.generateResponse(response);
+
+
+    }
+
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/menuList")
+
+    public Response getMenuList() throws Exception {
+       UserRequestHandler userRequestHandler = new UserRequestHandler();
+       MenuResponseList menuResponseList= new MenuResponseList();
+       try {
+           menuResponseList.setMenus(userRequestHandler.getMenuList());
+           return ResponseGenerator.generateSuccessResponse(menuResponseList, "List of menus.");
+       }
+       catch (SQLException e){
+           e.printStackTrace();
+           return ResponseGenerator.generateFailureResponse(menuResponseList, "Failure.");
+       }
+    }
+
+    @GET
+    @Path("/rollDetail/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public Response getrollById(@PathParam("id")int id)throws Exception
+    {
+       UserRequestHandler userRequestHandler=new UserRequestHandler();
+        Object response = null;
+        try{
+            RollByIdResponse rollByIdResponse=userRequestHandler.getrollById(id);
+            return ResponseGenerator.generateSuccessResponse(rollByIdResponse, "SUCCESS");
+        }catch (RollNotFoundException e) {
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID RollId ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ResponseGenerator.generateResponse(response);
+    }
+
+
+
+
+
+
 }
