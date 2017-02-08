@@ -111,17 +111,15 @@ public class FeedbackService {
     public Response getfeedbackById(@PathParam("id")int id)throws Exception
     {
         FeedbackRequestHandler feedbackRequestHandler=new FeedbackRequestHandler();
-        Object response = null;
         MessageResponse messageResponse = new MessageResponse();
         try{
             FeedbackByIdResponse feedbackByIdResponse=feedbackRequestHandler.getfeedbackById(id);
             return ResponseGenerator.generateSuccessResponse(feedbackByIdResponse, "SUCCESS");
         }catch (FeedbackNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID feedback id. ");
-
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID feedback id. ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
         }
     }
 }

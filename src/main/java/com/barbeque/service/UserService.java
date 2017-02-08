@@ -55,8 +55,7 @@ public class UserService {
     @Path("/logout")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response logout(@HeaderParam("sessionId") String sessionId/*, @HeaderParam("Auth") String auth*/) throws Exception {
-       /* if (auth != null && RequestValidation.isRequestValid(auth)) {*/
+    public Response logout(@HeaderParam("sessionId") String sessionId) throws Exception {
             LoginResponse loginResponse = new LoginResponse();
             try {
                 UserRequestHandler userRequestHandler = new UserRequestHandler();
@@ -77,9 +76,6 @@ public class UserService {
 
             }
             return ResponseGenerator.generateResponse(loginResponse);
-      /*  } else {
-            return ResponseGenerator.generateResponse(RequestValidator.getUnautheticatedResponse());
-        }*/
     }
 
     @GET
@@ -146,10 +142,4 @@ public class UserService {
         }
         return ResponseGenerator.generateResponse(response);
     }
-
-
-
-
-
-
 }

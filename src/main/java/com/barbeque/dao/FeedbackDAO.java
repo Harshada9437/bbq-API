@@ -325,7 +325,7 @@ public class FeedbackDAO {
         return feedbackRequestDTO;
     }
 
-    public static List<FeedbackRequestDTO> getFeedbacksList(int id) throws SQLException {
+    public static List<FeedbackRequestDTO> getFeedbacksList(int id) throws SQLException,FeedbackNotFoundException {
         List<FeedbackRequestDTO>  feedbackRequestDTOs = new ArrayList<FeedbackRequestDTO>();
         Connection connection = null;
         Statement statement = null;
@@ -369,7 +369,11 @@ public class FeedbackDAO {
                 feedbackRequestDTO.setWeightage(resultSet.getInt("weightage"));
                 feedbackRequestDTO.setThreshold(resultSet.getString("threshold"));
                 feedbackRequestDTO.setDeviceId(resultSet.getInt("device_id"));
+                rowCount++;
                 feedbackRequestDTOs.add(feedbackRequestDTO);
+            }
+            if(rowCount==0){
+                throw new FeedbackNotFoundException("Feedback id invalid");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
