@@ -3,6 +3,7 @@ package com.barbeque.dao;
 import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.dto.request.FeedbackListDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
+import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
 
@@ -262,7 +263,7 @@ public class FeedbackDAO {
         return answerDTOS;
     }
 
-    public static FeedbackRequestDTO getfeedbackById(int id) throws SQLException {
+    public static FeedbackRequestDTO getfeedbackById(int id) throws FeedbackNotFoundException {
         FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
         Connection connection = null;
         Statement statement = null;
@@ -280,6 +281,7 @@ public class FeedbackDAO {
                     "left join question_answer_link a on a.answer_id = f.answer_id\n" +
                     "where fh.id=" + id;
             ResultSet resultSet = statement.executeQuery(query);
+            int rowCount = 0;
             while (resultSet.next()) {
 
                 feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
@@ -303,10 +305,15 @@ public class FeedbackDAO {
                 feedbackRequestDTO.setAnswerDesc(resultSet.getString("answer_desc"));
                 feedbackRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
                 feedbackRequestDTO.setWeightage(resultSet.getInt("weightage"));
+                rowCount++;
             }
+            if (rowCount == 0) {
+                throw new FeedbackNotFoundException("Feedback id invalid");
+            }
+
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
-            throw sqlException;
         } finally {
             try {
                 statement.close();

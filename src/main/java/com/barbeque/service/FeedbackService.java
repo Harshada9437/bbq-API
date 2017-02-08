@@ -5,10 +5,12 @@ import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
+import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
 import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
+import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
@@ -27,7 +29,7 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/create")
-    public Response addFeedback(FeedbackRequest feedbackRequest) {
+    public Response addFeedback(FeedbackRequest feedbackRequest) throws Exception {
         FeedbackRequestBO feedbackRequestBO = new FeedbackRequestBO();
         feedbackRequestBO.setOutletId(feedbackRequest.getOutletId());
         feedbackRequestBO.setDeviceId(feedbackRequest.getDeviceId());
@@ -40,7 +42,7 @@ public class FeedbackService {
         MessageResponse messageResponse = new MessageResponse();
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         try {
-           DeviceDTO deviceDTO = DeviceDAO.getDevice(feedbackRequestBO.getDeviceId());
+            DeviceDTO deviceDTO = DeviceDAO.getDevice(feedbackRequestBO.getDeviceId());
             if (deviceDTO.getStatus().equals("A")) {
                 int feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(feedbackId));
@@ -94,10 +96,38 @@ public class FeedbackService {
             FeedbackResponseList feedbackResponse = new FeedbackResponseList();
             feedbackResponse.setFeedbacks(feedbackRequestHandler.getfeedbackList1(feedbackListRequestBO));
             return ResponseGenerator.generateSuccessResponse(feedbackResponse, "Successfully retrieved.");
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             MessageResponse messageResponse = new MessageResponse();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve the list");
         }
     }
+
+    @GET
+    @Path("/feedbackDetail/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public Response getfeedbackById(@PathParam("id")int id)throws Exception
+    {
+        FeedbackRequestHandler feedbackRequestHandler=new FeedbackRequestHandler();
+        Object response = null;
+        try{
+            FeedbackByIdResponse feedbackByIdResponse=feedbackRequestHandler.getfeedbackById(id);
+            return ResponseGenerator.generateSuccessResponse(feedbackByIdResponse, "SUCCESS");
+        }catch (FeedbackNotFoundException e) {
+            MessageResponse messageResponse = new MessageResponse();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID QuestionId ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ResponseGenerator.generateResponse(response);
+    }
+
+
+
+
+
 }
+

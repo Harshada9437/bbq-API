@@ -15,9 +15,11 @@ import com.barbeque.dto.VersionInfoDTO;
 import com.barbeque.dto.request.*;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
+import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
+import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.util.DateUtil;
 import com.barbeque.util.SendSms;
@@ -30,7 +32,7 @@ import java.util.*;
  * Created by user on 10/18/2016.
  */
 public class FeedbackRequestHandler {
-    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException, QuestionNotFoundException {
+    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException, QuestionNotFoundException, FeedbackNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         int customerId;
 
@@ -201,5 +203,48 @@ public class FeedbackRequestHandler {
         feedbackListDTO.setOutletId(feedbackListRequestBO.getOutletId());
 
         return feedbackListDTO;
+    }
+
+    public FeedbackByIdResponse getfeedbackById(int id) throws SQLException, FeedbackNotFoundException {
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        FeedbackByIdResponse feedbackByIdResponse = new FeedbackByIdResponse();
+        try {
+            feedbackByIdResponse = buildFeedbackDTOFromBO(FeedbackDAO.getfeedbackById(id));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return feedbackByIdResponse;
+    }
+
+    public FeedbackByIdResponse buildFeedbackDTOFromBO(FeedbackRequestDTO feedbackRequestDTO) throws SQLException, FeedbackNotFoundException
+    {
+        FeedbackByIdResponse feedbackByIdResponse = new FeedbackByIdResponse();
+        feedbackByIdResponse.setQuestionType(feedbackRequestDTO.getQuestionType());
+        feedbackByIdResponse.setId(feedbackRequestDTO.getId());
+        feedbackByIdResponse.setCustomerId(feedbackRequestDTO.getCustomerId());
+        feedbackByIdResponse.setDeviceId(feedbackRequestDTO.getDeviceId());
+        feedbackByIdResponse.setFeedbackDate(DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()));
+        feedbackByIdResponse.setModifiedOn(feedbackRequestDTO.getModifiedOn());
+        feedbackByIdResponse.setOutletId(feedbackRequestDTO.getOutletId());
+        feedbackByIdResponse.setDate(feedbackRequestDTO.getDate());
+        feedbackByIdResponse.setFeedbacks(feedbackRequestDTO.getFeedbacks());
+        feedbackByIdResponse.setTableNo(feedbackRequestDTO.getTableNo());
+        feedbackByIdResponse.setBillNo(feedbackRequestDTO.getBillNo());
+        feedbackByIdResponse.setOutletDesc(feedbackRequestDTO.getOutletDesc());
+        feedbackByIdResponse.setCustomerName(feedbackRequestDTO.getCustomerName());
+        feedbackByIdResponse.setMobileNo(feedbackRequestDTO.getMobileNo());
+        feedbackByIdResponse.setAnswerId(feedbackRequestDTO.getAnswerId());
+        feedbackByIdResponse.setQuestionId(feedbackRequestDTO.getQuestionId());
+        feedbackByIdResponse.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
+        feedbackByIdResponse.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
+        feedbackByIdResponse.setRating(feedbackRequestDTO.getRating());
+        feedbackByIdResponse.setWeightage(feedbackRequestDTO.getWeightage());
+        feedbackByIdResponse.setEmail(feedbackRequestDTO.getEmail());
+        feedbackByIdResponse.setDob(feedbackRequestDTO.getDob());
+        feedbackByIdResponse.setDoa(feedbackRequestDTO.getDoa());
+        feedbackByIdResponse.setLocality(feedbackRequestDTO.getLocality());
+
+        return feedbackByIdResponse;
+
     }
 }
