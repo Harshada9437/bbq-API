@@ -7,8 +7,7 @@ public class LoginResponseDTO {
     private String status;
     private String password;
     private String sessionId;
-    private String isActive;
-    private int roll_id;
+    private int roleId;
 
     public int getId() {
         return id;
@@ -58,20 +57,12 @@ public class LoginResponseDTO {
         this.sessionId = sessionId;
     }
 
-    public String getIsActive() {
-        return isActive;
+    public int getRoleId() {
+        return roleId;
     }
 
-    public void setIsActive(String isActive) {
-        this.isActive = isActive;
-    }
-
-    public int getRoll_id() {
-        return roll_id;
-    }
-
-    public void setRoll_id(int roll_id) {
-        this.roll_id = roll_id;
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
     }
 
     @Override
@@ -82,13 +73,12 @@ public class LoginResponseDTO {
         LoginResponseDTO that = (LoginResponseDTO) o;
 
         if (id != that.id) return false;
-        if (roll_id != that.roll_id) return false;
+        if (roleId != that.roleId) return false;
         if (!userName.equals(that.userName)) return false;
         if (!email.equals(that.email)) return false;
         if (!status.equals(that.status)) return false;
         if (!password.equals(that.password)) return false;
-        if (!sessionId.equals(that.sessionId)) return false;
-        return isActive.equals(that.isActive);
+        return sessionId.equals(that.sessionId);
     }
 
     @Override
@@ -99,8 +89,7 @@ public class LoginResponseDTO {
         result = 31 * result + status.hashCode();
         result = 31 * result + password.hashCode();
         result = 31 * result + sessionId.hashCode();
-        result = 31 * result + isActive.hashCode();
-        result = 31 * result + roll_id;
+        result = 31 * result + roleId;
         return result;
     }
 
@@ -113,8 +102,7 @@ public class LoginResponseDTO {
                 ", status='" + status + '\'' +
                 ", password='" + password + '\'' +
                 ", sessionId='" + sessionId + '\'' +
-                ", isActive='" + isActive + '\'' +
-                ", roll_id='" + roll_id + '\'' +
+                ", roleId=" + roleId +
                 '}';
     }
 }

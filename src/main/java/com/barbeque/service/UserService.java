@@ -1,9 +1,16 @@
 package com.barbeque.service;
 
-import com.barbeque.exceptions.RollNotFoundException;
+   import com.barbeque.bo.RollRequestBO;
+   import com.barbeque.bo.UpdateRollRequestBO;
+   import com.barbeque.bo.UserRequestBO;
+import com.barbeque.dao.user.UsersDAO;
+import com.barbeque.dto.response.LoginResponseDTO;
+import com.barbeque.exceptions.RoleNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.bo.LoginRequestBO;
 import com.barbeque.request.user.LoginRequest;
+import com.barbeque.request.user.RollRequest;
+import com.barbeque.request.user.UserRequest;
 import com.barbeque.requesthandler.UserRequestHandler;
 import com.barbeque.response.user.*;
 import com.barbeque.response.util.MessageResponse;
@@ -122,18 +129,18 @@ public class UserService {
     }
 
     @GET
-    @Path("/rollDetail/{id}")
+    @Path("/roleDetail/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Response getrollById(@PathParam("id")int id)throws Exception
+    public Response getroleById(@PathParam("id")int id)throws Exception
     {
        UserRequestHandler userRequestHandler=new UserRequestHandler();
         Object response = null;
         try{
-            RollByIdResponse rollByIdResponse=userRequestHandler.getrollById(id);
-            return ResponseGenerator.generateSuccessResponse(rollByIdResponse, "SUCCESS");
-        }catch (RollNotFoundException e) {
+            RoleByIdResponse roleByIdResponse =userRequestHandler.getroleById(id);
+            return ResponseGenerator.generateSuccessResponse(roleByIdResponse, "SUCCESS");
+        }catch (RoleNotFoundException e) {
             MessageResponse messageResponse = new MessageResponse();
             return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID RollId ");
 
@@ -142,4 +149,119 @@ public class UserService {
         }
         return ResponseGenerator.generateResponse(response);
     }
+
+
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/roleList")
+
+
+    public Response getRoleList() throws Exception {
+        UserRequestHandler userRequestHandler = new UserRequestHandler();
+        RoleResponseList roleResponseList = new RoleResponseList();
+        try {
+          roleResponseList.setRoles(userRequestHandler.getRoleList());
+            return ResponseGenerator.generateSuccessResponse(roleResponseList, "List of roles.");
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(roleResponseList, "Failure.");
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/createUser")
+    public Response createUser(UserRequest userRequest) throws Exception {
+            UserRequestBO userRequestBO = new UserRequestBO();
+            userRequestBO.setUserName(userRequest.getUserName());
+            userRequestBO.setEmail(userRequest.getEmail());
+            userRequestBO.setPassword(userRequest.getPassword());
+            userRequestBO.setRoleId(userRequest.getRoleId());
+
+           MessageResponse createUserResponse= new MessageResponse();
+            UserRequestHandler userRequestHandler = new UserRequestHandler();
+            try {
+
+                if (!UsersDAO.getuserById(userRequest.getUserName(),userRequest.getEmail())) {
+                    int userId = userRequestHandler.createUser(userRequestBO);
+                    return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
+
+                } else {
+                    return ResponseGenerator.generateFailureResponse(createUserResponse, "User already exists.");
+
+                }
+            } catch (SQLException sqlException)
+            {
+                return ResponseGenerator.generateFailureResponse(createUserResponse, "User creation Failed");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return ResponseGenerator.generateResponse(createUserResponse);
+
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/createRoll")
+    public Response createRoll(RollRequest rollRequest) throws Exception {
+        RollRequestBO rollRequestBO = new RollRequestBO();
+        rollRequestBO.setName(rollRequest.getName());
+        rollRequestBO.setMenuAccess(rollRequest.getMenuAccess());
+        rollRequestBO.setOutletAccess(rollRequest.getOutletAccess());
+
+
+        MessageResponse createUserResponse= new MessageResponse();
+        UserRequestHandler userRequestHandler = new UserRequestHandler();
+        try {
+
+            if (!UsersDAO.getuserById(rollRequest.getName())) {
+                int userId = userRequestHandler.createRoll(rollRequestBO);
+                return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
+
+            } else {
+                return ResponseGenerator.generateFailureResponse(createUserResponse, "User already exists.");
+
+            }
+        } catch (SQLException sqlException)
+        {
+            return ResponseGenerator.generateFailureResponse(createUserResponse, "User creation Failed");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseGenerator.generateResponse(createUserResponse);
+
+    }
+
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/updateRoll")
+    public Response updateRoll(UpdateRollRequest updateRollRequest) throws SQLException {
+
+        UpdateRollRequestBO updateFeedbackRequestBO= new UpdateRollRequestBO();
+        updateFeedbackRequestBO.setRoleId(updateRollRequest.getRoleId());
+        updateFeedbackRequestBO.setName(updateRollRequest.getName());
+        updateFeedbackRequestBO.setMenuAccess(updateRollRequest.getMenuAccess());
+        updateFeedbackRequestBO.setOutletAccess(updateRollRequest.getOutletAccess());
+
+      UserRequestHandler userRequestHandler = new UserRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        if (userRequestHandler.updateRoll(updateFeedbackRequestBO)) {
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Roll updated successfully");
+        } else {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the roll.");
+        }
+    }
+
+
+
 }

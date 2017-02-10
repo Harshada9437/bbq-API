@@ -1,9 +1,11 @@
 package com.barbeque.dao.user;
 
 import com.barbeque.dao.ConnectionHandler;
+import com.barbeque.dto.CreateUserDTO;
+import com.barbeque.dto.request.CreateRollDTO;
 import com.barbeque.dto.request.MenuRequestDTO;
-import com.barbeque.dto.request.RollRequestDTO;
-import com.barbeque.exceptions.RollNotFoundException;
+import com.barbeque.dto.request.RoleRequestDTO;
+import com.barbeque.exceptions.RoleNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.dto.response.LoginResponseDTO;
 
@@ -20,7 +22,7 @@ public class UsersDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT id, user_name, email, password, status,session_id,isActive,roll_id FROM user_details where user_name = \"")
+                    "SELECT id, user_name, email, password, status,session_id,role_id FROM user_details where user_name = \"")
                     .append(name).append("\"");
             ResultSet resultSet = statement.executeQuery(query.toString());
             int rowCount = 0;
@@ -32,8 +34,7 @@ public class UsersDAO {
                 loginResponseDTO.setPassword(resultSet.getString("password"));
                 loginResponseDTO.setStatus(resultSet.getString("status"));
                 loginResponseDTO.setSessionId(resultSet.getString("session_id"));
-                loginResponseDTO.setIsActive(resultSet.getString("isActive"));
-                loginResponseDTO.setRoll_id(resultSet.getInt("roll_id"));
+                loginResponseDTO.setRoleId(resultSet.getInt("role_id"));
                 rowCount++;
             }
             if (rowCount == 0) {
@@ -222,7 +223,7 @@ public class UsersDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
 
-            String query = "SELECT id,user_name,email,password,status,session_id,isActive,roll_id FROM user_details where id=" + id;
+            String query = "SELECT id,user_name,email,password,status,session_id,role_id FROM user_details where id=" + id;
 
             ResultSet resultSet = statement.executeQuery(query.toString());
             int rowCount = 0;
@@ -234,8 +235,7 @@ public class UsersDAO {
                 loginResponseDTO.setPassword(resultSet.getString("password"));
                 loginResponseDTO.setStatus(resultSet.getString("status"));
                 loginResponseDTO.setSessionId(resultSet.getString("session_id"));
-                loginResponseDTO.setIsActive(resultSet.getString("isActive"));
-                loginResponseDTO.setRoll_id(resultSet.getInt("roll_id"));
+                loginResponseDTO.setRoleId(resultSet.getInt("role_id"));
                 rowCount++;
             }
             if (rowCount == 0) {
@@ -290,8 +290,8 @@ public class UsersDAO {
     }
 
 
-    public static RollRequestDTO getrollById(int id) throws SQLException {
-        RollRequestDTO rollRequestDTO = new RollRequestDTO();
+    public static RoleRequestDTO getroleById(int id) throws SQLException {
+        RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
         Connection connection = null;
         Statement statement = null;
         try {
@@ -299,21 +299,21 @@ public class UsersDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
 
-            String query = "select * from roll where roll_id ="+id;
+            String query = "select * from role where role_id =" + id;
             ResultSet resultSet = statement.executeQuery(query);
             int rowCount = 0;
             while (resultSet.next()) {
-                RollRequestDTO rollRequestDTO1 = new RollRequestDTO();
-                rollRequestDTO.setRoll_id(resultSet.getInt("roll_id"));
-                rollRequestDTO.setName(resultSet.getString("name"));
-                rollRequestDTO.setMenu_access(resultSet.getString("menu_access"));
-                rollRequestDTO.setOutlet_access(resultSet.getString("outlet_access"));
+                RoleRequestDTO roleRequestDTO1 = new RoleRequestDTO();
+                roleRequestDTO.setRoleId(resultSet.getInt("role_id"));
+                roleRequestDTO.setName(resultSet.getString("name"));
+                roleRequestDTO.setMenuAccess(resultSet.getString("menu_access"));
+                roleRequestDTO.setOutletAccess(resultSet.getString("outlet_access"));
                 rowCount++;
             }
             if (rowCount == 0) {
                 try {
-                    throw new RollNotFoundException("Roll_id invalid");
-                } catch (RollNotFoundException e) {
+                    throw new RoleNotFoundException("Role_id invalid");
+                } catch (RoleNotFoundException e) {
                     e.printStackTrace();
                 }
             }
@@ -327,6 +327,264 @@ public class UsersDAO {
                 e.printStackTrace();
             }
         }
-        return rollRequestDTO;
+        return roleRequestDTO;
     }
-}
+
+    public List<RoleRequestDTO> getRoleList() throws SQLException {
+        List<RoleRequestDTO> roleRequestDTOList = new ArrayList<RoleRequestDTO>();
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            String query = "SELECT * FROM role";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
+                roleRequestDTO.setRoleId(resultSet.getInt("role_id"));
+                roleRequestDTO.setName(resultSet.getString("name"));
+                roleRequestDTO.setMenuAccess(resultSet.getString("menu_access"));
+                roleRequestDTO.setOutletAccess(resultSet.getString("outlet_access"));
+                roleRequestDTOList.add(roleRequestDTO);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return roleRequestDTOList;
+    }
+
+    public Integer createUser(CreateUserDTO createUserDTO) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        StringBuilder query = new StringBuilder("INSERT INTO user_details(user_name,email,password,role_id) values (?,?,?,?)");
+        Integer id = 0;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement(query.toString());
+            preparedStatement.setString(parameterIndex++,
+                    createUserDTO.getUserName());
+            preparedStatement.setString(parameterIndex++,
+                    createUserDTO.getEmail());
+            preparedStatement.setString(parameterIndex++,
+                    createUserDTO.getPassword());
+            preparedStatement.setInt(parameterIndex++,
+                    createUserDTO.getRoleId());
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+
+            try {
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    id = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException(
+                            "Creating user failed.");
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+                throw e;
+            }
+        } catch (SQLException sqlException) {
+            connection.rollback();
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return id;
+    }
+
+    public static Boolean getuserById(String userName, String email)
+            throws SQLException {
+
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Statement statement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuffer query = new StringBuffer(
+                    "select * from user_details where user_name = \"").append(userName)
+                    .append("\" or email =\"").append(email).append("\"");
+
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                        .trim());
+                while (resultSet.next()) {
+                  isCreated = true;
+                }
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
+                throw sqlException;
+            } finally {
+                try {
+                    statement.close();
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return isCreated;
+        }
+
+
+
+
+    public Integer createRoll(CreateRollDTO createRollDTO) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        StringBuilder query = new StringBuilder("INSERT INTO role(name,menu_access,outlet_access) values (?,?,?)");
+        Integer id = 0;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement(query.toString());
+            preparedStatement.setString(parameterIndex++,
+                    createRollDTO.getName());
+            preparedStatement.setString(parameterIndex++,
+                    createRollDTO.getMenuAccess());
+            preparedStatement.setString(parameterIndex++,
+                   createRollDTO.getOutletAccess());
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+
+            try {
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    id = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException(
+                            "Creation of roll failed.");
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+                throw e;
+            }
+        } catch (SQLException sqlException) {
+            connection.rollback();
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return id;
+    }
+
+    public static Boolean getuserById(String name)
+            throws SQLException {
+
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Statement statement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuffer query = new StringBuffer(
+                    "select * from role where name = \"").append(name).append("\"");
+
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+                isCreated = true;
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
+
+
+    public Boolean updateRoll(RoleRequestDTO roleRequestDTO) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE role SET name=?,menu_access=?,outlet_access=? WHERE role_id =?");
+
+
+            preparedStatement.setString(parameterIndex++,roleRequestDTO.getName());
+
+            preparedStatement.setString(parameterIndex++,roleRequestDTO.getMenuAccess());
+
+            preparedStatement.setString(parameterIndex++,roleRequestDTO.getOutletAccess());
+
+            preparedStatement.setInt(parameterIndex++,roleRequestDTO.getRoleId());
+
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
+
+
+    }
