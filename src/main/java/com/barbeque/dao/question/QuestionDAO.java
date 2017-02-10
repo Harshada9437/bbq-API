@@ -101,11 +101,12 @@ public class QuestionDAO {
         return allQuestions;
     }
 
-    public Boolean updateQuestion(QuestionRequestDTO questionRequestDTO) throws SQLException {
+    public Boolean updateQuestion(QuestionRequestDTO questionRequestDTO) throws SQLException, QuestionNotFoundException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
+            getQuestionById(questionRequestDTO.getId());
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);

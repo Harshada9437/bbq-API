@@ -2,13 +2,12 @@ package com.barbeque.service;
 
 import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.FeedbackRequestBO;
-import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
+import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
-import com.barbeque.request.feedback.UpdateFeedbackRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
 import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponseList;
@@ -29,7 +28,7 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/create")
-    public Response addFeedback(FeedbackRequest feedbackRequest) throws Exception {
+    public Response addFeedback(FeedbackRequest feedbackRequest) {
         FeedbackRequestBO feedbackRequestBO = new FeedbackRequestBO();
         feedbackRequestBO.setOutletId(feedbackRequest.getOutletId());
         feedbackRequestBO.setDeviceId(feedbackRequest.getDeviceId());
@@ -58,34 +57,8 @@ public class FeedbackService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/update")
-    public Response updateQuestion(UpdateFeedbackRequest updateFeedbackRequest) throws SQLException {
-
-        UpdateFeedbackRequestBO updateFeedbackRequestBO = new UpdateFeedbackRequestBO();
-        updateFeedbackRequestBO.setId(updateFeedbackRequest.getId());
-        updateFeedbackRequestBO.setQuestionId(updateFeedbackRequest.getQuestionId());
-        updateFeedbackRequestBO.setAnswerId(updateFeedbackRequest.getAnswerId());
-        updateFeedbackRequestBO.setAnswerText(updateFeedbackRequest.getAnswerText());
-        updateFeedbackRequestBO.setDate(updateFeedbackRequest.getDate());
-        updateFeedbackRequestBO.setTableNo(updateFeedbackRequest.getTableNo());
-        updateFeedbackRequestBO.setRating(updateFeedbackRequest.getRating());
-        updateFeedbackRequestBO.setBillNo(updateFeedbackRequest.getBillNo());
-        updateFeedbackRequestBO.setModifiedOn(updateFeedbackRequest.getAnswerText());
-
-        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
-        MessageResponse messageResponse = new MessageResponse();
-        if (feedbackRequestHandler.updateFeedback(updateFeedbackRequestBO)) {
-            return ResponseGenerator.generateSuccessResponse(messageResponse, "Feedback updated successfully");
-        } else {
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the feedback.");
-        }
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getfeedbackList(FeedbackListRequest feedbackListRequest) throws SQLException {
+    public Response getfeedbackList(FeedbackListRequest feedbackListRequest) {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
         try {
@@ -93,10 +66,11 @@ public class FeedbackService {
             feedbackListRequestBO.setToDate(feedbackListRequest.getToDate());
             feedbackListRequestBO.setOutletId(feedbackListRequest.getOutletId());
             feedbackListRequestBO.setTableNo(feedbackListRequest.getTableNo());
+            feedbackListRequestBO.setUserId(feedbackListRequest.getUserId());
             FeedbackResponseList feedbackResponse = new FeedbackResponseList();
             feedbackResponse.setFeedbacks(feedbackRequestHandler.getfeedbackList1(feedbackListRequestBO));
             return ResponseGenerator.generateSuccessResponse(feedbackResponse, "Successfully retrieved.");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             MessageResponse messageResponse = new MessageResponse();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve the list");
@@ -108,7 +82,7 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Response getfeedbackById(@PathParam("id")int id)throws Exception
+    public Response getfeedbackById(@PathParam("id")int id)
     {
         FeedbackRequestHandler feedbackRequestHandler=new FeedbackRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
@@ -120,6 +94,9 @@ public class FeedbackService {
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
+        } catch (QuestionNotFoundException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid question id.");
         }
     }
 }

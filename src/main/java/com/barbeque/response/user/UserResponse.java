@@ -2,18 +2,21 @@ package com.barbeque.response.user;
 
 import com.barbeque.response.util.GenericResponse;
 
-public class LoginResponse implements GenericResponse {
+/**
+ * Created by System-3 on 2/8/2017.
+ */
+public class UserResponse implements GenericResponse {
+
     private int id;
     private String userName;
-    private String name;
     private String email;
+    private String name;
     private String status;
-    private String sessionId;
-    private String menuAccess;
     private String outletAccess;
+    private String menuAccess;
     private int roleId;
-    private String messageType;
     private String message;
+    private String messageType;
 
     public String getName() {
         return name;
@@ -21,30 +24,6 @@ public class LoginResponse implements GenericResponse {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getMenuAccess() {
-        return menuAccess;
-    }
-
-    public void setMenuAccess(String menuAccess) {
-        this.menuAccess = menuAccess;
-    }
-
-    public String getOutletAccess() {
-        return outletAccess;
-    }
-
-    public void setOutletAccess(String outletAccess) {
-        this.outletAccess = outletAccess;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
     }
 
     public int getId() {
@@ -79,6 +58,22 @@ public class LoginResponse implements GenericResponse {
         this.status = status;
     }
 
+    public String getOutletAccess() {
+        return outletAccess;
+    }
+
+    public void setOutletAccess(String outletAccess) {
+        this.outletAccess = outletAccess;
+    }
+
+    public String getMenuAccess() {
+        return menuAccess;
+    }
+
+    public void setMenuAccess(String menuAccess) {
+        this.menuAccess = menuAccess;
+    }
+
     public int getRoleId() {
         return roleId;
     }
@@ -87,29 +82,17 @@ public class LoginResponse implements GenericResponse {
         this.roleId = roleId;
     }
 
-    public String getMessageType() {
-        return messageType;
-    }
-
     public String getMessage() {
         return message;
     }
 
     @Override
-    public String toString() {
-        return "LoginResponse{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", status='" + status + '\'' +
-                ", sessionId='" + sessionId + '\'' +
-                ", menuAccess='" + menuAccess + '\'' +
-                ", outletAccess='" + outletAccess + '\'' +
-                ", roleId=" + roleId +
-                ", messageType='" + messageType + '\'' +
-                ", message='" + message + '\'' +
-                '}';
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessageType() {
+        return messageType;
     }
 
     @Override
@@ -118,7 +101,18 @@ public class LoginResponse implements GenericResponse {
     }
 
     @Override
-    public void setMessage(String message) {
-        this.message = message;
+    public String toString() {
+        return "UserResponse{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", status='" + status + '\'' +
+                ", outletAccess='" + outletAccess + '\'' +
+                ", menuAccess='" + menuAccess + '\'' +
+                ", roleId=" + roleId +
+                ", message='" + message + '\'' +
+                ", messageType='" + messageType + '\'' +
+                '}';
     }
 }

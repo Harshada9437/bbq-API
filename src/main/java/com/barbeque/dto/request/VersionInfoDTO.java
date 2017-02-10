@@ -1,4 +1,4 @@
-package com.barbeque.dto;
+package com.barbeque.dto.request;
 
 /**
  * Created by Sandeep on 1/20/2017.

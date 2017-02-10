@@ -22,7 +22,7 @@ public class QuestionService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/create")
-    public Response addQuestion(QuestionRequest questionRequest) throws SQLException {
+    public Response addQuestion(QuestionRequest questionRequest) {
         QuestionRequestBO questionRequestBO = new QuestionRequestBO();
         questionRequestBO.setQuestionDesc(questionRequest.getQuestionDesc());
         questionRequestBO.setQuestionType(questionRequest.getQuestionType());
@@ -51,19 +51,24 @@ public class QuestionService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getQuestionList() throws Exception {
-
+    public Response getQuestionList() {
         QuestionRequestHandler questionRequestHandler = new QuestionRequestHandler();
         QuestionResponseList questionResponseList = new QuestionResponseList();
-        questionResponseList.setQuestions(questionRequestHandler.getQuestionList());
-        return ResponseGenerator.generateSuccessResponse(questionResponseList, "List of questions.");
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            questionResponseList.setQuestions(questionRequestHandler.getQuestionList());
+            return ResponseGenerator.generateSuccessResponse(questionResponseList, "List of questions.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
+        }
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/update")
-    public Response updateQuestion(UpdateQueRequest updateQueRequest) throws SQLException {
+    public Response updateQuestion(UpdateQueRequest updateQueRequest) {
 
         UpdateQueRequestBO updateQueRequestBO = new UpdateQueRequestBO();
         updateQueRequestBO.setId(updateQueRequest.getId());
@@ -84,6 +89,9 @@ public class QuestionService {
             }
         } catch (QuestionNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid question id");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "failed to update.");
         }
     }
 
@@ -92,23 +100,18 @@ public class QuestionService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/questionInfo/{id}")
-    public Response getQuestionList(@PathParam("id")int id)throws Exception
+    public Response getQuestionList(@PathParam("id")int id)
     {
         QuestionRequestHandler questionRequestHandler=new QuestionRequestHandler();
-        Object response = null;
+        MessageResponse messageResponse = new MessageResponse();
         try{
             GetQuestionResponse questionResponse=questionRequestHandler.getQuestionById(id);
             return ResponseGenerator.generateSuccessResponse(questionResponse, "SUCCESS");
         }catch (QuestionNotFoundException e) {
-            MessageResponse messageResponse = new MessageResponse();
             return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID QuestionId ");
-
         } catch (SQLException e) {
             e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "failed to retrieve question details. ");
         }
-        return ResponseGenerator.generateResponse(response);
     }
-
-
-
 }

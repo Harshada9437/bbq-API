@@ -1,13 +1,20 @@
-package com.barbeque.service;
+package com.barbeque.response.user;
 
 /**
- * Created by System-3 on 2/10/2017.
+ * Created by System-3 on 2/8/2017.
  */
-public class UpdateRollRequest {
+public class RoleResponse {
     private int roleId;
     private String name;
     private String menuAccess;
     private String outletAccess;
+
+    public RoleResponse(int roleId, String name, String menuAccess, String outletAccess) {
+        this.roleId = roleId;
+        this.name = name;
+        this.menuAccess = menuAccess;
+        this.outletAccess = outletAccess;
+    }
 
     public int getRoleId() {
         return roleId;
@@ -42,37 +49,14 @@ public class UpdateRollRequest {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UpdateRollRequest that = (UpdateRollRequest) o;
-
-        if (roleId != that.roleId) return false;
-        if (!name.equals(that.name)) return false;
-        if (!menuAccess.equals(that.menuAccess)) return false;
-        return outletAccess.equals(that.outletAccess);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = roleId;
-        result = 31 * result + name.hashCode();
-        result = 31 * result + menuAccess.hashCode();
-        result = 31 * result + outletAccess.hashCode();
-        return result;
-    }
-
-    @Override
     public String toString() {
-        return "UpdateRollRequest{" +
+        return "RoleResponse{" +
                 "roleId=" + roleId +
                 ", name='" + name + '\'' +
                 ", menuAccess='" + menuAccess + '\'' +
                 ", outletAccess='" + outletAccess + '\'' +
                 '}';
     }
+
+
 }
-
-
-

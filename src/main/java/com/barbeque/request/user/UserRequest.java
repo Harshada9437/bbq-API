@@ -5,9 +5,18 @@ package com.barbeque.request.user;
  */
 public class UserRequest {
     private String userName;
+    private String name;
     private String email;
     private String password;
     private int roleId;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getUserName() {
         return userName;
@@ -51,6 +60,7 @@ public class UserRequest {
 
         if (roleId != that.roleId) return false;
         if (!userName.equals(that.userName)) return false;
+        if (!name.equals(that.name)) return false;
         if (!email.equals(that.email)) return false;
         return password.equals(that.password);
     }
@@ -60,6 +70,7 @@ public class UserRequest {
         int result = userName.hashCode();
         result = 31 * result + email.hashCode();
         result = 31 * result + password.hashCode();
+        result = 31 * result + name.hashCode();
         result = 31 * result + roleId;
         return result;
     }
@@ -69,6 +80,7 @@ public class UserRequest {
         return "UserRequest{" +
                 "userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", roleId=" + roleId +
                 '}';

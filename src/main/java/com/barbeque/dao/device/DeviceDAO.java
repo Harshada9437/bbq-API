@@ -3,6 +3,7 @@ package com.barbeque.dao.device;
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.dto.request.RegisterDTO;
+import com.barbeque.exceptions.DeviceNotFoundException;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
@@ -210,11 +211,12 @@ public class DeviceDAO {
         return isCreate;
     }
 
-    public Boolean updateDevice(DeviceDTO deviceDTO) throws SQLException {
+    public Boolean updateDevice(DeviceDTO deviceDTO) throws SQLException, DeviceNotFoundException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
+            getDevice(deviceDTO.getId());
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
@@ -282,7 +284,7 @@ public class DeviceDAO {
         return otp1;
     }
 
-    public static DeviceDTO getDevice(int deviceId) throws SQLException {
+    public static DeviceDTO getDevice(int deviceId) throws SQLException, DeviceNotFoundException {
         Connection connection = null;
         Statement statement = null;
         DeviceDTO deviceDTO = new DeviceDTO();
@@ -299,6 +301,10 @@ public class DeviceDAO {
                deviceDTO.setStatus(resultSet.getString("status"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("installation_date"));
+            }
+
+            if(resultSet.getFetchSize() == 0){
+                throw new DeviceNotFoundException("invalid device id");
             }
         } catch (SQLException e) {
             e.printStackTrace();

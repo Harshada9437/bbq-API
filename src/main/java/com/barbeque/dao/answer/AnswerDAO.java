@@ -69,7 +69,7 @@ public class AnswerDAO {
         return id;
     }
 
-    public  List<AnswerDTO> getAnswer(int questionId) throws SQLException, QuestionNotFoundException {
+    public  List<AnswerDTO> getAnswer(int questionId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         List<AnswerDTO> answerDTOs = new ArrayList<AnswerDTO>();

@@ -13,32 +13,11 @@ import java.util.List;
  * Created by System-2 on 12/15/2016.
  */
 public class CustomerRequestHandler {
-   /* public Integer addCustomer(CustomerRequestBO customerRequestBO) throws SQLException {
+
+    public boolean updateCustomer(UpdateCustomerRequestBO updateCustomerRequestBO) throws SQLException {
+
         CustomerDAO customerDAO = new CustomerDAO();
-        int id = customerDAO.addCustomer(buildRequestDTOFromBO(customerRequestBO));
-        return id;
-    }
-
-    private CustomerDTO buildRequestDTOFromBO(CustomerRequestBO customerRequestBO) {
-        CustomerDTO customerDTO = new CustomerDTO();
-
-        customerDTO.setName(customerRequestBO.getName());
-        customerDTO.setPhoneNo(customerRequestBO.getPhoneNo());
-        customerDTO.setEmailId(customerRequestBO.getEmailId());
-        customerDTO.setDob(customerRequestBO.getDob());
-        customerDTO.setDoa(customerRequestBO.getDoa());
-
-        return customerDTO;
-    }*/
-
-    public boolean updateCustomer(UpdateCustomerRequestBO updateCustomerRequestBO) {
-        Boolean isProcessed = Boolean.FALSE;
-        CustomerDAO customerDAO = new CustomerDAO();
-        try {
-            isProcessed = customerDAO.updateCustomer(buildDTOFromBO(updateCustomerRequestBO));
-        } catch (SQLException sq) {
-            isProcessed = false;
-        }
+        Boolean isProcessed = customerDAO.updateCustomer(buildDTOFromBO(updateCustomerRequestBO));
         return isProcessed;
     }
 
@@ -54,10 +33,9 @@ public class CustomerRequestHandler {
         return customerDTO;
     }
 
-    public List<CustomerResponse> getCustomerList() {
+    public List<CustomerResponse> getCustomerList() throws SQLException {
         CustomerDAO customerDAO = new CustomerDAO();
         List<CustomerResponse> customerList = new ArrayList<CustomerResponse>();
-        try {
             List<CustomerDTO> customerRequestDTOList = customerDAO.getCustomerList();
 
             for (CustomerDTO customerDTO : customerRequestDTOList) {
@@ -73,9 +51,6 @@ public class CustomerRequestHandler {
                 );
                 customerList.add(customerResponse);
             }
-        } catch (SQLException sq) {
-            sq.printStackTrace();
-        }
         return customerList;
     }
 }

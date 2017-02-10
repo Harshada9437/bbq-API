@@ -8,15 +8,15 @@ import java.util.List;
  * Created by System-3 on 2/9/2017.
  */
 public class RoleResponseList implements GenericResponse {
-    private List<RoleListResponse> roles;
+    private List<RoleResponse> roles;
     private String messageType;
     private String message;
 
-    public List<RoleListResponse> getRoles() {
+    public List<RoleResponse> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<RoleListResponse> roles) {
+    public void setRoles(List<RoleResponse> roles) {
         this.roles = roles;
     }
 

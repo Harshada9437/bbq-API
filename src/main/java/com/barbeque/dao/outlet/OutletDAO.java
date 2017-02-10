@@ -1,13 +1,12 @@
 package com.barbeque.dao.outlet;
 
 import com.barbeque.dao.ConnectionHandler;
-import com.barbeque.dao.template.TemplateDAO;
-import com.barbeque.dto.UpdateSettingsDTO;
-import com.barbeque.dto.request.OutletDTO;
-import com.barbeque.dto.request.TableDTO;
-import com.barbeque.dto.request.TempDTO;
+import com.barbeque.dao.user.UsersDAO;
+import com.barbeque.dto.request.UpdateSettingsDTO;
+import com.barbeque.dto.request.*;
+import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
-import com.barbeque.exceptions.TemplateNotFoundException;
+import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.sync.Outlet;
 
 import java.sql.*;
@@ -55,11 +54,19 @@ public class OutletDAO {
         return isCreated;
     }
 
-    public static List<OutletDTO> getOutlate() throws SQLException {
+    public static List<OutletDTO> getOutlate(String outletId, int userId) throws SQLException, UserNotFoundException {
         Connection connection = null;
         Statement statement = null;
         List<OutletDTO> outletDTOs = new ArrayList<OutletDTO>();
         try {
+            String outlet="";
+            if(outletId == null || outletId.equals("")){
+                LoginResponseDTO loginResponseDTO= UsersDAO.getuserById(userId);
+                RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
+                outlet = rollRequestDTO.getOutletAccess();
+            }else{
+                outlet=outletId;
+            }
 
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
@@ -77,7 +84,8 @@ public class OutletDAO {
                     "left join groups g\n" +
                     "on g.id=o.group_id\n" +
                     "left join template t\n" +
-                    "on t.template_id=m.template_id");
+                    "on t.template_id=m.template_id\n" +
+                    "where o.id IN (" + outlet + ")");
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
             int index = 1;
@@ -144,7 +152,7 @@ public class OutletDAO {
         return outlets;
     }
 
-    public OutletDTO getOutletById(int outletId) throws SQLException, OutletNotFoundException {
+    public static OutletDTO getOutletById(int outletId) throws SQLException, OutletNotFoundException {
         Connection connection = null;
         Statement statement = null;
         OutletDTO outletDTO = new OutletDTO();

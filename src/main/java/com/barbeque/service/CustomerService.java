@@ -25,7 +25,7 @@ public class CustomerService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/update")
-    public Response updateCustomer(UpdateCustomerRequest updateCustomerRequest) throws SQLException {
+    public Response updateCustomer(UpdateCustomerRequest updateCustomerRequest){
 
         UpdateCustomerRequestBO updateCustomerRequestBO = new UpdateCustomerRequestBO();
         updateCustomerRequestBO.setId(updateCustomerRequest.getId());
@@ -37,9 +37,14 @@ public class CustomerService {
 
         CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
-        if (customerRequestHandler.updateCustomer(updateCustomerRequestBO)) {
-            return ResponseGenerator.generateSuccessResponse(messageResponse, "Customer updated successfully");
-        } else {
+        try {
+            if (customerRequestHandler.updateCustomer(updateCustomerRequestBO)) {
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Customer updated successfully");
+            } else {
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the customer.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the customer.");
         }
     }
@@ -48,10 +53,15 @@ public class CustomerService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getCustomerList() throws Exception {
+    public Response getCustomerList(){
         CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
         CustomerResponseList customerResponseList = new CustomerResponseList();
-        customerResponseList.setCustomers(customerRequestHandler.getCustomerList());
-        return ResponseGenerator.generateSuccessResponse(customerResponseList, "List of customers.");
+        try {
+            customerResponseList.setCustomers(customerRequestHandler.getCustomerList());
+            return ResponseGenerator.generateSuccessResponse(customerResponseList, "List of customers.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(customerResponseList, "failed to retrieve.");
+        }
     }
 }

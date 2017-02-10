@@ -13,7 +13,16 @@ public class FeedbackDetails {
     private String answerDesc;
     private String questionDesc;
     private int rating;
+    private int isNegative;
     private String feedbackDate;
+
+    public int getIsNegative() {
+        return isNegative;
+    }
+
+    public void setIsNegative(int isNegative) {
+        this.isNegative = isNegative;
+    }
 
     public String getThreshold() {
         return threshold;
@@ -99,14 +108,15 @@ public class FeedbackDetails {
     public String toString() {
         return "FeedbackDetails{" +
                 "questionId=" + questionId +
-                ", questionType='" + questionType + '\'' +
-                ", answerId=" + answerId +
                 ", weightage=" + weightage +
+                ", questionType=" + questionType +
+                ", answerId=" + answerId +
                 ", answerText='" + answerText + '\'' +
                 ", threshold='" + threshold + '\'' +
                 ", answerDesc='" + answerDesc + '\'' +
                 ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
+                ", isNegative=" + isNegative +
                 ", feedbackDate='" + feedbackDate + '\'' +
                 '}';
     }

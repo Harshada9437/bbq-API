@@ -1,9 +1,10 @@
 package com.barbeque.dao;
 
-import com.barbeque.dto.request.AnswerDTO;
-import com.barbeque.dto.request.FeedbackListDTO;
-import com.barbeque.dto.request.FeedbackRequestDTO;
+import com.barbeque.dao.user.UsersDAO;
+import com.barbeque.dto.request.*;
+import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
+import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.util.DateUtil;
 
@@ -104,49 +105,7 @@ public class FeedbackDAO {
         }
     }
 
-    public Boolean updateQuestion(FeedbackRequestDTO feedbackRequestDTO) throws SQLException {
-        boolean isCreated = false;
-        PreparedStatement preparedStatement = null;
-        Connection connection = null;
-        try {
-            int parameterIndex = 1;
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement("UPDATE feedback_head SET date=?, customer_id=?, table_no=?, bill_no=? WHERE feedback_id =?");
-
-            preparedStatement.setString(parameterIndex++, String.valueOf(feedbackRequestDTO.getDate()));
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getCustomerId());
-
-            preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getTableNo());
-
-            preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getBillNo());
-
-            preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getId());
-
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                connection.commit();
-                isCreated = Boolean.TRUE;
-            } else {
-                connection.rollback();
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            throw sqlException;
-        } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return isCreated;
-    }
-
-    public List<FeedbackRequestDTO> getfeedbackList1(FeedbackListDTO feedbackListDTO) throws SQLException {
+    public List<FeedbackRequestDTO> getfeedbackList1(FeedbackListDTO feedbackListDTO) throws SQLException, UserNotFoundException {
         List<FeedbackRequestDTO> feedbackList = new ArrayList<FeedbackRequestDTO>();
         Connection connection = null;
         Statement statement = null;
@@ -170,6 +129,11 @@ public class FeedbackDAO {
                     i++;
                 }
                 where1 += " and fh.outlet_id IN(" + ids + ")";
+            }
+            if(feedbackListDTO.getOutletId() == null || feedbackListDTO.getOutletId().size() == 0){
+                LoginResponseDTO loginResponseDTO= UsersDAO.getuserById(feedbackListDTO.getUserId());
+                RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
+                where1 += " and fh.outlet_id IN(" + rollRequestDTO.getOutletAccess() + ")";
             }
             String query = "select f.*, fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
                     "from feedback f\n" +

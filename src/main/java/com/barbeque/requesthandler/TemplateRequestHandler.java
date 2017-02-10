@@ -38,7 +38,7 @@ public class TemplateRequestHandler {
         return templateDTO;
     }
 
-    public Boolean assignQuestion(AssignQuestionRequestBO assignQuestionRequestBO, int templateId) throws SQLException {
+    public Boolean assignQuestion(AssignQuestionRequestBO assignQuestionRequestBO, int templateId) throws SQLException, TemplateNotFoundException {
         QueTempDAO queTempDAO = new QueTempDAO();
         Boolean isCreated = queTempDAO.assignQuestion(buildDTOFromBO(assignQuestionRequestBO), templateId);
         return isCreated;
@@ -53,13 +53,13 @@ public class TemplateRequestHandler {
         return queTempDTO;
     }
 
-    public List<QueResponse> getAssignedQuestions(int templateId) throws SQLException, TemplateNotFoundException, QuestionNotFoundException {
+    public List<QueResponse> getAssignedQuestions(int templateId) throws SQLException, TemplateNotFoundException {
         QueTempDAO queTempDAO = new QueTempDAO();
         List<QueResponse> queList = getTempQueResponseListFromDTOs(queTempDAO.getAssignedQuestions(templateId));
         return queList;
     }
 
-    private List<QueResponse> getTempQueResponseListFromDTOs(List<QueTempDTO> QueTempDTOs) throws QuestionNotFoundException, SQLException {
+    private List<QueResponse> getTempQueResponseListFromDTOs(List<QueTempDTO> QueTempDTOs) throws SQLException {
         List<QueResponse> queResponses = new ArrayList<QueResponse>();
         Iterator<QueTempDTO> queTempDTOIterator = QueTempDTOs.iterator();
         while (queTempDTOIterator.hasNext()) {
@@ -85,14 +85,9 @@ public class TemplateRequestHandler {
         tempDAO.removeQuestionDetails(templateId, queId);
     }
 
-    public boolean updateTemplate(UpdateTemplateRequestBO updateTemplateRequestBO) {
-        Boolean isProcessed;
+    public boolean updateTemplate(UpdateTemplateRequestBO updateTemplateRequestBO) throws SQLException, TemplateNotFoundException {
         TemplateDAO templateDAO = new TemplateDAO();
-        try {
-            isProcessed = templateDAO.updateTemplate(buildUpdateBOFromDTO(updateTemplateRequestBO));
-        } catch (SQLException sq) {
-            isProcessed = false;
-        }
+        Boolean isProcessed = templateDAO.updateTemplate(buildUpdateBOFromDTO(updateTemplateRequestBO));
         return isProcessed;
     }
 
@@ -104,21 +99,15 @@ public class TemplateRequestHandler {
         return templateDTO;
     }
 
-    public boolean updateAssignQuestion(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO) throws SQLException
-    {
-        Boolean isProcessed;
+    public boolean updateAssignQuestion(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO) throws SQLException {
+
         QueTempDAO queTempDAO = new QueTempDAO();
-        try {
-            isProcessed = queTempDAO.updateupdateAssignQuestion(buildUpdateBOFromDTO(updateAssignQuestionRequestBO));
-        } catch (SQLException sq) {
-            isProcessed = false;
-        }
+        Boolean isProcessed = queTempDAO.updateupdateAssignQuestion(buildUpdateBOFromDTO(updateAssignQuestionRequestBO));
         return isProcessed;
     }
 
-    private UpdateAssignQuestionDTO buildUpdateBOFromDTO(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO)
-    {
-        UpdateAssignQuestionDTO updateAssignQuestionDTO=new UpdateAssignQuestionDTO();
+    private UpdateAssignQuestionDTO buildUpdateBOFromDTO(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO) {
+        UpdateAssignQuestionDTO updateAssignQuestionDTO = new UpdateAssignQuestionDTO();
         updateAssignQuestionDTO.setTemplateId(updateAssignQuestionRequestBO.getTemplateId());
         updateAssignQuestionDTO.setPriority(updateAssignQuestionRequestBO.getPriority());
         updateAssignQuestionDTO.setQuestionId(updateAssignQuestionRequestBO.getQuestionId());
@@ -126,14 +115,9 @@ public class TemplateRequestHandler {
     }
 
 
-    public List<TemplateResponseList> getTemplate() throws SQLException, TemplateNotFoundException {
+    public List<TemplateResponseList> getTemplate() throws SQLException {
         TemplateDAO templateDAO = new TemplateDAO();
-        List<TemplateResponseList> templateResponseLists = new ArrayList<TemplateResponseList>();
-        try {
-            templateResponseLists = getTemplateListDTOsFromBO(templateDAO.getTemplate());
-        } catch (SQLException s) {
-            s.printStackTrace();
-        }
+        List<TemplateResponseList> templateResponseLists = getTemplateListDTOsFromBO(templateDAO.getTemplate());
         return templateResponseLists;
     }
 
@@ -152,7 +136,7 @@ public class TemplateRequestHandler {
 
     public GetTemplateResponse getTemplateById(int templateId, int outletId) throws SQLException, TemplateNotFoundException {
         TemplateDAO templateDAO = new TemplateDAO();
-        GetTemplateResponse response = buildResponseFromDTO(templateDAO.getTemplateInfo(templateId,outletId));
+        GetTemplateResponse response = buildResponseFromDTO(templateDAO.getTemplateInfo(templateId, outletId));
         return response;
     }
 

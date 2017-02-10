@@ -18,7 +18,6 @@ public class ConnectionHandler {
         userName = ConfigProperties.db_username;
         password = ConfigProperties.db_password;
         url = "jdbc:mysql://"+host+":"+port+"/" + dbName;
-        System.out.println("DBURL: " + url);
         driver = "com.mysql.jdbc.Driver";
     }
 

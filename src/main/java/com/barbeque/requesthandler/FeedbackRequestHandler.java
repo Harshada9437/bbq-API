@@ -8,12 +8,13 @@ import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dao.question.QuestionDAO;
-import com.barbeque.dto.UpdateSettingsDTO;
+import com.barbeque.dto.request.UpdateSettingsDTO;
 import com.barbeque.dto.request.*;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
+import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackByIdResponse;
@@ -28,7 +29,8 @@ import java.util.*;
  * Created by user on 10/18/2016.
  */
 public class FeedbackRequestHandler {
-    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException, QuestionNotFoundException, FeedbackNotFoundException {
+    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException,
+            QuestionNotFoundException, FeedbackNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         int customerId;
 
@@ -51,22 +53,24 @@ public class FeedbackRequestHandler {
 
         int id = feedbackDAO.addFeedback(buildFeedbackRequestDTOFromBO(feedbackRequestBO), customerId);
         List<FeedbackDetails> feedbacks = FeedbackDAO.getfeedback(id);
-        Boolean isExist=Boolean.FALSE;
+        Boolean isExist = Boolean.FALSE;
         UpdateSettingsDTO setting = OutletDAO.getSetting(feedbackRequestBO.getOutletId());
         for (FeedbackDetails feedbackDetails : feedbacks) {
             AnswerDTO answerDTO = AnswerDAO.getAnswerById(feedbackDetails.getAnswerId());
             QuestionRequestDTO questionRequestDTO = QuestionDAO.getQuestionById(feedbackDetails.getQuestionId());
-            if (setting.getSmsGatewayId()!=null && !setting.getSmsGatewayId().equals("") && answerDTO.getThreshold() != null && !answerDTO.getThreshold().equals("") ) {
-                if ((questionRequestDTO.getQuestionType() == '2' || questionRequestDTO.getQuestionType() == '3') && feedbackDetails.getRating() != 0 )
-                {
-                    int ans = answerDTO.getRating()/answerDTO.getWeightage();
-                    int weightage = feedbackDetails.getRating()/ans;
-                    if(weightage <= Integer.parseInt(answerDTO.getThreshold())) {
+            if (setting.getSmsGatewayId() != null && !setting.getSmsGatewayId().equals("") &&
+                    answerDTO.getThreshold() != null && !answerDTO.getThreshold().equals("")) {
+                if ((questionRequestDTO.getQuestionType() == '2' || questionRequestDTO.getQuestionType() == '3')
+                        && feedbackDetails.getRating() != 0) {
+                    int ans = answerDTO.getRating() / answerDTO.getWeightage();
+                    int weightage = feedbackDetails.getRating() / ans;
+                    if (weightage <= Integer.parseInt(answerDTO.getThreshold())) {
                         isExist = Boolean.TRUE;
                         break;
                     }
                 }
-                if ((questionRequestDTO.getQuestionType() == '1' || questionRequestDTO.getQuestionType() == '5'|| questionRequestDTO.getQuestionType() == '6') && answerDTO.getThreshold().equals("1")){
+                if ((questionRequestDTO.getQuestionType() == '1' || questionRequestDTO.getQuestionType() == '5' ||
+                        questionRequestDTO.getQuestionType() == '6') && answerDTO.getThreshold().equals("1")) {
                     isExist = Boolean.TRUE;
                     break;
                 }
@@ -75,7 +79,7 @@ public class FeedbackRequestHandler {
         if (isExist) {
             SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
             SmsSettingDTO smsSettingDTO = SmsDAO.fetchSmsSettingsById(setting.getSmsGatewayId());
-            SendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(),smsSettingDTO);
+            SendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(), smsSettingDTO);
         }
         return id;
     }
@@ -97,37 +101,18 @@ public class FeedbackRequestHandler {
     public int createCustomer(CreateCustomer createCustomer) throws SQLException {
 
         CustomerDAO customerDAO = new CustomerDAO();
-        int id = customerDAO.addCustomer(createCustomer.getLocality(), createCustomer.getName(), createCustomer.getPhoneNo(), createCustomer.getEmailId(), createCustomer.getDob(), createCustomer.getDoa());
+        int id = customerDAO.addCustomer(createCustomer.getLocality(), createCustomer.getName(),
+                createCustomer.getPhoneNo(), createCustomer.getEmailId(), createCustomer.getDob(), createCustomer.getDoa());
         return id;
 
     }
 
-    public Boolean updateFeedback(UpdateFeedbackRequestBO updateFeedbackRequestBO) throws SQLException {
-        Boolean isProcessed;
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
-        try {
-            isProcessed = feedbackDAO.updateQuestion(buildDTOFromBO(updateFeedbackRequestBO));
-        } catch (SQLException sq) {
-            isProcessed = false;
-        }
-        return isProcessed;
-    }
-
-    private FeedbackRequestDTO buildDTOFromBO(UpdateFeedbackRequestBO updateFeedbackRequestBO) {
-        FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
-        feedbackRequestDTO.setId(updateFeedbackRequestBO.getId());
-        feedbackRequestDTO.setDate(updateFeedbackRequestBO.getDate());
-        feedbackRequestDTO.setTableNo(updateFeedbackRequestBO.getTableNo());
-        feedbackRequestDTO.setBillNo(updateFeedbackRequestBO.getBillNo());
-        feedbackRequestDTO.setModifiedOn(updateFeedbackRequestBO.getAnswerText());
-
-        return feedbackRequestDTO;
-    }
-
-    public List<FeedbackResponse> getfeedbackList1(FeedbackListRequestBO feedbackListRequestBO) throws SQLException {
+    public List<FeedbackResponse> getfeedbackList1(FeedbackListRequestBO feedbackListRequestBO) throws
+            SQLException, UserNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
 
-        List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList1(buildFeedbackDTO(feedbackListRequestBO));
+        List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList1(buildFeedbackDTO
+                (feedbackListRequestBO));
         List<FeedbackResponse> uniqueList = new ArrayList<FeedbackResponse>();
         List<Integer> uniqueIds = new ArrayList<Integer>();
         for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
@@ -199,24 +184,26 @@ public class FeedbackRequestHandler {
         feedbackListDTO.setToDate(feedbackListRequestBO.getToDate());
         feedbackListDTO.setTableNo(feedbackListRequestBO.getTableNo());
         feedbackListDTO.setOutletId(feedbackListRequestBO.getOutletId());
+        feedbackListDTO.setUserId(feedbackListRequestBO.getUserId());
 
         return feedbackListDTO;
     }
 
-    public FeedbackByIdResponse getfeedbackById(int id) throws SQLException, FeedbackNotFoundException {
+    public FeedbackByIdResponse getfeedbackById(int id) throws SQLException, FeedbackNotFoundException,
+            QuestionNotFoundException {
 
         FeedbackByIdResponse feedbackByIdResponse = buildResponseFromDTO(FeedbackDAO.getFeedbacksList(id));
         return feedbackByIdResponse;
     }
 
-    public FeedbackByIdResponse buildResponseFromDTO(List<FeedbackRequestDTO> feedbackRequestDTOs) throws SQLException, FeedbackNotFoundException
-    {
-        FeedbackByIdResponse feedbackResp=null;
+    public FeedbackByIdResponse buildResponseFromDTO(List<FeedbackRequestDTO> feedbackRequestDTOs) throws
+            SQLException, FeedbackNotFoundException, QuestionNotFoundException {
+        FeedbackByIdResponse feedbackResp = null;
         List<FeedbackByIdResponse> uniqueList = new ArrayList<FeedbackByIdResponse>();
         List<Integer> uniqueIds = new ArrayList<Integer>();
         for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOs) {
             if (!uniqueIds.contains(feedbackRequestDTO.getId())) {
-                 feedbackResp = new FeedbackByIdResponse(feedbackRequestDTO.getQuestionType(),
+                feedbackResp = new FeedbackByIdResponse(feedbackRequestDTO.getQuestionType(),
                         feedbackRequestDTO.getId(),
                         feedbackRequestDTO.getDeviceId(),
                         DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
@@ -242,6 +229,29 @@ public class FeedbackRequestHandler {
                 answer.setQuestionType(feedbackRequestDTO.getQuestionType());
                 answer.setWeightage(feedbackRequestDTO.getWeightage());
                 answer.setThreshold(feedbackRequestDTO.getThreshold());
+                AnswerDTO answerDTO = AnswerDAO.getAnswerById(answer.getAnswerId());
+                if (answer.getThreshold() != null && !answer.getThreshold().equals("")) {
+                    if ((answer.getQuestionType() == '2' || answer.getQuestionType() == '3') && answer.getRating()
+                            != 0) {
+                        int ans = answerDTO.getRating() / answerDTO.getWeightage();
+                        int weightage = answer.getRating() / ans;
+                        if (weightage <= Integer.parseInt(answerDTO.getThreshold())) {
+                            answer.setIsNegative(1);
+                        } else {
+                            answer.setIsNegative(0);
+                        }
+                    }
+                    if ((answer.getQuestionType() == '1' || answer.getQuestionType() == '5' ||
+                            answer.getQuestionType() == '6')) {
+                        if (answerDTO.getThreshold().equals("1")) {
+                            answer.setIsNegative(1);
+                        } else {
+                            answer.setIsNegative(0);
+                        }
+                    }
+                } else {
+                    answer.setIsNegative(0);
+                }
                 newAnswerList.add(answer);
                 feedbackResp.setFeedbacks(newAnswerList);
 
@@ -261,6 +271,29 @@ public class FeedbackRequestHandler {
                     answer.setQuestionType(feedbackRequestDTO.getQuestionType());
                     answer.setWeightage(feedbackRequestDTO.getWeightage());
                     answer.setThreshold(feedbackRequestDTO.getThreshold());
+                    AnswerDTO answerDTO = AnswerDAO.getAnswerById(answer.getAnswerId());
+                    if (answer.getThreshold() != null && !answer.getThreshold().equals("")) {
+                        if ((answer.getQuestionType() == '2' || answer.getQuestionType() == '3') &&
+                                answer.getRating() != 0) {
+                            int ans = answerDTO.getRating() / answerDTO.getWeightage();
+                            int weightage = answer.getRating() / ans;
+                            if (weightage <= Integer.parseInt(answerDTO.getThreshold())) {
+                                answer.setIsNegative(1);
+                            } else {
+                                answer.setIsNegative(0);
+                            }
+                        }
+                        if ((answer.getQuestionType() == '1' || answer.getQuestionType() == '5' ||
+                                answer.getQuestionType() == '6')) {
+                            if (answerDTO.getThreshold().equals("1")) {
+                                answer.setIsNegative(1);
+                            } else {
+                                answer.setIsNegative(0);
+                            }
+                        }
+                    } else {
+                        answer.setIsNegative(0);
+                    }
                     curAnswerList.add(answer);
                 }
             }
@@ -278,6 +311,11 @@ public class FeedbackRequestHandler {
         }
         return null;
     }
-
-
 }
+
+
+
+
+
+
+

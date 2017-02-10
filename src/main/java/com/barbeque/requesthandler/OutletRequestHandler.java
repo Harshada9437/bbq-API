@@ -1,13 +1,14 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.bo.AssignTemplateRequestBO;
+import com.barbeque.bo.OutletListRequestBO;
 import com.barbeque.bo.UpdateSettingsRequestBO;
 import com.barbeque.dao.outlet.OutletDAO;
-import com.barbeque.dto.UpdateSettingsDTO;
+import com.barbeque.dto.request.UpdateSettingsDTO;
 import com.barbeque.dto.request.OutletDTO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
-import com.barbeque.exceptions.TemplateNotFoundException;
+import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.response.outlet.OutletResponseL;
 import com.barbeque.response.outlet.OutletResponseList;
 
@@ -19,10 +20,9 @@ import java.util.*;
  * Created by System-2 on 12/20/2016.
  */
 public class OutletRequestHandler {
-    public Boolean assignTemplate(AssignTemplateRequestBO assignTemplateRequestBO, int outletId) throws SQLException, ParseException {
-        Boolean isCreated = Boolean.FALSE;
+    public Boolean assignTemplate(AssignTemplateRequestBO assignTemplateRequestBO, int outletId) throws SQLException {
         OutletDAO outletDAO = new OutletDAO();
-        isCreated = outletDAO.assignTemplate(buildOutletDTOFromBO(assignTemplateRequestBO), outletId);
+        Boolean isCreated = outletDAO.assignTemplate(buildOutletDTOFromBO(assignTemplateRequestBO), outletId);
         return isCreated;
     }
 
@@ -34,14 +34,9 @@ public class OutletRequestHandler {
         return tempDTO;
     }
 
-    public List<OutletResponseL> getOutlate() throws SQLException, TemplateNotFoundException {
+    public List<OutletResponseL> getOutlate(OutletListRequestBO outletListRequestBO) throws SQLException, UserNotFoundException {
         OutletDAO outletDAO = new OutletDAO();
-        List<OutletResponseL> outletResponseLists = new ArrayList<OutletResponseL>();
-        try {
-            outletResponseLists = getOutletListDTOsFromBO(outletDAO.getOutlate());
-        } catch (SQLException s) {
-            s.printStackTrace();
-        }
+        List<OutletResponseL> outletResponseLists = getOutletListDTOsFromBO(outletDAO.getOutlate(outletListRequestBO.getOutletId(), outletListRequestBO.getUserId()));
         return outletResponseLists;
     }
 
@@ -72,8 +67,7 @@ public class OutletRequestHandler {
 
     public OutletResponseList getOutletById(int outletId) throws SQLException, OutletNotFoundException {
         OutletDAO outletDAO = new OutletDAO();
-        OutletResponseList outletResponse = new OutletResponseList();
-        outletResponse = buildResponseFromDTO(outletDAO.getOutletById(outletId));
+        OutletResponseList outletResponse = buildResponseFromDTO(outletDAO.getOutletById(outletId));
         return outletResponse;
     }
 
@@ -114,18 +108,13 @@ public class OutletRequestHandler {
     }
 
     public Boolean updateSettings(UpdateSettingsRequestBO updateSettingsRequestBO, int outletId) throws SQLException {
-        Boolean isProcessed = Boolean.FALSE;
+        Boolean isProcessed;
         OutletDAO outletDAO = new OutletDAO();
-        UpdateSettingsDTO updateSettingsDTO = null;
-        try {
-            updateSettingsDTO= OutletDAO.getSetting(outletId);
-            if (updateSettingsDTO != null ) {
-                isProcessed = outletDAO.updateSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
-            } else {
-                isProcessed = outletDAO.createSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
-            }
-        } catch (SQLException sq) {
-            isProcessed = false;
+        UpdateSettingsDTO updateSettingsDTO = OutletDAO.getSetting(outletId);
+        if (updateSettingsDTO != null) {
+            isProcessed = outletDAO.updateSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
+        } else {
+            isProcessed = outletDAO.createSettings(buildDTOFromBO(updateSettingsRequestBO), outletId);
         }
         return isProcessed;
     }

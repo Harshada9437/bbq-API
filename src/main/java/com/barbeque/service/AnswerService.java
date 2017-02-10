@@ -18,7 +18,7 @@ public class AnswerService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list/{question_id}")
-    public Response getAnswerList(@PathParam("question_id") int questionId) throws Exception {
+    public Response getAnswerList(@PathParam("question_id") int questionId){
         AnswerRequestHandler answerRequestHandler = new AnswerRequestHandler();
         AnswerResponse answerResponse = new AnswerResponse();
         try {

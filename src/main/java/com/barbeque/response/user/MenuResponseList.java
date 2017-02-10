@@ -9,15 +9,15 @@ import java.util.List;
  */
 
     public class MenuResponseList implements GenericResponse{
-        private List<MenuListResponse> menus;
+        private List<MenuResponse> menus;
         private String messageType;
         private String message;
 
-    public List<MenuListResponse> getMenus() {
+    public List<MenuResponse> getMenus() {
         return menus;
     }
 
-    public void setMenus(List<MenuListResponse> menus) {
+    public void setMenus(List<MenuResponse> menus) {
         this.menus = menus;
     }
 

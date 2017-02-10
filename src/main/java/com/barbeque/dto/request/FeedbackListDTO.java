@@ -10,6 +10,15 @@ public class FeedbackListDTO {
     private String toDate;
     private List<Integer> outletId;
     private String tableNo;
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
     public List<Integer> getOutletId() {
         return outletId;
@@ -50,19 +59,20 @@ public class FeedbackListDTO {
 
         FeedbackListDTO that = (FeedbackListDTO) o;
 
-        if (outletId != that.outletId) return false;
+        if (userId != that.userId) return false;
         if (fromDate != null ? !fromDate.equals(that.fromDate) : that.fromDate != null) return false;
         if (toDate != null ? !toDate.equals(that.toDate) : that.toDate != null) return false;
+        if (outletId != null ? !outletId.equals(that.outletId) : that.outletId != null) return false;
         return tableNo != null ? tableNo.equals(that.tableNo) : that.tableNo == null;
     }
 
     @Override
     public int hashCode() {
-
         int result = fromDate != null ? fromDate.hashCode() : 0;
         result = 31 * result + (toDate != null ? toDate.hashCode() : 0);
         result = 31 * result + (outletId != null ? outletId.hashCode() : 0);
         result = 31 * result + (tableNo != null ? tableNo.hashCode() : 0);
+        result = 31 * result + userId;
         return result;
     }
 
@@ -73,6 +83,7 @@ public class FeedbackListDTO {
                 ", toDate='" + toDate + '\'' +
                 ", outletId=" + outletId +
                 ", tableNo='" + tableNo + '\'' +
+                ", userId=" + userId +
                 '}';
     }
 }

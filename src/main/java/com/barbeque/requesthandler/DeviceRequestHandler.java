@@ -1,14 +1,14 @@
 package com.barbeque.requesthandler;
 
-import com.barbeque.bo.DeviceRequestBO;
 import com.barbeque.bo.DeviceStatusRequestBO;
 import com.barbeque.bo.RegisterRequestBO;
 import com.barbeque.bo.UpdateDeviceRequestBO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dao.outlet.OutletDAO;
-import com.barbeque.dto.UpdateSettingsDTO;
+import com.barbeque.dto.request.UpdateSettingsDTO;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.dto.request.RegisterDTO;
+import com.barbeque.exceptions.DeviceNotFoundException;
 import com.barbeque.response.device.DeviceResponse;
 import com.barbeque.util.DateUtil;
 import com.barbeque.util.EmailService;
@@ -80,7 +80,7 @@ public class DeviceRequestHandler {
         return generatedToken.toString();
     }
 
-    public Integer verifyDevice(UpdateDeviceRequestBO deviceRequestBO) throws SQLException {
+    public Integer verifyDevice(UpdateDeviceRequestBO deviceRequestBO) throws SQLException, DeviceNotFoundException {
         DeviceDAO deviceDAO=new DeviceDAO();
         DeviceDTO deviceDTO = deviceDAO.getDeviceByInstallationId(deviceRequestBO.getInstallationId());
         int id = -1;
@@ -109,7 +109,7 @@ public class DeviceRequestHandler {
         return deviceDTO;
     }
 
-    public Boolean updateDevice(DeviceStatusRequestBO deviceRequestBO) throws SQLException {
+    public Boolean updateDevice(DeviceStatusRequestBO deviceRequestBO) throws SQLException, DeviceNotFoundException {
         DeviceDAO deviceDAO=new DeviceDAO();
         Boolean isCreate = deviceDAO.updateDevice(buildStatusDtofromBo(deviceRequestBO));
         return isCreate;

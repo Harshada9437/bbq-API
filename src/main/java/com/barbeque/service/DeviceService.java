@@ -1,15 +1,14 @@
 package com.barbeque.service;
 
-import com.barbeque.bo.DeviceRequestBO;
 import com.barbeque.bo.DeviceStatusRequestBO;
 import com.barbeque.bo.RegisterRequestBO;
 import com.barbeque.bo.UpdateDeviceRequestBO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dao.outlet.OutletDAO;
-import com.barbeque.dto.UpdateSettingsDTO;
+import com.barbeque.dto.request.UpdateSettingsDTO;
 import com.barbeque.dto.request.OutletDTO;
+import com.barbeque.exceptions.DeviceNotFoundException;
 import com.barbeque.exceptions.OutletNotFoundException;
-import com.barbeque.request.device.DeviceRequest;
 import com.barbeque.request.device.DeviceStatusRequest;
 import com.barbeque.request.device.RegisterRequest;
 import com.barbeque.request.device.UpdateDeviceRequest;
@@ -55,6 +54,9 @@ public class DeviceService {
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to verify the device.");
+        } catch (DeviceNotFoundException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid device id");
         }
     }
 
@@ -74,14 +76,15 @@ public class DeviceService {
             Boolean isCreate = deviceRequestHandler.updateDevice(deviceRequestBO);
             if (isCreate) {
                 return ResponseGenerator.generateSuccessResponse(messageResponse, "Device updated successfully.");
-
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to add the device.");
+        } catch (DeviceNotFoundException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid device id");
         }
     }
 
@@ -89,7 +92,7 @@ public class DeviceService {
     @Path("/list")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceList() throws Exception {
+    public Response getDeviceList() {
         DeviceRequestHandler deviceRequestHandler = new DeviceRequestHandler();
         DeviceResponseList deviceResponseList = new DeviceResponseList();
         try {
@@ -107,7 +110,7 @@ public class DeviceService {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response registerDevice(RegisterRequest registerRequest) throws OutletNotFoundException {
+    public Response registerDevice(RegisterRequest registerRequest) {
         DeviceRequestHandler deviceRequestHandler = new DeviceRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
 
@@ -135,6 +138,9 @@ public class DeviceService {
         }catch (SQLException e){
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse,"Unable to validate the device.");
+        } catch (OutletNotFoundException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse,"Invalid store id.");
         }
     }
 

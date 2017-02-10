@@ -5,7 +5,8 @@ package com.barbeque.dto.request;
  */
 public class MenuRequestDTO {
     private int id;
-    private int parent_id;
+    private int parentId;
+    private String sequenceId;
     private String name;
     private String hyperlink;
     private String isActive;
@@ -18,12 +19,20 @@ public class MenuRequestDTO {
         this.id = id;
     }
 
-    public int getParent_id() {
-        return parent_id;
+    public int getParentId() {
+        return parentId;
     }
 
-    public void setParent_id(int parent_id) {
-        this.parent_id = parent_id;
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getSequenceId() {
+        return sequenceId;
+    }
+
+    public void setSequenceId(String sequenceId) {
+        this.sequenceId = sequenceId;
     }
 
     public String getName() {
@@ -58,19 +67,21 @@ public class MenuRequestDTO {
         MenuRequestDTO that = (MenuRequestDTO) o;
 
         if (id != that.id) return false;
-        if (parent_id != that.parent_id) return false;
-        if (!name.equals(that.name)) return false;
-        if (!hyperlink.equals(that.hyperlink)) return false;
-        return isActive.equals(that.isActive);
+        if (parentId != that.parentId) return false;
+        if (sequenceId != null ? !sequenceId.equals(that.sequenceId) : that.sequenceId != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (hyperlink != null ? !hyperlink.equals(that.hyperlink) : that.hyperlink != null) return false;
+        return isActive != null ? isActive.equals(that.isActive) : that.isActive == null;
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + parent_id;
-        result = 31 * result + name.hashCode();
-        result = 31 * result + hyperlink.hashCode();
-        result = 31 * result + isActive.hashCode();
+        result = 31 * result + parentId;
+        result = 31 * result + (sequenceId != null ? sequenceId.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (hyperlink != null ? hyperlink.hashCode() : 0);
+        result = 31 * result + (isActive != null ? isActive.hashCode() : 0);
         return result;
     }
 
@@ -78,7 +89,8 @@ public class MenuRequestDTO {
     public String toString() {
         return "MenuRequestDTO{" +
                 "id=" + id +
-                ", parent_id=" + parent_id +
+                ", parentId=" + parentId +
+                ", sequenceId='" + sequenceId + '\'' +
                 ", name='" + name + '\'' +
                 ", hyperlink='" + hyperlink + '\'' +
                 ", isActive='" + isActive + '\'' +

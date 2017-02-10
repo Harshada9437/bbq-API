@@ -16,12 +16,7 @@ import java.util.List;
 public class AnswerRequestHandler {
     public List<AnswerResponseList> getAnswer(int questionId) throws SQLException, QuestionNotFoundException {
         AnswerDAO answerDAO = new AnswerDAO();
-        List<AnswerResponseList> answerResponseLists = new ArrayList<AnswerResponseList>();
-        try {
-            answerResponseLists = getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
-        } catch (SQLException s) {
-            s.printStackTrace();
-        }
+        List<AnswerResponseList> answerResponseLists = getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
         return answerResponseLists;
     }
 

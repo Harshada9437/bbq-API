@@ -98,11 +98,14 @@ public class TemplateDAO {
         return templateDTO;
     }
 
-    public Boolean updateTemplate(TemplateDTO templateDTO) throws SQLException {
+    public Boolean updateTemplate(TemplateDTO templateDTO) throws SQLException, TemplateNotFoundException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
+
+            getTemplateById(templateDTO.getId());
+
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
@@ -136,7 +139,7 @@ public class TemplateDAO {
         return isCreated;
     }
 
-    public List<TemplateDTO> getTemplate() throws SQLException, TemplateNotFoundException {
+    public List<TemplateDTO> getTemplate() throws SQLException {
         Connection connection = null;
         Statement statement = null;
         List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();

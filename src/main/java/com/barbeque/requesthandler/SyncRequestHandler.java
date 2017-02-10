@@ -5,7 +5,7 @@ import com.barbeque.bo.SmsSettingRequestBO;
 import com.barbeque.bo.UpdateSettingRequestBO;
 import com.barbeque.dao.Sync.*;
 import com.barbeque.dao.outlet.OutletDAO;
-import com.barbeque.dto.VersionInfoDTO;
+import com.barbeque.dto.request.VersionInfoDTO;
 import com.barbeque.dto.request.SettingRequestDTO;
 import com.barbeque.dto.request.SmsSettingDTO;
 import com.barbeque.response.user.SettingResponse;
@@ -32,7 +32,7 @@ public class SyncRequestHandler {
     }
 
 
-    public void syncData(Data data) throws SQLException {
+    public void syncData(Data data) throws Exception {
         List<Group> groups = data.getGroups();
         List<Integer> oldGroup = GroupDAO.getGroups();
             for (Group group : groups) {

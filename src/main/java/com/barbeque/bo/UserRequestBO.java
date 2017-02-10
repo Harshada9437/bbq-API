@@ -4,18 +4,18 @@ package com.barbeque.bo;
  * Created by System-3 on 2/9/2017.
  */
 public class UserRequestBO {
-    private int id;
     private String userName;
+    private String name;
     private String email;
     private String password;
     private int roleId;
 
-    public int getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUserName() {
@@ -58,19 +58,19 @@ public class UserRequestBO {
 
         UserRequestBO that = (UserRequestBO) o;
 
-        if (id != that.id) return false;
         if (roleId != that.roleId) return false;
         if (!userName.equals(that.userName)) return false;
+        if (!name.equals(that.name)) return false;
         if (!email.equals(that.email)) return false;
         return password.equals(that.password);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + userName.hashCode();
+        int result = userName.hashCode();
         result = 31 * result + email.hashCode();
         result = 31 * result + password.hashCode();
+        result = 31 * result + name.hashCode();
         result = 31 * result + roleId;
         return result;
     }
@@ -78,9 +78,9 @@ public class UserRequestBO {
     @Override
     public String toString() {
         return "UserRequestBO{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
+                "userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", roleId=" + roleId +
                 '}';

@@ -1,13 +1,9 @@
 package com.barbeque.dao.Sync;
 
 import com.barbeque.dao.ConnectionHandler;
-import com.barbeque.dto.VersionInfoDTO;
-import com.barbeque.dto.request.SettingRequestDTO;
-import com.barbeque.dto.request.SmsSettingDTO;
+import com.barbeque.dto.request.VersionInfoDTO;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Sandeep on 1/20/2017.

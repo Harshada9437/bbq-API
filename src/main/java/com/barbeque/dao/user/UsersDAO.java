@@ -1,7 +1,7 @@
 package com.barbeque.dao.user;
 
+import com.barbeque.bo.ChangePasswordBO;
 import com.barbeque.dao.ConnectionHandler;
-import com.barbeque.dto.CreateUserDTO;
 import com.barbeque.dto.request.CreateRollDTO;
 import com.barbeque.dto.request.MenuRequestDTO;
 import com.barbeque.dto.request.RoleRequestDTO;
@@ -17,24 +17,28 @@ public class UsersDAO {
     public LoginResponseDTO getUserDetailsWithName(String name) throws UserNotFoundException, SQLException {
         Connection connection = null;
         Statement statement = null;
-        LoginResponseDTO loginResponseDTO = null;
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
         try {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
-                    "SELECT id, user_name, email, password, status,session_id,role_id FROM user_details where user_name = \"")
+                    "SELECT u.*,r.menu_access,r.outlet_access FROM user_details u\n" +
+                            "left join role r\n" +
+                            "on r.role_id=u.role_id\n" +
+                            " where u.user_name = \"")
                     .append(name).append("\"");
             ResultSet resultSet = statement.executeQuery(query.toString());
             int rowCount = 0;
-            loginResponseDTO = new LoginResponseDTO();
             while (resultSet.next()) {
                 loginResponseDTO.setUserName(name);
                 loginResponseDTO.setId(resultSet.getInt("id"));
                 loginResponseDTO.setEmail(resultSet.getString("email"));
-                loginResponseDTO.setPassword(resultSet.getString("password"));
+                loginResponseDTO.setName(resultSet.getString("name"));
                 loginResponseDTO.setStatus(resultSet.getString("status"));
-                loginResponseDTO.setSessionId(resultSet.getString("session_id"));
                 loginResponseDTO.setRoleId(resultSet.getInt("role_id"));
+                loginResponseDTO.setMenuAccess(resultSet.getString("menu_access"));
+                loginResponseDTO.setPassword(resultSet.getString("password"));
+                loginResponseDTO.setOutletAccess(resultSet.getString("outlet_access"));
                 rowCount++;
             }
             if (rowCount == 0) {
@@ -223,18 +227,22 @@ public class UsersDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
 
-            String query = "SELECT id,user_name,email,password,status,session_id,role_id FROM user_details where id=" + id;
+            String query = "SELECT u.*,r.menu_access,r.outlet_access FROM user_details u\n" +
+                    "left join role r\n" +
+                    "on r.role_id=u.role_id\n" +
+                    " where u.id=" + id;
 
             ResultSet resultSet = statement.executeQuery(query.toString());
             int rowCount = 0;
-            loginResponseDTO = new LoginResponseDTO();
+
             while (resultSet.next()) {
                 loginResponseDTO.setId(id);
                 loginResponseDTO.setUserName(resultSet.getString("user_name"));
+                loginResponseDTO.setName(resultSet.getString("name"));
                 loginResponseDTO.setEmail(resultSet.getString("email"));
-                loginResponseDTO.setPassword(resultSet.getString("password"));
+                loginResponseDTO.setOutletAccess(resultSet.getString("outlet_access"));
                 loginResponseDTO.setStatus(resultSet.getString("status"));
-                loginResponseDTO.setSessionId(resultSet.getString("session_id"));
+                loginResponseDTO.setMenuAccess(resultSet.getString("menu_access"));
                 loginResponseDTO.setRoleId(resultSet.getInt("role_id"));
                 rowCount++;
             }
@@ -264,13 +272,14 @@ public class UsersDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            String query = "SELECT * FROM menu";
+            String query = "SELECT * FROM menu\n order by sequence_id*1";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 MenuRequestDTO menuRequestDTO = new MenuRequestDTO();
                 menuRequestDTO.setId(resultSet.getInt("id"));
+                menuRequestDTO.setParentId(resultSet.getInt("parent_id"));
                 menuRequestDTO.setName(resultSet.getString("name"));
-                menuRequestDTO.setParent_id(resultSet.getInt("parent_id"));
+                menuRequestDTO.setSequenceId(resultSet.getString("sequence_id"));
                 menuRequestDTO.setHyperlink(resultSet.getString("hyperlink"));
                 menuRequestDTO.setIsActive(resultSet.getString("isActive"));
                 menuRequestDTOList.add(menuRequestDTO);
@@ -362,10 +371,10 @@ public class UsersDAO {
         return roleRequestDTOList;
     }
 
-    public Integer createUser(CreateUserDTO createUserDTO) throws SQLException {
+    public Integer createUser(LoginResponseDTO createUserDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO user_details(user_name,email,password,role_id) values (?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO user_details(name,user_name,email,password,role_id) values (?,?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -373,6 +382,8 @@ public class UsersDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection
                     .prepareStatement(query.toString());
+            preparedStatement.setString(parameterIndex++,
+                    createUserDTO.getName());
             preparedStatement.setString(parameterIndex++,
                     createUserDTO.getUserName());
             preparedStatement.setString(parameterIndex++,
@@ -418,11 +429,10 @@ public class UsersDAO {
         return id;
     }
 
-    public static Boolean getuserById(String userName, String email)
+    public static Boolean getuser(String userName, String email,String name)
             throws SQLException {
 
         boolean isCreated = false;
-        PreparedStatement preparedStatement = null;
         Statement statement = null;
         Connection connection = null;
         try {
@@ -431,7 +441,7 @@ public class UsersDAO {
             statement = connection.createStatement();
             StringBuffer query = new StringBuffer(
                     "select * from user_details where user_name = \"").append(userName)
-                    .append("\" or email =\"").append(email).append("\"");
+                    .append("\" or email =\"").append(email).append("\" or name=\"").append(name+"\"");
 
             ResultSet resultSet = statement.executeQuery(query.toString()
                         .trim());
@@ -509,11 +519,9 @@ public class UsersDAO {
         return id;
     }
 
-    public static Boolean getuserById(String name)
-            throws SQLException {
+    public static Boolean getRole(String name) throws SQLException {
 
         boolean isCreated = false;
-        PreparedStatement preparedStatement = null;
         Statement statement = null;
         Connection connection = null;
         try {
@@ -540,6 +548,108 @@ public class UsersDAO {
             }
         }
         return isCreated;
+    }
+
+
+    public static Boolean updateUser(LoginResponseDTO loginResponseDTO) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE user_details SET name=?, email =?," +
+                            "role_id = ?,status=? WHERE id =?");
+
+            preparedStatement.setString(parameterIndex++, loginResponseDTO.getName());
+
+            preparedStatement.setString(parameterIndex++, loginResponseDTO.getEmail());
+
+            preparedStatement.setInt(parameterIndex++, loginResponseDTO.getRoleId());
+
+            preparedStatement.setString(parameterIndex++, loginResponseDTO.getStatus());
+
+            preparedStatement.setInt(parameterIndex++, loginResponseDTO.getId());
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
+
+    public Boolean changePassword(ChangePasswordBO changePwdBO) throws SQLException {
+        Boolean isProcessed = Boolean.FALSE;
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            String query = "SELECT password FROM user_details WHERE id="
+                    + changePwdBO.getId();
+
+            ResultSet resultSet = statement.executeQuery(query);
+            String oldDBpassword = null;
+            while (resultSet.next()) {
+                oldDBpassword = resultSet.getString("password");
+            }
+
+            if (oldDBpassword != null && changePwdBO.getOldPassword() != null
+                    && oldDBpassword.equals(changePwdBO.getOldPassword())) {
+                if (updatePassword(changePwdBO.getNewPassword(),
+                        changePwdBO.getId(), connection)) {
+                    connection.commit();
+                    isProcessed = Boolean.TRUE;
+                }
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isProcessed;
+    }
+
+    private boolean updatePassword(String newPassword, int userId, Connection connection) throws SQLException {
+        boolean isUpdated = false;
+        connection.setAutoCommit(false);
+        String query = "UPDATE user_details SET password=\"" + newPassword
+                + "\" WHERE id=" + userId;
+        PreparedStatement preparedStatement = connection
+                .prepareStatement(query);
+        int i = preparedStatement.executeUpdate();
+        if (i > 0) {
+            connection.commit();
+            isUpdated = Boolean.TRUE;
+        } else {
+            connection.rollback();
+        }
+        return isUpdated;
+
     }
 
 
@@ -587,4 +697,46 @@ public class UsersDAO {
     }
 
 
+    public List<LoginResponseDTO> getUserList() throws SQLException {
+        List<LoginResponseDTO> userList = new ArrayList<LoginResponseDTO>();
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+
+            String query = "SELECT u.*,r.menu_access,r.outlet_access FROM user_details u\n" +
+                    "left join role r\n" +
+                    "on r.role_id=u.role_id";
+
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            while (resultSet.next()) {
+                LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+                loginResponseDTO.setId(resultSet.getInt("id"));
+                loginResponseDTO.setUserName(resultSet.getString("user_name"));
+                loginResponseDTO.setName(resultSet.getString("name"));
+                loginResponseDTO.setEmail(resultSet.getString("email"));
+                loginResponseDTO.setOutletAccess(resultSet.getString("outlet_access"));
+                loginResponseDTO.setStatus(resultSet.getString("status"));
+                loginResponseDTO.setMenuAccess(resultSet.getString("menu_access"));
+                loginResponseDTO.setRoleId(resultSet.getInt("role_id"));
+                userList.add(loginResponseDTO);
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return userList;
     }
+
+}

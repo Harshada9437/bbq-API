@@ -1,16 +1,15 @@
-package com.barbeque.dto.response;
+package com.barbeque.bo;
 
-public class LoginResponseDTO {
+public class LoginResponseBO {
     private int id;
     private String userName;
     private String name;
-    private String password;
+    private String menuAccess;
+    private String outletAccess;
     private String email;
     private String status;
-    private String outletAccess;
-    private String sessionId;
-    private String menuAccess;
     private int roleId;
+    private String sessionId;
 
     public String getName() {
         return name;
@@ -20,12 +19,20 @@ public class LoginResponseDTO {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getMenuAccess() {
+        return menuAccess;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setMenuAccess(String menuAccess) {
+        this.menuAccess = menuAccess;
+    }
+
+    public String getOutletAccess() {
+        return outletAccess;
+    }
+
+    public void setOutletAccess(String outletAccess) {
+        this.outletAccess = outletAccess;
     }
 
     public int getId() {
@@ -52,20 +59,20 @@ public class LoginResponseDTO {
         this.email = email;
     }
 
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getOutletAccess() {
-        return outletAccess;
-    }
-
-    public void setOutletAccess(String outletAccess) {
-        this.outletAccess = outletAccess;
     }
 
     public String getSessionId() {
@@ -76,39 +83,22 @@ public class LoginResponseDTO {
         this.sessionId = sessionId;
     }
 
-    public String getMenuAccess() {
-        return menuAccess;
-    }
-
-    public void setMenuAccess(String menuAccess) {
-        this.menuAccess = menuAccess;
-    }
-
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        LoginResponseDTO that = (LoginResponseDTO) o;
+        LoginResponseBO that = (LoginResponseBO) o;
 
         if (id != that.id) return false;
         if (roleId != that.roleId) return false;
         if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
+        if (menuAccess != null ? !menuAccess.equals(that.menuAccess) : that.menuAccess != null) return false;
+        if (outletAccess != null ? !outletAccess.equals(that.outletAccess) : that.outletAccess != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        if (outletAccess != null ? !outletAccess.equals(that.outletAccess) : that.outletAccess != null) return false;
-        if (sessionId != null ? !sessionId.equals(that.sessionId) : that.sessionId != null) return false;
-        return menuAccess != null ? menuAccess.equals(that.menuAccess) : that.menuAccess == null;
+        return sessionId != null ? sessionId.equals(that.sessionId) : that.sessionId == null;
     }
 
     @Override
@@ -116,29 +106,27 @@ public class LoginResponseDTO {
         int result = id;
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (menuAccess != null ? menuAccess.hashCode() : 0);
+        result = 31 * result + (outletAccess != null ? outletAccess.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (outletAccess != null ? outletAccess.hashCode() : 0);
-        result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);
-        result = 31 * result + (menuAccess != null ? menuAccess.hashCode() : 0);
         result = 31 * result + roleId;
+        result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "LoginResponseDTO{" +
+        return "LoginResponseBO{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
+                ", menuAccess='" + menuAccess + '\'' +
+                ", outletAccess='" + outletAccess + '\'' +
                 ", email='" + email + '\'' +
                 ", status='" + status + '\'' +
-                ", outletAccess='" + outletAccess + '\'' +
-                ", sessionId='" + sessionId + '\'' +
-                ", menuAccess='" + menuAccess + '\'' +
                 ", roleId=" + roleId +
+                ", sessionId='" + sessionId + '\'' +
                 '}';
     }
 }

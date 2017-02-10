@@ -35,14 +35,15 @@ public class TemplateService {
         MessageResponse messageResponse = new MessageResponse();
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         try {
-            if (!TemplateDAO.getTemplateByName(templateRequest.getTemplateDesc())){
+            if (!TemplateDAO.getTemplateByName(templateRequest.getTemplateDesc())) {
                 int templateId = templateRequestHandler.createTemplate(templateRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(templateId));
-            }else {
+            } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Template description already exist");
             }
 
         } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Template Creation Failed");
         }
     }
@@ -51,7 +52,7 @@ public class TemplateService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/update")
-    public Response updateTemplate(UpdateTemplateRequest updateTemplateRequest, @HeaderParam("Auth") String auth) throws Exception {
+    public Response updateTemplate(UpdateTemplateRequest updateTemplateRequest) {
         UpdateTemplateRequestBO updateTemplateRequestBO = new UpdateTemplateRequestBO();
         updateTemplateRequestBO.setId(updateTemplateRequest.getId());
         updateTemplateRequestBO.setTemplateDesc(updateTemplateRequest.getTemplateDesc());
@@ -60,10 +61,17 @@ public class TemplateService {
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
 
-        if (templateRequestHandler.updateTemplate(updateTemplateRequestBO)) {
-            return ResponseGenerator.generateSuccessResponse(messageResponse, "Template updated successfully");
-        } else {
+        try {
+            if (templateRequestHandler.updateTemplate(updateTemplateRequestBO)) {
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Template updated successfully");
+            } else {
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the template.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update the template.");
+        } catch (TemplateNotFoundException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template id.");
         }
     }
 
@@ -72,7 +80,7 @@ public class TemplateService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/assignQuestion/{template_id}")
-    public Response assignQuestion(AssignQuestionRequest assignQuestionRequest, @PathParam("template_id") int templateId) throws Exception {
+    public Response assignQuestion(AssignQuestionRequest assignQuestionRequest, @PathParam("template_id") int templateId) {
         AssignQuestionRequestBO assignQuestionRequestBO = new AssignQuestionRequestBO();
         assignQuestionRequestBO.setQuestionId(assignQuestionRequest.getQuestionId());
         assignQuestionRequestBO.setPriority(assignQuestionRequest.getPriority());
@@ -80,14 +88,17 @@ public class TemplateService {
         MessageResponse tempQueResponse = new MessageResponse();
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         try {
-            if (!QueTempDAO.isAlreadyAssigned(assignQuestionRequest.getQuestionId(),templateId)) {
+            if (!QueTempDAO.isAlreadyAssigned(assignQuestionRequest.getQuestionId(), templateId)) {
                 templateRequestHandler.assignQuestion(assignQuestionRequestBO, templateId);
                 return ResponseGenerator.generateSuccessResponse(tempQueResponse, "Questions are assigned");
             } else {
                 return ResponseGenerator.generateFailureResponse(tempQueResponse, "Questiuon is already assigned.");
             }
         } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
             return ResponseGenerator.generateFailureResponse(tempQueResponse, "Assign question Failed");
+        } catch (TemplateNotFoundException e) {
+            return ResponseGenerator.generateFailureResponse(tempQueResponse, "Invalid template id");
         }
     }
 
@@ -95,28 +106,26 @@ public class TemplateService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/listQuestions/{template_id}")
-    public Response getAssignedQuestions(@PathParam("template_id") int templateId) throws Exception {
+    public Response getAssignedQuestions(@PathParam("template_id") int templateId) {
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         TempQueListResponse response = new TempQueListResponse();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             response.setQuestions(templateRequestHandler.getAssignedQuestions(templateId));
             return ResponseGenerator.generateSuccessResponse(response, "list of questions.");
-
         } catch (TemplateNotFoundException e) {
-            MessageResponse messageResponse = new MessageResponse();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template id");
-
         } catch (SQLException e) {
             e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "failed to retrieve.");
         }
-        return ResponseGenerator.generateResponse(response);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/updateteAssignQuestion")
-    public Response getUpdatedAssignedQuestions(UpdateAssignQuestionRequest updateAssignQuestionRequest) throws Exception {
+    public Response getUpdatedAssignedQuestions(UpdateAssignQuestionRequest updateAssignQuestionRequest) {
 
         UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO = new UpdateAssignQuestionRequestBO();
         updateAssignQuestionRequestBO.setQuestionId(updateAssignQuestionRequest.getQuestionId());
@@ -126,11 +135,11 @@ public class TemplateService {
 
         MessageResponse messageResponse = new MessageResponse();
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
-        try
-        {
+        try {
             templateRequestHandler.updateAssignQuestion(updateAssignQuestionRequestBO);
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Priority of question updated successfully");
-    }catch (SQLException sqlException) {
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update Priority of question");
         }
     }
@@ -139,16 +148,15 @@ public class TemplateService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/deleteAssignQuestion/{template_id}/{question_id}")
-    public Response deleteAssignQuestion(@PathParam("template_id") int templateId, @PathParam("question_id") int queId) throws Exception {
+    public Response deleteAssignQuestion(@PathParam("template_id") int templateId, @PathParam("question_id") int queId) {
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {
             templateRequestHandler.removeQuestionDetails(templateId, queId);
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Question has been removed.");
-
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Please first remove the details assigned to question.");
-
         } catch (TemplateNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template.");
         }
@@ -158,36 +166,32 @@ public class TemplateService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getTemplateList() throws Exception {
+    public Response getTemplateList() {
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         TemplateResponse templateResponse = new TemplateResponse();
         try {
             templateResponse.setTemplateResponseList(templateRequestHandler.getTemplate());
             return ResponseGenerator.generateSuccessResponse(templateResponse, "Template are available");
-        } catch (TemplateNotFoundException e) {
-            MessageResponse messageResponse = new MessageResponse();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Template State ");
-
         } catch (SQLException e) {
             e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(templateResponse, "Failed to retrieve.");
         }
-        return ResponseGenerator.generateResponse(templateResponse);
     }
 
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/templateInfo/{template_id}/{outlet_id}")
-    public Response getOutletByStoreId(@PathParam("template_id") int templateId, @PathParam("outlet_id") int outletId) throws Exception {
+    public Response getOutletByStoreId(@PathParam("template_id") int templateId, @PathParam("outlet_id") int outletId) {
         TemplateRequestHandler templateRequestHandler = new TemplateRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            GetTemplateResponse response = templateRequestHandler.getTemplateById(templateId,outletId);
+            GetTemplateResponse response = templateRequestHandler.getTemplateById(templateId, outletId);
             return ResponseGenerator.generateSuccessResponse(response, "Template Information");
         } catch (TemplateNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid template id ");
-
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving outlet details. ");
         }
     }

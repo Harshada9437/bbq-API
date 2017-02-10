@@ -13,13 +13,14 @@ import java.util.List;
  * Created by System1 on 9/27/2016.
  */
 public class QueTempDAO {
-    public Boolean assignQuestion(QueTempDTO queTempDTO,int templateId) throws SQLException {
+    public Boolean assignQuestion(QueTempDTO queTempDTO,int templateId) throws SQLException, TemplateNotFoundException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO template_question_link(template_id, question_id,priority");
         query.append(")values (?,?,?)");
         Boolean isCreated =Boolean.FALSE;
         try {
+            TemplateDAO.getTemplateById(templateId);
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
@@ -58,6 +59,9 @@ public class QueTempDAO {
         Statement statement = null;
         List<QueTempDTO> queList = new ArrayList<QueTempDTO>();
         try {
+
+            TemplateDAO.getTemplateById(templateId);
+
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();

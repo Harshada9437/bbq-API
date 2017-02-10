@@ -10,13 +10,11 @@ import com.barbeque.request.user.SmsSettingRequest;
 import com.barbeque.request.user.UpdateSettingRequest;
 import com.barbeque.requesthandler.SyncRequestHandler;
 import com.barbeque.response.user.SettingResponse;
-import com.barbeque.response.user.SmsSettingResponse;
 import com.barbeque.response.user.SmsSettingResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.response.util.VersionInfoResponse;
 import com.barbeque.sync.*;
-import org.codehaus.jettison.json.JSONException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -34,18 +32,15 @@ public class SyncService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/sync")
-    public Response addFeedback() throws SQLException, JSONException {
+    public Response addFeedback() {
         MessageResponse messageResponse = new MessageResponse();
         try {
             Data data = Synchronize.callURL("http://crm.bnhl.in/CRMProfile/Service1.svc/GetGSIHierarchy/");
             SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
             syncRequestHandler.syncData(data);
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Data synchronized successfully");
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Synchronization failed.");
-        } catch (SQLException sq) {
-            sq.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Synchronization failed.");
         }
     }
@@ -54,14 +49,14 @@ public class SyncService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/androidVersion")
-    public Response getOutletById() throws Exception {
+    public Response getOutletById() {
         SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
-        VersionInfoResponse versionInfoResponse = new VersionInfoResponse();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            versionInfoResponse = syncRequestHandler.getAndroidVersion();
+            VersionInfoResponse versionInfoResponse = syncRequestHandler.getAndroidVersion();
             return ResponseGenerator.generateSuccessResponse(versionInfoResponse, "Latest Version");
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving details.");
         }
     }
@@ -70,7 +65,7 @@ public class SyncService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/save")
-    public Response saveSetting(SettingRequest settingRequest) throws Exception {
+    public Response saveSetting(SettingRequest settingRequest) {
         SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
         SettingRequestBO settingRequestBO = new SettingRequestBO();
         MessageResponse messageResponse = new MessageResponse();
@@ -82,6 +77,7 @@ public class SyncService {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
         }
     }
@@ -90,14 +86,14 @@ public class SyncService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/fetch")
-    public Response fetchSettings() throws Exception {
+    public Response fetchSettings() {
         SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
-        SettingResponse settingResponse = new SettingResponse();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            settingResponse = syncRequestHandler.fetchSettings();
+            SettingResponse settingResponse = syncRequestHandler.fetchSettings();
             return ResponseGenerator.generateSuccessResponse(settingResponse, "Message template");
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving details.");
         }
     }
@@ -106,7 +102,7 @@ public class SyncService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/saveSmsSettings")
-    public Response saveSmsSettings(SmsSettingRequest settingRequest) throws Exception {
+    public Response saveSmsSettings(SmsSettingRequest settingRequest) {
         SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
         SmsSettingRequestBO settingRequestBO = new SmsSettingRequestBO();
         MessageResponse messageResponse = new MessageResponse();
@@ -123,6 +119,7 @@ public class SyncService {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Name already exist.");
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
         }
     }
@@ -131,7 +128,7 @@ public class SyncService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/updateSmsSettings")
-    public Response updateSmsSettings(UpdateSettingRequest settingRequest) throws Exception {
+    public Response updateSmsSettings(UpdateSettingRequest settingRequest) {
         SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
         UpdateSettingRequestBO settingRequestBO = new UpdateSettingRequestBO();
         MessageResponse messageResponse = new MessageResponse();
@@ -149,6 +146,7 @@ public class SyncService {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Name already exist.");
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in saving settings.");
         }
     }
@@ -158,7 +156,7 @@ public class SyncService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/fetchSmsSettings")
-    public Response fetchSmsSettings() throws Exception {
+    public Response fetchSmsSettings() {
         SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
         SmsSettingResponseList settingResponse = new SmsSettingResponseList();
         MessageResponse messageResponse = new MessageResponse();
@@ -166,6 +164,7 @@ public class SyncService {
             settingResponse.setSmsSettings(syncRequestHandler.fetchSmsSettings());
             return ResponseGenerator.generateSuccessResponse(settingResponse, "Message settings");
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving details.");
         }
     }

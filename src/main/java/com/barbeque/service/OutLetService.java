@@ -1,10 +1,13 @@
 package com.barbeque.service;
 
+import com.barbeque.bo.OutletListRequestBO;
 import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
+import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.outlet.AssignTemplateRequest;
+import com.barbeque.request.outlet.OutletListRequest;
 import com.barbeque.request.outlet.UpdateSettingsRequest;
 import com.barbeque.requesthandler.OutletRequestHandler;
 import com.barbeque.response.outlet.OutletResponseList;
@@ -31,7 +34,7 @@ public class OutLetService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/assignTemplate/{outlet_id}")
-    public Response assignTemplate(AssignTemplateRequest assignTemplateRequest, @PathParam("outlet_id") int outletId) throws Exception {
+    public Response assignTemplate(AssignTemplateRequest assignTemplateRequest, @PathParam("outlet_id") int outletId) {
         AssignTemplateRequestBO assignTemplateRequestBO = new AssignTemplateRequestBO();
         assignTemplateRequestBO.setTemplateId(assignTemplateRequest.getTemplateId());
         assignTemplateRequestBO.setFromDate(assignTemplateRequest.getFromDate());
@@ -56,7 +59,7 @@ public class OutLetService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/updateSettings/{outlet_id}")
-    public Response updateSettings(UpdateSettingsRequest updateSettingsRequest, @PathParam("outlet_id") int outletId) throws Exception {
+    public Response updateSettings(UpdateSettingsRequest updateSettingsRequest, @PathParam("outlet_id") int outletId) {
         UpdateSettingsRequestBO updateSettingsRequestBO = new UpdateSettingsRequestBO();
 
         updateSettingsRequestBO.setMobileNoLength(updateSettingsRequest.getMobileNoLength());
@@ -86,31 +89,33 @@ public class OutLetService {
 
     }
 
-    @GET
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getOutletList() throws Exception {
+    public Response getOutletList(OutletListRequest outletListRequest) {
         OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         OutletResponse outletResponse = new OutletResponse();
+        MessageResponse messageResponse = new MessageResponse();
         try {
-            outletResponse.setOutletResponseList(outletRequestHandler.getOutlate());
+            OutletListRequestBO outletListRequestBO = new OutletListRequestBO();
+            outletListRequestBO.setOutletId(outletListRequest.getOutletId());
+            outletListRequestBO.setUserId(outletListRequest.getUserId());
+            outletResponse.setOutletResponseList(outletRequestHandler.getOutlate(outletListRequestBO));
             return ResponseGenerator.generateSuccessResponse(outletResponse, "outlet are available");
-        } catch (TemplateNotFoundException e) {
-            MessageResponse messageResponse = new MessageResponse();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "failed to retrieve outlet list");
-
+        } catch (UserNotFoundException e) {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "invalid user id");
         } catch (SQLException e) {
             e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "invalid user id");
         }
-        return ResponseGenerator.generateResponse(outletResponse);
     }
 
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/outletInfoById/{outlet_id}")
-    public Response getOutletById(@PathParam("outlet_id") int outletId) throws Exception {
+    public Response getOutletById(@PathParam("outlet_id") int outletId) {
         OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         OutletResponseList outletResponse = new OutletResponseList();
         MessageResponse messageResponse = new MessageResponse();
@@ -121,6 +126,7 @@ public class OutLetService {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid outlet id ");
 
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving outlet details. ");
         }
     }
@@ -129,7 +135,7 @@ public class OutLetService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/outletInfo/{outlet_store_id}")
-    public Response getOutletByStoreId(@PathParam("outlet_store_id") String storeId) throws Exception {
+    public Response getOutletByStoreId(@PathParam("outlet_store_id") String storeId) {
         OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         OutletResponseList outletResponse = new OutletResponseList();
         MessageResponse messageResponse = new MessageResponse();

@@ -1,27 +1,14 @@
-package com.barbeque.response.user;
-
-import com.barbeque.response.util.GenericResponse;
+package com.barbeque.dto.request;
 
 /**
- * Created by System-3 on 2/8/2017.
+ * Created by System-3 on 2/9/2017.
  */
-public class UserdetailsByIdResponse implements GenericResponse {
-
-    private int id;
+public class CreateUserDTO {
     private String userName;
     private String email;
-    private String status;
     private String password;
-    private String sessionId;
+    private String isActive;
     private int roleId;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getUserName() {
         return userName;
@@ -39,14 +26,6 @@ public class UserdetailsByIdResponse implements GenericResponse {
         this.email = email;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -55,12 +34,12 @@ public class UserdetailsByIdResponse implements GenericResponse {
         this.password = password;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getIsActive() {
+        return isActive;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
     }
 
     public int getRoleId() {
@@ -76,49 +55,33 @@ public class UserdetailsByIdResponse implements GenericResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UserdetailsByIdResponse that = (UserdetailsByIdResponse) o;
+        CreateUserDTO that = (CreateUserDTO) o;
 
-        if (id != that.id) return false;
         if (roleId != that.roleId) return false;
         if (!userName.equals(that.userName)) return false;
         if (!email.equals(that.email)) return false;
-        if (!status.equals(that.status)) return false;
         if (!password.equals(that.password)) return false;
-        return sessionId.equals(that.sessionId);
+        return isActive.equals(that.isActive);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + userName.hashCode();
+        int result = userName.hashCode();
         result = 31 * result + email.hashCode();
-        result = 31 * result + status.hashCode();
         result = 31 * result + password.hashCode();
-        result = 31 * result + sessionId.hashCode();
+        result = 31 * result + isActive.hashCode();
         result = 31 * result + roleId;
         return result;
     }
 
     @Override
     public String toString() {
-        return "UserdetailsByIdResponse{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
+        return "CreateUserDTO{" +
+                "userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
-                ", status='" + status + '\'' +
                 ", password='" + password + '\'' +
-                ", sessionId='" + sessionId + '\'' +
+                ", isActive='" + isActive + '\'' +
                 ", roleId=" + roleId +
                 '}';
-    }
-
-    @Override
-    public void setMessageType(String message) {
-
-    }
-
-    @Override
-    public void setMessage(String message) {
-
     }
 }
