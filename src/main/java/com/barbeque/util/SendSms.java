@@ -25,21 +25,17 @@ import java.util.Locale;
 
 public class SendSms {
 
-    private static final String route = "4";
+    private String route = "4";
 
     //Prepare Url
-    private static URLConnection myURLConnection = null;
-    private static URL myURL = null;
-    private static BufferedReader reader = null;
+    private URLConnection myURLConnection = null;
+    private URL myURL = null;
+    private BufferedReader reader = null;
 
     //Send SMS API
-    private static String mainUrl = "https://control.msg91.com/api/sendhttp.php?";
+    private String mainUrl = "https://control.msg91.com/api/sendhttp.php?";
 
-    //Prepare parameter string
-    private static final StringBuilder sbPostData = new StringBuilder(mainUrl);
-
-
-    public static Boolean sendThresholdSms(int id, String msg, SmsSettingDTO smsSettingDTO) throws FeedbackNotFoundException {
+    public Boolean sendThresholdSms(int id, String msg, SmsSettingDTO smsSettingDTO) throws FeedbackNotFoundException {
         Boolean isProcessed = Boolean.FALSE;
 
         String authkey = smsSettingDTO.getApi();
@@ -47,24 +43,27 @@ public class SendSms {
         String senderId = smsSettingDTO.getSenderId();
         String countryCode = smsSettingDTO.getCountryCode();
 
-        String url = UrlFormatter.shortenUrl(ConfigProperties.url+ "/" + id) ;
+        String url = UrlFormatter.shortenUrl(ConfigProperties.url + "/" + id);
 
         FeedbackRequestDTO feedback = FeedbackDAO.getfeedbackById(id);
 
         UpdateSettingsDTO dto = OutletDAO.getSetting(feedback.getOutletId());
         //Your message to send, Add URL encoding here.
 
-        String message = msg.replace("%cn%",feedback.getCustomerName());
-        message=message.replace("%mn%",dto.getMgrName());
-        message=message.replace("%ce%",feedback.getEmail());
-        message=message.replace("%cm%",feedback.getMobileNo());
-        message=message.replace("%tn%",feedback.getTableNo());
-        message=message.replace("%url%",url);
-        String date = format(feedback.getFeedbackDate(),"dd-MMM-yyyy HH:mm:ss");
-        message=message.replace("%fd%",date);
+        String message = msg.replace("%cn%", feedback.getCustomerName());
+        message = message.replace("%mn%", dto.getMgrName());
+        message = message.replace("%ce%", feedback.getEmail());
+        message = message.replace("%cm%", feedback.getMobileNo());
+        message = message.replace("%tn%", feedback.getTableNo());
+        message = message.replace("%url%", url);
+        String date = format(feedback.getFeedbackDate(), "dd-MMM-yyyy HH:mm:ss");
+        message = message.replace("%fd%", date);
 
         //encoding message
         String encoded_message = URLEncoder.encode(message);
+
+        //Prepare parameter string
+        StringBuilder sbPostData = new StringBuilder(mainUrl);
 
         sbPostData.append("authkey=" + authkey);
         sbPostData.append("&mobiles=" + dto.getMgrMobile());
@@ -88,20 +87,20 @@ public class SendSms {
             String response;
             while ((response = reader.readLine()) != null)
                 //print response
-                System.out.println(response);
+                isProcessed = Boolean.TRUE;
 
             //finally close connection
             reader.close();
 
-            isProcessed = Boolean.TRUE;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
         return isProcessed;
     }
 
-    public static String format(Timestamp value, String format){
-            SimpleDateFormat dateFormatter = new SimpleDateFormat(format, Locale.ENGLISH);
-            return dateFormatter.format(value.getTime());
+    public String format(Timestamp value, String format) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(format, Locale.ENGLISH);
+        return dateFormatter.format(value.getTime());
     }
 }

@@ -79,7 +79,8 @@ public class FeedbackRequestHandler {
         if (isExist) {
             SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
             SmsSettingDTO smsSettingDTO = SmsDAO.fetchSmsSettingsById(setting.getSmsGatewayId());
-            SendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(), smsSettingDTO);
+            SendSms sendSms = new SendSms();
+            sendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(), smsSettingDTO);
         }
         return id;
     }

@@ -295,17 +295,21 @@ public class DeviceDAO {
             StringBuilder query = new StringBuilder("SELECT * FROM devices where id =" + deviceId);
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
+
+            int i = 1;
             while (resultSet.next()) {
                deviceDTO.setStoreId(resultSet.getString("store_id"));
                deviceDTO.setInstallationId(resultSet.getString("installation_id"));
                deviceDTO.setStatus(resultSet.getString("status"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("installation_date"));
+               i++;
             }
 
-            if(resultSet.getFetchSize() == 0){
+            if(i==1){
                 throw new DeviceNotFoundException("invalid device id");
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
