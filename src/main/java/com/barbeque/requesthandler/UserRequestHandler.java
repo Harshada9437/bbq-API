@@ -246,7 +246,7 @@ public class UserRequestHandler {
 
         List<LoginResponseDTO> dtos = usersDAO.getUserList();
 
-        for(LoginResponseDTO createUserDTO : dtos){
+        for (LoginResponseDTO createUserDTO : dtos) {
             UsersResp user = new UsersResp(createUserDTO.getId(),
                     createUserDTO.getUserName(),
                     createUserDTO.getName(),
@@ -259,5 +259,16 @@ public class UserRequestHandler {
         }
         return userList;
     }
+
+    public Boolean resetPassword(ResetPasswordRequestBO resetPasswordRequestBO) throws Exception {
+        UsersDAO usersDAO = new UsersDAO();
+
+        String encodedNewPassword = MD5Encode.Encode(resetPasswordRequestBO.getNewPassword());
+        resetPasswordRequestBO.setNewPassword(encodedNewPassword);
+        Boolean isProcessed = usersDAO.resetPassword(resetPasswordRequestBO);
+
+        return isProcessed;
+    }
+
 }
 

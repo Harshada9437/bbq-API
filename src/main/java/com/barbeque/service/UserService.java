@@ -9,6 +9,7 @@ import com.barbeque.requesthandler.UserRequestHandler;
 import com.barbeque.response.user.*;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
+import com.barbeque.util.UserRequestValidation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -89,7 +90,7 @@ public class UserService {
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateUser(UpdateUserRequest updateUserRequest){
+    public Response updateUser(UpdateUserRequest updateUserRequest) {
         MessageResponse loginResponse = new MessageResponse();
         try {
             UserRequestHandler userRequestHandler = new UserRequestHandler();
@@ -118,7 +119,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Response getuserById(@PathParam("id") int id){
+    public Response getuserById(@PathParam("id") int id) {
 
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
@@ -140,7 +141,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/menuList")
 
-    public Response getMenuList(){
+    public Response getMenuList() {
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         MenuResponseList menuResponseList = new MenuResponseList();
         try {
@@ -157,7 +158,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Response getroleById(@PathParam("id") int id){
+    public Response getroleById(@PathParam("id") int id) {
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {
@@ -177,7 +178,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/roleList")
-    public Response getRoleList(){
+    public Response getRoleList() {
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         RoleResponseList roleResponseList = new RoleResponseList();
         try {
@@ -193,7 +194,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getUserList(){
+    public Response getUserList() {
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         UserResponseList userResponseList = new UserResponseList();
         try {
@@ -221,7 +222,7 @@ public class UserService {
         MessageResponse createUserResponse = new MessageResponse();
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         try {
-            if (!UsersDAO.getuser(userRequest.getUserName(), userRequest.getEmail(),userRequest.getName())) {
+            if (!UsersDAO.getuser(userRequest.getUserName(), userRequest.getEmail(), userRequest.getName())) {
                 int userId = userRequestHandler.createUser(userRequestBO);
                 return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
 
@@ -238,7 +239,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/createRole")
-    public Response createRoll(RollRequest rollRequest){
+    public Response createRoll(RollRequest rollRequest) {
         RollRequestBO rollRequestBO = new RollRequestBO();
         rollRequestBO.setName(rollRequest.getName());
         rollRequestBO.setMenuAccess(rollRequest.getMenuAccess());
@@ -268,7 +269,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/updateRole")
-    public Response updateRoll(UpdateRollRequest updateRollRequest){
+    public Response updateRoll(UpdateRollRequest updateRollRequest) {
 
         UpdateRollRequestBO updateFeedbackRequestBO = new UpdateRollRequestBO();
         updateFeedbackRequestBO.setRoleId(updateRollRequest.getRoleId());
@@ -294,7 +295,7 @@ public class UserService {
     @Path("/changePassword")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response changePassword(ChangePasswordRequest changePwdReq){
+    public Response changePassword(ChangePasswordRequest changePwdReq) {
         ChangePasswordBO changePwdBO = new ChangePasswordBO(
                 changePwdReq.getUserId(), changePwdReq.getOldPassword(),
                 changePwdReq.getNewPassword());
@@ -313,6 +314,24 @@ public class UserService {
         }
     }
 
-
-
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/resetPassword")
+    public Response changePassword(ResetPasswordRequest resetPasswordRequest,@HeaderParam("Auth") String auth) throws Exception {
+        if (auth != null && UserRequestValidation.isRequestValid(auth)) {
+        ResetPasswordRequestBO resetPasswordRequestBO = new ResetPasswordRequestBO(
+                resetPasswordRequest.getId(),
+                resetPasswordRequest.getNewPassword());
+        UserRequestHandler userRequestHandler = new UserRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        if (userRequestHandler.resetPassword(resetPasswordRequestBO)) {
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Password has been reset successfully.");
+        } else {
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Reset password failed.");
+        }
+        } else {
+            return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
+        }
+    }
 }

@@ -111,13 +111,15 @@ public class FeedbackService {
     public Response createFeedbackTracking(FeedbackTrackingRequest feedbackTrackingRequest) {
         FeedbackTrackingRequestBO feedbackTrackingRequestBO = new FeedbackTrackingRequestBO();
         feedbackTrackingRequestBO.setFeedbackId(feedbackTrackingRequest.getFeedbackId());
-
-
         MessageResponse createUserResponse = new MessageResponse();
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         try {
-            Boolean userId = feedbackRequestHandler.createFeedbackTracking(feedbackTrackingRequestBO);
-            return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
+            Boolean isCreate = feedbackRequestHandler.createFeedbackTracking(feedbackTrackingRequestBO);
+            if(isCreate) {
+                return ResponseGenerator.generateSuccessResponse(createUserResponse, "Negative feedback url tracked.");
+            }else{
+                return ResponseGenerator.generateFailureResponse(createUserResponse, "Feedback tracking creation Failed");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(createUserResponse, "Feedback tracking creation Failed");
@@ -146,7 +148,7 @@ public class FeedbackService {
             return ResponseGenerator.generateSuccessResponse(feedbackTrackingResponseList, "List of Negative feedbacks.");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(feedbackTrackingResponseList, "Failure.");
+            return ResponseGenerator.generateFailureResponse(feedbackTrackingResponseList, "Failed to retrieve the feedbacks.");
         }
     }
 

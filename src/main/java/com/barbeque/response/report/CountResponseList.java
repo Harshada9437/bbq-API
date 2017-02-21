@@ -12,12 +12,6 @@ public class CountResponseList implements GenericResponse{
     private String message;
     private String messageType;
 
-    public CountResponseList() {
-        this.count = count;
-        this.message = message;
-        this.messageType = messageType;
-    }
-
     public List<CountResponse> getCount() {
         return count;
     }

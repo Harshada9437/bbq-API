@@ -1,6 +1,7 @@
 package com.barbeque.dao.user;
 
 import com.barbeque.bo.ChangePasswordBO;
+import com.barbeque.bo.ResetPasswordRequestBO;
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.CreateRollDTO;
 import com.barbeque.dto.request.MenuRequestDTO;
@@ -58,6 +59,37 @@ public class UsersDAO {
         }
         return loginResponseDTO;
     }
+
+    public Boolean getValidUserBySessionIdPasswordUsername(String userName, String password, String sessionId)
+            throws SQLException {
+        Boolean isVerify = Boolean.FALSE;
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT * FROM user_details where user_name =\"" + userName + "\" and password=\"" + password + "\" and session_id LIKE \"%|" +
+                            sessionId + "|%\"");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            while (resultSet.next()) {
+                isVerify = Boolean.TRUE;
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isVerify;
+    }
+
 
     public Boolean updateSessionId(String sessionIdL, String sessionId, int userId)
             throws SQLException {
@@ -737,6 +769,41 @@ public class UsersDAO {
             }
         }
         return userList;
+    }
+
+    public Boolean resetPassword(ResetPasswordRequestBO resetPwdBO) throws SQLException {
+        Boolean isProcessed = Boolean.FALSE;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.prepareStatement("UPDATE user_details SET password=?  WHERE id=?");
+
+            statement.setString(parameterIndex++,resetPwdBO.getNewPassword());
+
+            statement.setInt(parameterIndex++,resetPwdBO.getId());
+
+            int i = statement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isProcessed = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isProcessed;
     }
 
 }

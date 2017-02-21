@@ -12,13 +12,6 @@ public class AverageResponseList implements GenericResponse{
     private String message;
     private String messageType;
 
-
-    public AverageResponseList() {
-        this.average = average;
-        this.message = message;
-        this.messageType = messageType;
-    }
-
     public List<AverageResponse> getAverage() {
         return average;
     }
@@ -31,6 +24,7 @@ public class AverageResponseList implements GenericResponse{
         return message;
     }
 
+    @Override
     public void setMessage(String message) {
         this.message = message;
     }
@@ -39,6 +33,7 @@ public class AverageResponseList implements GenericResponse{
         return messageType;
     }
 
+    @Override
     public void setMessageType(String messageType) {
         this.messageType = messageType;
     }

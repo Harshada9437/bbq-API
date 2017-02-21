@@ -65,13 +65,14 @@ public class FeedbackRequestHandler {
                     int weightage = feedbackDetails.getRating() / ans;
                     if (weightage <= Integer.parseInt(answerDTO.getThreshold())) {
                         isExist = Boolean.TRUE;
+                        FeedbackDAO.updateFeedback(id);
                         break;
                     }
                 }
                 if ((questionRequestDTO.getQuestionType() == '1' || questionRequestDTO.getQuestionType() == '5' ||
                         questionRequestDTO.getQuestionType() == '6') && answerDTO.getThreshold().equals("1")) {
                     isExist = Boolean.TRUE;
-
+                    FeedbackDAO.updateFeedback(id);
                     break;
                 }
             }
@@ -80,7 +81,9 @@ public class FeedbackRequestHandler {
             SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
             SmsSettingDTO smsSettingDTO = SmsDAO.fetchSmsSettingsById(setting.getSmsGatewayId());
             SendSms sendSms = new SendSms();
-            sendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(), smsSettingDTO);
+            Boolean isSent = sendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(), smsSettingDTO);
+            System.out.println("Successfully sent:::" + isSent);
+
         }
         return id;
     }

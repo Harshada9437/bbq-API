@@ -141,8 +141,7 @@ public class FeedbackDAO {
                 RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
                 where1 += " and fh.outlet_id IN(" + rollRequestDTO.getOutletAccess() + ")";
             }
-            String query = "select f.*, t.id,fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
-                    "(select true from feedback_view_tracking t where t.feedback_id=h.id) as addressed \n" +
+            String query = "select f.*,fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
                     "from feedback f\n" +
                     "left join feedback_head fh on fh.id=f.feedback_id\n" +
                     "left join outlet o on fh.outlet_id = o.id\n" +
@@ -175,7 +174,6 @@ public class FeedbackDAO {
                 feedbackRequestDTO.setAnswerDesc(resultSet.getString("answer_desc"));
                 feedbackRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
                 feedbackRequestDTO.setWeightage(resultSet.getInt("weightage"));
-                feedbackRequestDTO.setIsAddressed(resultSet.getInt("addressed"));
                 feedbackList.add(feedbackRequestDTO);
             }
         } catch (SQLException sqlException) {
@@ -643,7 +641,7 @@ public class FeedbackDAO {
                 feedbackTrackingDTO.setManagerName(resultSet.getString("manager_name"));
                 feedbackTrackingDTO.setManagerMobile(resultSet.getString("manager_mobile"));
                 feedbackTrackingDTO.setManagerEmail(resultSet.getString("manager_email"));
-                feedbackTrackingDTO.setFirstViewDate(resultSet.getString("first_view_date"));
+                feedbackTrackingDTO.setFirstViewDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("first_view_date")));
                 feedbackTrackingDTO.setViewCount(resultSet.getInt("view_count"));
             }
         } catch (SQLException sqlException) {
@@ -738,30 +736,35 @@ public class FeedbackDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            String query = "select ft.feedback_id,f.outlet_id,f.date,f.table_no,f.customer_id,ft.manager_name,ft.manager_mobile,ft.manager_email,ft.first_view_date,ft.view_count,\n" +
+            String query = "select f.id,ft.feedback_id,f.outlet_id,f.date,f.table_no,f.customer_id,os.mgr_name,os.mgr_mobile,os.mgr_email,ft.first_view_date,COALESCE(ft.view_count,0) as view_count,\n" +
                     "c.name as custoner_name,c.phone_no,o.outlet_desc,\n" +
                     "(select true from feedback_view_tracking t where t.feedback_id=f.id) as isAddressed\n" +
                     "from feedback_head f\n" +
                     "left join feedback_view_tracking ft on ft.feedback_id = f.id\n" +
                     "left join customer c on f.customer_id = c.id\n" +
                     "left join outlet o on f.outlet_id = o.id\n" +
+                    "left join outlet_setting os on f.outlet_id = os.outlet_id\n" +
                     "where f.isNegative=1 and f.date >= '" + feedbackListRequestBO.getFromDate() + "' AND f.date <='" +
                     feedbackListRequestBO.getToDate() + "'" + where1;
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 FeedbackTrackingResponseDTO feedbackTrackingResponseDTO = new FeedbackTrackingResponseDTO();
-                feedbackTrackingResponseDTO.setFeedbackId(resultSet.getInt("feedback_id"));
+                feedbackTrackingResponseDTO.setFeedbackId(resultSet.getInt("id"));
                 feedbackTrackingResponseDTO.setOutletId(resultSet.getInt("outlet_id"));
                 feedbackTrackingResponseDTO.setOutletName(resultSet.getString("outlet_desc"));
-                feedbackTrackingResponseDTO.setDate(resultSet.getString("date"));
+                feedbackTrackingResponseDTO.setDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("date")));
                 feedbackTrackingResponseDTO.setTableNo(resultSet.getString("table_no"));
                 feedbackTrackingResponseDTO.setCustomerId(resultSet.getInt("customer_id"));
                 feedbackTrackingResponseDTO.setCustomerName(resultSet.getString("custoner_name"));
                 feedbackTrackingResponseDTO.setPhoneNo(resultSet.getString("phone_no"));
-                feedbackTrackingResponseDTO.setMgrName(resultSet.getString("manager_name"));
-                feedbackTrackingResponseDTO.setMgrMobileNo(resultSet.getString("manager_mobile"));
-                feedbackTrackingResponseDTO.setMgrEmail(resultSet.getString("manager_email"));
-                feedbackTrackingResponseDTO.setFistViewDate(resultSet.getString("first_view_date"));
+                feedbackTrackingResponseDTO.setMgrName(resultSet.getString("mgr_name"));
+                feedbackTrackingResponseDTO.setMgrMobileNo(resultSet.getString("mgr_mobile"));
+                feedbackTrackingResponseDTO.setMgrEmail(resultSet.getString("mgr_email"));
+                if(resultSet.getTimestamp("first_view_date") == null){
+                    feedbackTrackingResponseDTO.setFistViewDate("");
+                }else {
+                    feedbackTrackingResponseDTO.setFistViewDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("first_view_date")));
+                }
                 feedbackTrackingResponseDTO.setViewCount(resultSet.getInt("view_count"));
                 feedbackTrackingResponseDTO.setIsAddressed(resultSet.getInt("isAddressed"));
 
@@ -782,5 +785,37 @@ public class FeedbackDAO {
         return trackingDTOList;
     }
 
+    public static void updateFeedback(int id)  throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE feedback_head SET isNegative =1 WHERE id =?");
+
+
+            preparedStatement.setInt(parameterIndex++,id);
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

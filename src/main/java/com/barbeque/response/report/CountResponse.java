@@ -1,7 +1,5 @@
 package com.barbeque.response.report;
 
-import com.barbeque.response.util.GenericResponse;
-
 /**
  * Created by System-3 on 2/13/2017.
  */

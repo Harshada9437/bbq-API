@@ -81,7 +81,7 @@ public class DeviceDAO {
             while (resultSet.next()) {
                 deviceDTO.setId(resultSet.getInt("id"));
                 deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
-                deviceDTO.setInstallationDate(resultSet.getString("installation_date"));
+                deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
                 deviceDTO.setFingerprint(resultSet.getString("fingerprint"));
                 deviceDTO.setInstallationId(resultSet.getString("installation_id"));
                 deviceDTO.setStoreId(resultSet.getString("store_id"));
@@ -120,7 +120,7 @@ public class DeviceDAO {
                 date = "";
                 deviceDTO.setId(resultSet.getInt("id"));
                 deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
-                deviceDTO.setInstallationDate(resultSet.getString("installation_date"));
+                deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
                 deviceDTO.setFingerprint(resultSet.getString("fingerprint"));
                 deviceDTO.setInstallationId(resultSet.getString("installation_id"));
                 deviceDTO.setStoreId(resultSet.getString("store_id"));
@@ -307,7 +307,7 @@ public class DeviceDAO {
             int i = 1;
             while (resultSet.next()) {
                deviceDTO.setStoreId(resultSet.getString("store_id"));
-               deviceDTO.setInstallationId(resultSet.getString("installation_id"));
+                deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
                deviceDTO.setStatus(resultSet.getString("status"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("installation_date"));
@@ -345,7 +345,7 @@ public class DeviceDAO {
             int i=1;
             while (resultSet.next()) {
                 deviceDTO.setStoreId(resultSet.getString("store_id"));
-                deviceDTO.setInstallationId(resultSet.getString("installation_id"));
+                deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
                 deviceDTO.setStatus(resultSet.getString("status"));
                 deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
                 deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
