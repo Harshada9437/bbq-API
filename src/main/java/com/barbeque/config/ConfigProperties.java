@@ -22,8 +22,6 @@ public class ConfigProperties {
 
     static {
         try {
-            //LOGS
-            System.out.println("Tomcat home: " + System.getProperty("catalina.home"));
 
             app_path = new File(System.getProperty("catalina.home") + "/webapps").getAbsolutePath();
 
