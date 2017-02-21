@@ -216,17 +216,26 @@ public class DeviceDAO {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
-            getDevice(deviceDTO.getId());
+            getDeviceById(deviceDTO.getAndroidDeviceId());
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement("UPDATE devices SET installation_date=?, status =? WHERE id =?");
+            if(deviceDTO.getInstallationDate()==null || deviceDTO.getInstallationDate().equals("")){
+                preparedStatement = connection
+                        .prepareStatement("UPDATE devices SET status =? WHERE android_device_id =?");
+                preparedStatement.setString(parameterIndex++, deviceDTO.getStatus());
 
-            preparedStatement.setString(parameterIndex++, deviceDTO.getInstallationDate());
-            preparedStatement.setString(parameterIndex++, deviceDTO.getStatus());
+                preparedStatement.setString(parameterIndex++, deviceDTO.getAndroidDeviceId());
 
-            preparedStatement.setInt(parameterIndex++, deviceDTO.getId());
+            }else {
+                preparedStatement = connection
+                        .prepareStatement("UPDATE devices SET installation_date=?, status =? WHERE id =?");
+                preparedStatement.setString(parameterIndex++, deviceDTO.getInstallationDate());
+                preparedStatement.setString(parameterIndex++, deviceDTO.getStatus());
+
+                preparedStatement.setInt(parameterIndex++, deviceDTO.getId());
+
+            }
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -295,15 +304,55 @@ public class DeviceDAO {
             StringBuilder query = new StringBuilder("SELECT * FROM devices where id =" + deviceId);
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
+            int i=1;
             while (resultSet.next()) {
                deviceDTO.setStoreId(resultSet.getString("store_id"));
                deviceDTO.setInstallationId(resultSet.getString("installation_id"));
                deviceDTO.setStatus(resultSet.getString("status"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
                deviceDTO.setAndroidDeviceId(resultSet.getString("installation_date"));
+               i++;
             }
 
-            if(resultSet.getFetchSize() == 0){
+            if(i == 1){
+                throw new DeviceNotFoundException("invalid device id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return deviceDTO;
+    }
+
+    public static DeviceDTO getDeviceById(String deviceId) throws SQLException, DeviceNotFoundException {
+        Connection connection = null;
+        Statement statement = null;
+        DeviceDTO deviceDTO = new DeviceDTO();
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder("SELECT * FROM devices where android_device_id =\"" + deviceId + "\"");
+            ResultSet resultSet = statement.executeQuery(query.toString()
+                    .trim());
+            int i=1;
+            while (resultSet.next()) {
+                deviceDTO.setStoreId(resultSet.getString("store_id"));
+                deviceDTO.setInstallationId(resultSet.getString("installation_id"));
+                deviceDTO.setStatus(resultSet.getString("status"));
+                deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
+                deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
+                i++;
+            }
+
+            if(i == 1){
                 throw new DeviceNotFoundException("invalid device id");
             }
         } catch (SQLException e) {

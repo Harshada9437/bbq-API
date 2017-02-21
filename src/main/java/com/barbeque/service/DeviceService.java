@@ -68,7 +68,7 @@ public class DeviceService {
         DeviceStatusRequestBO deviceRequestBO = new DeviceStatusRequestBO();
         MessageResponse messageResponse = new MessageResponse();
 
-        deviceRequestBO.setId(deviceRequest.getId());
+        deviceRequestBO.setAndroidDeviceId(deviceRequest.getAndroidDeviceId());
         deviceRequestBO.setStatus(deviceRequest.getStatus());
 
         try {

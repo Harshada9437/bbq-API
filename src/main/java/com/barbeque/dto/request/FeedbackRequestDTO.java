@@ -30,12 +30,21 @@ public class FeedbackRequestDTO {
     private String answerDesc;
     private String questionDesc;
     private int rating;
+    private int isAddressed;
     private int weightage;
     private String email;
     private String threshold;
     private String dob;
     private String doa;
     private String locality;
+
+    public int getIsAddressed() {
+        return isAddressed;
+    }
+
+    public void setIsAddressed(int isAddressed) {
+        this.isAddressed = isAddressed;
+    }
 
     public String getThreshold() {
         return threshold;
@@ -265,6 +274,7 @@ public class FeedbackRequestDTO {
         if (questionType != that.questionType) return false;
         if (id != that.id) return false;
         if (customerId != that.customerId) return false;
+        if (isAddressed != that.isAddressed) return false;
         if (deviceId != that.deviceId) return false;
         if (outletId != that.outletId) return false;
         if (answerId != that.answerId) return false;
@@ -296,6 +306,7 @@ public class FeedbackRequestDTO {
         int result = (int) questionType;
         result = 31 * result + id;
         result = 31 * result + customerId;
+        result = 31 * result + isAddressed;
         result = 31 * result + deviceId;
         result = 31 * result + (feedbackDate != null ? feedbackDate.hashCode() : 0);
         result = 31 * result + (modifiedOn != null ? modifiedOn.hashCode() : 0);
@@ -330,6 +341,7 @@ public class FeedbackRequestDTO {
                 ", id=" + id +
                 ", customerId=" + customerId +
                 ", deviceId=" + deviceId +
+                ", isAddressed=" + isAddressed +
                 ", feedbackDate=" + feedbackDate +
                 ", modifiedOn='" + modifiedOn + '\'' +
                 ", outletId=" + outletId +

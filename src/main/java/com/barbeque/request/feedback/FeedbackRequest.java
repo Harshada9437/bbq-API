@@ -16,6 +16,7 @@ public class FeedbackRequest {
     private String billNo;
     public CreateCustomer customer;
 
+
     public int getDeviceId() {
         return deviceId;
     }

@@ -2,15 +2,19 @@ package com.barbeque.service;
 
 import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.FeedbackRequestBO;
+import com.barbeque.bo.FeedbackTrackingRequestBO;
+import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
+import com.barbeque.request.feedback.FeedbackTrackingRequest;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
 import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponseList;
+import com.barbeque.response.feedback.FeedbackTrackingResponseList;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
 
@@ -58,7 +62,7 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getfeedbackList(FeedbackListRequest feedbackListRequest) {
+    public Response getfeedbackList(FeedbackListRequest feedbackListRequest ) {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
         try {
@@ -82,14 +86,13 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Response getfeedbackById(@PathParam("id")int id)
-    {
-        FeedbackRequestHandler feedbackRequestHandler=new FeedbackRequestHandler();
+    public Response getfeedbackById(@PathParam("id") int id) {
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
-        try{
-            FeedbackByIdResponse feedbackByIdResponse=feedbackRequestHandler.getfeedbackById(id);
+        try {
+            FeedbackByIdResponse feedbackByIdResponse = feedbackRequestHandler.getfeedbackById(id);
             return ResponseGenerator.generateSuccessResponse(feedbackByIdResponse, "SUCCESS");
-        }catch (FeedbackNotFoundException e) {
+        } catch (FeedbackNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID feedback id. ");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -99,5 +102,55 @@ public class FeedbackService {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid question id.");
         }
     }
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/createfeedbackTracking")
+    public Response createFeedbackTracking(FeedbackTrackingRequest feedbackTrackingRequest) {
+        FeedbackTrackingRequestBO feedbackTrackingRequestBO = new FeedbackTrackingRequestBO();
+        feedbackTrackingRequestBO.setFeedbackId(feedbackTrackingRequest.getFeedbackId());
+
+
+        MessageResponse createUserResponse = new MessageResponse();
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+        try {
+            Boolean userId = feedbackRequestHandler.createFeedbackTracking(feedbackTrackingRequestBO);
+            return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(createUserResponse, "Feedback tracking creation Failed");
+        }
+    }
+
+
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/negativeReport")
+
+    public Response getNegativeReport(FeedbackListRequest feedbackListRequest){
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+      FeedbackTrackingResponseList feedbackTrackingResponseList = new FeedbackTrackingResponseList();
+        FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
+        try {
+            feedbackListRequestBO.setFromDate(feedbackListRequest.getFromDate());
+            feedbackListRequestBO.setToDate(feedbackListRequest.getToDate());
+            feedbackListRequestBO.setOutletId(feedbackListRequest.getOutletId());
+            feedbackListRequestBO.setTableNo(feedbackListRequest.getTableNo());
+            feedbackListRequestBO.setUserId(feedbackListRequest.getUserId());
+           feedbackTrackingResponseList.setFeedbackTrackingDetails(feedbackRequestHandler.getFeedbackTrackingList(feedbackListRequestBO));
+            return ResponseGenerator.generateSuccessResponse(feedbackTrackingResponseList, "List of Negative feedbacks.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(feedbackTrackingResponseList, "Failure.");
+        }
+    }
+
+
+
 }
 

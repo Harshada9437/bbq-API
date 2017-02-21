@@ -263,7 +263,6 @@ public class UsersDAO {
         }
         return loginResponseDTO;
     }
-
     public List<MenuRequestDTO> getMenuList() throws SQLException {
         List<MenuRequestDTO> menuRequestDTOList = new ArrayList<MenuRequestDTO>();
         Connection connection = null;
@@ -297,6 +296,7 @@ public class UsersDAO {
         }
         return menuRequestDTOList;
     }
+
 
 
     public static RoleRequestDTO getroleById(int id) throws SQLException {

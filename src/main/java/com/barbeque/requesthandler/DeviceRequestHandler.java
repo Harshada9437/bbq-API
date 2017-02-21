@@ -118,7 +118,7 @@ public class DeviceRequestHandler {
     private DeviceDTO buildStatusDtofromBo(DeviceStatusRequestBO deviceRequestBO) {
         DeviceDTO deviceDTO = new DeviceDTO();
 
-        deviceDTO.setId(deviceRequestBO.getId());
+        deviceDTO.setAndroidDeviceId(deviceRequestBO.getAndroidDeviceId());
         deviceDTO.setStatus(deviceRequestBO.getStatus());
         return deviceDTO;
     }

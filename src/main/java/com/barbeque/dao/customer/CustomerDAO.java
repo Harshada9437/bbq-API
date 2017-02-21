@@ -2,6 +2,7 @@ package com.barbeque.dao.customer;
 
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.CustomerDTO;
+import com.barbeque.exceptions.CustomerNotFoundException;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
@@ -170,14 +171,21 @@ public class CustomerDAO {
             StringBuilder query = new StringBuilder(
                     "SELECT id, phone_no,email_id FROM customer where phone_no = \"" + mobile + "\"");
             ResultSet resultSet = statement.executeQuery(query.toString());
-
+            int i=1;
             while (resultSet.next()) {
                 isProcessed = resultSet.getInt("id");
+                i++;
                 connection.commit();
+            }
+            if(i==1){
+                throw new CustomerNotFoundException(
+                        "Invalid Customer.");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             throw sqlException;
+        } catch (CustomerNotFoundException e) {
+            e.printStackTrace();
         } finally {
             try {
                 statement.close();

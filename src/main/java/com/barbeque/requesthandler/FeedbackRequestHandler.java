@@ -1,7 +1,6 @@
 package com.barbeque.requesthandler;
 
-import com.barbeque.bo.FeedbackListRequestBO;
-import com.barbeque.bo.UpdateCustomerRequestBO;
+import com.barbeque.bo.*;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.Sync.SmsDAO;
 import com.barbeque.dao.answer.AnswerDAO;
@@ -10,8 +9,6 @@ import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dao.question.QuestionDAO;
 import com.barbeque.dto.request.UpdateSettingsDTO;
 import com.barbeque.dto.request.*;
-import com.barbeque.bo.FeedbackRequestBO;
-import com.barbeque.bo.UpdateFeedbackRequestBO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
@@ -19,6 +16,8 @@ import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponse;
+import com.barbeque.response.feedback.FeedbackTrackingResponse;
+import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.util.DateUtil;
 import com.barbeque.util.SendSms;
 
@@ -72,6 +71,7 @@ public class FeedbackRequestHandler {
                 if ((questionRequestDTO.getQuestionType() == '1' || questionRequestDTO.getQuestionType() == '5' ||
                         questionRequestDTO.getQuestionType() == '6') && answerDTO.getThreshold().equals("1")) {
                     isExist = Boolean.TRUE;
+
                     break;
                 }
             }
@@ -118,18 +118,19 @@ public class FeedbackRequestHandler {
         for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
             if (!uniqueIds.contains(feedbackRequestDTO.getId())) {
                 FeedbackResponse feedbackResp = new FeedbackResponse(feedbackRequestDTO.getId(),
+                        feedbackRequestDTO.getCustomerId(),
                         DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
                         feedbackRequestDTO.getOutletId(),
                         feedbackRequestDTO.getTableNo(),
                         feedbackRequestDTO.getBillNo(),
-                        feedbackRequestDTO.getOutletDesc(),
-                        feedbackRequestDTO.getCustomerId(),
                         feedbackRequestDTO.getCustomerName(),
+                        feedbackRequestDTO.getOutletDesc(),
                         feedbackRequestDTO.getMobileNo(),
                         feedbackRequestDTO.getEmail(),
                         feedbackRequestDTO.getDob(),
                         feedbackRequestDTO.getDoa(),
-                        feedbackRequestDTO.getLocality());
+                        feedbackRequestDTO.getLocality(),
+                        feedbackRequestDTO.getIsAddressed());
                 List<FeedbackDetails> newAnswerList = new ArrayList<FeedbackDetails>();
                 FeedbackDetails answer = new FeedbackDetails();
                 answer.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
@@ -311,7 +312,71 @@ public class FeedbackRequestHandler {
         }
         return null;
     }
+
+
+    public Boolean createFeedbackTracking(FeedbackTrackingRequestBO feedbackTrackingRequestBO) throws Exception {
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        Boolean isUpdate;
+        FeedbackTrackingDTO feedbackTrackingDTO = buildFeedbackTrackingDTOFromBO(feedbackTrackingRequestBO);
+        FeedbackTrackingDTO feedbackTrackingDTO1 = FeedbackDAO.getcustomer(feedbackTrackingDTO.getManagerMobile(),feedbackTrackingDTO.getFeedbackId());
+        if (feedbackTrackingDTO1.getFeedbackId()==0) {
+            isUpdate = feedbackDAO.createFeedbackTracking(feedbackTrackingDTO);
+
+        } else {
+
+            isUpdate = feedbackDAO.updateFeedbackTracking(feedbackTrackingDTO1);
+
+        }
+        return isUpdate;
+    }
+
+
+    private FeedbackTrackingDTO buildFeedbackTrackingDTOFromBO(FeedbackTrackingRequestBO feedbackTrackingRequestBO) throws Exception {
+        FeedbackTrackingDTO feedbackTrackingDTO = new FeedbackTrackingDTO();
+
+        feedbackTrackingDTO.setFeedbackId(feedbackTrackingRequestBO.getFeedbackId());
+        FeedbackRequestDTO feedbackRequestDTO = FeedbackDAO.getfeedbackById(feedbackTrackingRequestBO.getFeedbackId());
+        UpdateSettingsDTO updateSettingsDTO = OutletDAO.getSetting(feedbackRequestDTO.getOutletId());
+        if(updateSettingsDTO.getMgrEmail()== null && updateSettingsDTO.getMgrMobile()== null &&  updateSettingsDTO.getMgrName()== null){
+            feedbackTrackingDTO.setManagerEmail("");
+            feedbackTrackingDTO.setManagerMobile("");
+            feedbackTrackingDTO.setManagerName("");
+        }
+        feedbackTrackingDTO.setManagerMobile(updateSettingsDTO.getMgrMobile());
+        feedbackTrackingDTO.setManagerName(updateSettingsDTO.getMgrName());
+        feedbackTrackingDTO.setManagerEmail(updateSettingsDTO.getMgrEmail());
+        return feedbackTrackingDTO;
+    }
+
+
+    public List<FeedbackTrackingResponse> getFeedbackTrackingList(FeedbackListRequestBO feedbackListRequestBO) throws SQLException, UserNotFoundException {
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        List<FeedbackTrackingResponse> feedbackTrackingDTOList = new ArrayList<FeedbackTrackingResponse>();
+        List<FeedbackTrackingResponseDTO> trackingList = feedbackDAO.getFeedbackTrackingList(feedbackListRequestBO);
+
+        for (FeedbackTrackingResponseDTO feedbackTrackingResponseDTO : trackingList) {
+           FeedbackTrackingResponse feedbackTrackingResponse = new FeedbackTrackingResponse(feedbackTrackingResponseDTO.getFeedbackId(),
+                   feedbackTrackingResponseDTO.getOutletId(),
+                   feedbackTrackingResponseDTO.getOutletName(),
+                   feedbackTrackingResponseDTO.getDate(),
+                   feedbackTrackingResponseDTO.getTableNo(),
+                   feedbackTrackingResponseDTO.getCustomerId(),
+                   feedbackTrackingResponseDTO.getCustomerName(),
+                   feedbackTrackingResponseDTO.getPhoneNo(),
+                   feedbackTrackingResponseDTO.getMgrName(),
+                   feedbackTrackingResponseDTO.getMgrMobileNo(),
+                   feedbackTrackingResponseDTO.getMgrEmail(),
+                   feedbackTrackingResponseDTO.getFistViewDate(),
+                   feedbackTrackingResponseDTO.getViewCount(),
+                   feedbackTrackingResponseDTO.getIsAddressed());
+
+            feedbackTrackingDTOList.add(feedbackTrackingResponse);
+        }
+        return feedbackTrackingDTOList;
+    }
 }
+
+
 
 
 

@@ -22,45 +22,39 @@ public class FeedbackResponse {
     private String dob;
     private String doa;
     private String locality;
+    private int isAddressed;
 
-    public String getLocality() {
-        return locality;
+
+    public int getId() {
+        return id;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getDob() {
-        return dob;
-    }
-
-    public String getDoa() {
-        return doa;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getCustomerId() {
         return customerId;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
-    public String getOutletDesc() {
-        return outletDesc;
+    public String getFeedbackDate() {
+        return feedbackDate;
     }
 
-    public String getMobileNo() {
-        return mobileNo;
-    }
-
-    public int getId() {
-        return id;
+    public void setFeedbackDate(String feedbackDate) {
+        this.feedbackDate = feedbackDate;
     }
 
     public int getOutletId() {
         return outletId;
+    }
+
+    public void setOutletId(int outletId) {
+        this.outletId = outletId;
     }
 
     public List<FeedbackDetails> getFeedbacks() {
@@ -75,28 +69,97 @@ public class FeedbackResponse {
         return tableNo;
     }
 
+    public void setTableNo(String tableNo) {
+        this.tableNo = tableNo;
+    }
+
     public String getBillNo() {
         return billNo;
     }
 
-    public String getFeedbackDate() {
-        return feedbackDate;
+    public void setBillNo(String billNo) {
+        this.billNo = billNo;
     }
 
-    public FeedbackResponse(int id, String feedbackDate, int outletId, String tableNo, String billNo, String outletDesc,int customerId, String customerName, String mobileNo, String email, String dob, String doa, String locality) {
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getOutletDesc() {
+        return outletDesc;
+    }
+
+    public void setOutletDesc(String outletDesc) {
+        this.outletDesc = outletDesc;
+    }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getDoa() {
+        return doa;
+    }
+
+    public void setDoa(String doa) {
+        this.doa = doa;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public int getIsAddressed() {
+        return isAddressed;
+    }
+
+    public void setIsAddressed(int isAddressed) {
+        this.isAddressed = isAddressed;
+    }
+
+    public FeedbackResponse(int id, int customerId, String feedbackDate, int outletId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo, String email, String dob, String doa, String locality, int isAddressed) {
         this.id = id;
+        this.customerId = customerId;
         this.feedbackDate = feedbackDate;
         this.outletId = outletId;
         this.tableNo = tableNo;
         this.billNo = billNo;
-        this.outletDesc = outletDesc;
-        this.customerId = customerId;
         this.customerName = customerName;
+        this.outletDesc = outletDesc;
         this.mobileNo = mobileNo;
         this.email = email;
         this.dob = dob;
         this.doa = doa;
         this.locality = locality;
+        this.isAddressed = isAddressed;
     }
 
     @Override
@@ -116,6 +179,7 @@ public class FeedbackResponse {
                 ", dob='" + dob + '\'' +
                 ", doa='" + doa + '\'' +
                 ", locality='" + locality + '\'' +
+                ", isAddressed=" + isAddressed +
                 '}';
     }
 }

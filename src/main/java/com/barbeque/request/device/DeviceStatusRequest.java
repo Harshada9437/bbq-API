@@ -4,15 +4,15 @@ package com.barbeque.request.device;
  * Created by System-2 on 1/17/2017.
  */
 public class DeviceStatusRequest {
-    private int id;
+    private String androidDeviceId;
     private String status;
 
-    public int getId() {
-        return id;
+    public String getAndroidDeviceId() {
+        return androidDeviceId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setAndroidDeviceId(String androidDeviceId) {
+        this.androidDeviceId = androidDeviceId;
     }
 
     public String getStatus() {
@@ -30,13 +30,14 @@ public class DeviceStatusRequest {
 
         DeviceStatusRequest that = (DeviceStatusRequest) o;
 
-        if (id != that.id) return false;
+        if (androidDeviceId != null ? !androidDeviceId.equals(that.androidDeviceId) : that.androidDeviceId != null)
+            return false;
         return status != null ? status.equals(that.status) : that.status == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = androidDeviceId != null ? androidDeviceId.hashCode() : 0;
         result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
@@ -44,7 +45,7 @@ public class DeviceStatusRequest {
     @Override
     public String toString() {
         return "DeviceStatusRequest{" +
-                "id=" + id +
+                "androidDeviceId='" + androidDeviceId + '\'' +
                 ", status='" + status + '\'' +
                 '}';
     }
