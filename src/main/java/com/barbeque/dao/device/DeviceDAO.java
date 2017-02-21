@@ -304,7 +304,7 @@ public class DeviceDAO {
             StringBuilder query = new StringBuilder("SELECT * FROM devices where id =" + deviceId);
             ResultSet resultSet = statement.executeQuery(query.toString()
                     .trim());
-            int i=1;
+            int i = 1;
             while (resultSet.next()) {
                deviceDTO.setStoreId(resultSet.getString("store_id"));
                deviceDTO.setInstallationId(resultSet.getString("installation_id"));
