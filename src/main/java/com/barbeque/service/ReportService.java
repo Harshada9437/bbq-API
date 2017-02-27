@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
 
+
 @Path("/report")
 public class ReportService {
     @GET
@@ -40,7 +41,6 @@ public class ReportService {
         }
     }
 
-
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -61,7 +61,6 @@ public class ReportService {
         }
     }
 
-
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +80,9 @@ public class ReportService {
             return ResponseGenerator.generateFailureResponse(customerReportResponseList, "Failure.");
         }
     }
+
+
+
 }
 
 

@@ -733,12 +733,10 @@ public class FeedbackDAO {
                 RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
                 where1 += " and f.outlet_id IN(" + rollRequestDTO.getOutletAccess() + ")";
             }
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.createStatement();
+
             String query = "select f.id,ft.feedback_id,f.outlet_id,f.date,f.table_no,f.customer_id,os.mgr_name,os.mgr_mobile,os.mgr_email,ft.first_view_date,COALESCE(ft.view_count,0) as view_count,\n" +
                     "c.name as custoner_name,c.phone_no,o.outlet_desc,\n" +
-                    "(select true from feedback_view_tracking t where t.feedback_id=f.id) as isAddressed\n" +
+                    "(select count(feedback_id) from feedback_view_tracking t where t.feedback_id=f.id) as isAddressed\n" +
                     "from feedback_head f\n" +
                     "left join feedback_view_tracking ft on ft.feedback_id = f.id\n" +
                     "left join customer c on f.customer_id = c.id\n" +

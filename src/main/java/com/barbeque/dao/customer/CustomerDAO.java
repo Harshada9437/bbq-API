@@ -17,7 +17,7 @@ public class CustomerDAO {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO customer(locality,name, phone_no, email_id, dob, doa, modified_on) values (?,?,?,?,?,?,?)");
-        Integer id = 0;
+        Integer id ;
         try {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
@@ -171,22 +171,16 @@ public class CustomerDAO {
             StringBuilder query = new StringBuilder(
                     "SELECT id, phone_no,email_id FROM customer where phone_no = \"" + mobile + "\"");
             ResultSet resultSet = statement.executeQuery(query.toString());
-            int i=1;
+
             while (resultSet.next()) {
                 isProcessed = resultSet.getInt("id");
-                i++;
                 connection.commit();
             }
-            if(i==1){
-                throw new CustomerNotFoundException(
-                        "Invalid Customer.");
-            }
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             throw sqlException;
-        } catch (CustomerNotFoundException e) {
-            e.printStackTrace();
-        } finally {
+        }  finally {
             try {
                 statement.close();
                 connection.close();

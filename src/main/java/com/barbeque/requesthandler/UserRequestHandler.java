@@ -34,44 +34,44 @@ public class UserRequestHandler {
         int count = getCount(sessionId);
         Boolean isValidUser = userName.equals(loginResponseDTO.getUserName()) && encodedPassword.equals
                 (loginResponseDTO.getPassword());
-        if (isValidUser && count < 16) {
-            Long newSessionId = new Date().getTime();
-            if (loginResponseDTO.getSessionId() == null) {
-                usersDAO.updateLogInSessionId(loginResponseDTO.getId(), "|" + String.valueOf(newSessionId) + "|");
+        if (isValidUser) {
+            if (count < 16) {
+                Long newSessionId = new Date().getTime();
+                if (loginResponseDTO.getSessionId() == null) {
+                    usersDAO.updateLogInSessionId(loginResponseDTO.getId(), "|" + String.valueOf(newSessionId) + "|");
+                } else {
+                    usersDAO.updateLogInSessionId(loginResponseDTO.getId(), loginResponseDTO.getSessionId() + "|" +
+                            String.valueOf(newSessionId) + "|");
+                }
+                loginResponseBO.setSessionId(newSessionId + "@" + loginResponseDTO.getId());
+                loginResponseBO.setStatus(loginResponseDTO.getStatus());
+                loginResponseBO.setId(loginResponseDTO.getId());
+                loginResponseBO.setUserName(loginResponseDTO.getUserName());
+                loginResponseBO.setName(loginResponseDTO.getName());
+                loginResponseBO.setEmail(loginResponseDTO.getEmail());
+                loginResponseBO.setRoleId(loginResponseDTO.getRoleId());
+                loginResponseBO.setMenuAccess(loginResponseDTO.getMenuAccess());
+                loginResponseBO.setOutletAccess(loginResponseDTO.getOutletAccess());
             } else {
-                usersDAO.updateLogInSessionId(loginResponseDTO.getId(), loginResponseDTO.getSessionId() + "|" +
-                        String.valueOf(newSessionId) + "|");
+                usersDAO.removeSessionId(userName, encodedPassword);
+                loginResponseDTO.setSessionId("");
+                Long newSessionId = new Date().getTime();
+                if (loginResponseDTO.getSessionId() == null) {
+                    usersDAO.updateLogInSessionId(loginResponseDTO.getId(), String.valueOf(newSessionId));
+                } else {
+                    usersDAO.updateLogInSessionId(loginResponseDTO.getId(), loginResponseDTO.getSessionId() + "|" +
+                            String.valueOf(newSessionId) + "|");
+                }
+                loginResponseBO.setSessionId(newSessionId + "@" + loginResponseDTO.getId());
+                loginResponseBO.setStatus(loginResponseDTO.getStatus());
+                loginResponseBO.setId(loginResponseDTO.getId());
+                loginResponseBO.setUserName(loginResponseDTO.getUserName());
+                loginResponseBO.setName(loginResponseDTO.getName());
+                loginResponseBO.setEmail(loginResponseDTO.getEmail());
+                loginResponseBO.setRoleId(loginResponseDTO.getRoleId());
+                loginResponseBO.setMenuAccess(loginResponseDTO.getMenuAccess());
+                loginResponseBO.setOutletAccess(loginResponseDTO.getOutletAccess());
             }
-            loginResponseBO.setSessionId(newSessionId + "@" + loginResponseDTO.getId());
-            loginResponseBO.setStatus(loginResponseDTO.getStatus());
-            loginResponseBO.setId(loginResponseDTO.getId());
-            loginResponseBO.setUserName(loginResponseDTO.getUserName());
-            loginResponseBO.setName(loginResponseDTO.getName());
-            loginResponseBO.setEmail(loginResponseDTO.getEmail());
-            loginResponseBO.setRoleId(loginResponseDTO.getRoleId());
-            loginResponseBO.setMenuAccess(loginResponseDTO.getMenuAccess());
-            loginResponseBO.setOutletAccess(loginResponseDTO.getOutletAccess());
-
-        } else {
-            usersDAO.removeSessionId(userName, encodedPassword);
-            loginResponseDTO.setSessionId("");
-            Long newSessionId = new Date().getTime();
-            if (loginResponseDTO.getSessionId() == null) {
-                usersDAO.updateLogInSessionId(loginResponseDTO.getId(), String.valueOf(newSessionId));
-            } else {
-                usersDAO.updateLogInSessionId(loginResponseDTO.getId(), loginResponseDTO.getSessionId() + "|" +
-                        String.valueOf(newSessionId) + "|");
-            }
-            loginResponseBO.setSessionId(newSessionId + "@" + loginResponseDTO.getId());
-            loginResponseBO.setStatus(loginResponseDTO.getStatus());
-            loginResponseBO.setId(loginResponseDTO.getId());
-            loginResponseBO.setUserName(loginResponseDTO.getUserName());
-            loginResponseBO.setName(loginResponseDTO.getName());
-            loginResponseBO.setEmail(loginResponseDTO.getEmail());
-            loginResponseBO.setRoleId(loginResponseDTO.getRoleId());
-            loginResponseBO.setMenuAccess(loginResponseDTO.getMenuAccess());
-            loginResponseBO.setOutletAccess(loginResponseDTO.getOutletAccess());
-
         }
         return loginResponseBO;
     }
