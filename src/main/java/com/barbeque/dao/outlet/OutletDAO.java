@@ -29,7 +29,8 @@ public class OutletDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(query.toString());
             preparedStatement.setInt(parameterIndex++, outletId);
-            preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
+            preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());
+            preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
             preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -54,12 +55,12 @@ public class OutletDAO {
         return isCreated;
     }
 
-    public static List<OutletDTO> getOutlate(String outletId, int userId) throws SQLException, UserNotFoundException {
+    public static List<OutletDTO> getOutlet(String outletId, int userId) throws SQLException, UserNotFoundException {
         Connection connection = null;
         Statement statement = null;
         List<OutletDTO> outletDTOs = new ArrayList<OutletDTO>();
         try {
-            String outlet="";
+            String outlet;
             if(outletId == null || outletId.equals("")){
                 LoginResponseDTO loginResponseDTO= UsersDAO.getuserById(userId);
                 RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
@@ -86,9 +87,7 @@ public class OutletDAO {
                     "left join template t\n" +
                     "on t.template_id=m.template_id\n" +
                     "where o.id IN (" + outlet + ")");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-            int index = 1;
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 OutletDTO outletDTO = new OutletDTO();
                 outletDTO.setId(resultSet.getInt("id"));
@@ -105,7 +104,6 @@ public class OutletDAO {
                 outletDTO.setGroupId(resultSet.getInt("group_id"));
                 outletDTO.setPosStoreId(resultSet.getString("pos_store_id"));
                 outletDTO.setTemplateId(resultSet.getInt("template_id"));
-                index++;
                 outletDTOs.add(outletDTO);
             }
         } catch (SQLException sqlException) {
@@ -123,7 +121,7 @@ public class OutletDAO {
         return outletDTOs;
     }
 
-    public static List<Integer> getOutlates() {
+    public static List<Integer> getOutletIds() {
         Connection connection = null;
         Statement statement = null;
         List<Integer> outlets = new ArrayList<Integer>();
@@ -131,9 +129,8 @@ public class OutletDAO {
 
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT id FROM outlet ");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            StringBuilder query = new StringBuilder("SELECT id FROM outlet");
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
@@ -177,11 +174,9 @@ public class OutletDAO {
                     "left join outlet_setting s\n" +
                     "on s.outlet_id=o.id\n" +
                     "where o.id=").append(outletId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             int index = 1;
             while (resultSet.next()) {
-
                 outletDTO.setId(resultSet.getInt("id"));
                 outletDTO.setOutletDesc(resultSet.getString("outlet_desc"));
                 outletDTO.setShortDesc(resultSet.getString("short_desc"));
@@ -252,8 +247,7 @@ public class OutletDAO {
                     "left join outlet_setting s\n" +
                     "on s.outlet_id=o.id\n" +
                     "where o.pos_store_id=\"").append(storeId).append("\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             int index = 1;
             while (resultSet.next()) {
 
@@ -463,8 +457,7 @@ public class OutletDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("SELECT * FROM outlet_setting where outlet_id=" + outletId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 updateSettingsDTO = new UpdateSettingsDTO();
@@ -545,34 +538,5 @@ public class OutletDAO {
             }
         }
         return isCreated;
-    }
-
-    public void removeAssugnTemplate(int outletId, int templateId) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        Connection connection = null;
-        try {
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement("delete from outlet_template_link WHERE outlet_id = " + outletId
-                    + " and template_id=" + templateId);
-
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                connection.commit();
-            } else {
-                connection.rollback();
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            throw sqlException;
-        } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

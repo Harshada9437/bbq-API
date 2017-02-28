@@ -83,7 +83,7 @@ public class DeviceRequestHandler {
     public Integer verifyDevice(UpdateDeviceRequestBO deviceRequestBO) throws SQLException, DeviceNotFoundException {
         DeviceDAO deviceDAO=new DeviceDAO();
         DeviceDTO deviceDTO = deviceDAO.getDeviceByInstallationId(deviceRequestBO.getInstallationId());
-        int id = -1;
+        int id;
         if(deviceDTO.getId() > 0){
             id = deviceDTO.getId();
             deviceDTO.setFingerprint(deviceRequestBO.getFingerprint());

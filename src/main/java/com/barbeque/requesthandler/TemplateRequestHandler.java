@@ -7,12 +7,10 @@ import com.barbeque.dto.request.QueTempDTO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.dto.request.TemplateDTO;
 import com.barbeque.dto.request.UpdateAssignQuestionDTO;
-import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.bo.AssignQuestionRequestBO;
 import com.barbeque.bo.TemplateRequestBO;
 import com.barbeque.bo.UpdateTemplateRequestBO;
-import com.barbeque.request.template.UpdateAssignQuestionRequest;
 import com.barbeque.response.template.GetTemplateResponse;
 import com.barbeque.response.template.QueResponse;
 import com.barbeque.response.template.TemplateResponseList;
@@ -102,7 +100,7 @@ public class TemplateRequestHandler {
     public boolean updateAssignQuestion(UpdateAssignQuestionRequestBO updateAssignQuestionRequestBO) throws SQLException {
 
         QueTempDAO queTempDAO = new QueTempDAO();
-        Boolean isProcessed = queTempDAO.updateupdateAssignQuestion(buildUpdateBOFromDTO(updateAssignQuestionRequestBO));
+        Boolean isProcessed = queTempDAO.updateAssignQuestion(buildUpdateBOFromDTO(updateAssignQuestionRequestBO));
         return isProcessed;
     }
 

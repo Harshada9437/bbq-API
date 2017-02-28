@@ -56,8 +56,7 @@ public class SmsDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select * from global_settings");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             int index = 1;
             while (resultSet.next()) {
@@ -145,9 +144,7 @@ public class SmsDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select * from sms_gateway_mstr");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 SmsSettingDTO settingRequestDTO = new SmsSettingDTO();
@@ -182,9 +179,7 @@ public class SmsDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select * from sms_gateway_mstr where id=" + id);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 smsSettingDTO.setId(resultSet.getInt("id"));
@@ -217,9 +212,7 @@ public class SmsDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select * from sms_gateway_mstr where name=\"" + name + "\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 isProcessed=Boolean.TRUE;
@@ -242,7 +235,7 @@ public class SmsDAO {
     public static void updateSmsSettings(SmsSettingDTO settingRequestDTO) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
-        int id = 0;
+
         try{
             int parameterIndex = 1;
 
@@ -286,9 +279,7 @@ public class SmsDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select * from sms_gateway_mstr where id<>" + id +" and name=\"" + name + "\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 isProcessed=Boolean.TRUE;

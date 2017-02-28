@@ -74,7 +74,7 @@ public class SyncRequestHandler {
         }
 
         List<Outlet> outlets = data.getOutlets();
-        List<Integer> oldOutlet = OutletDAO.getOutlates();
+        List<Integer> oldOutlet = OutletDAO.getOutletIds();
             for (Outlet outlet : outlets) {
                     if (oldOutlet.contains(outlet.getId())) {
                         OutletDAO.updateOutlet(outlet);

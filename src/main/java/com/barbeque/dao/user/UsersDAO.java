@@ -71,8 +71,7 @@ public class UsersDAO {
             StringBuilder query = new StringBuilder(
                     "SELECT * FROM user_details where user_name =\"" + userName + "\" and password=\"" + password + "\" and session_id LIKE \"%|" +
                             sessionId + "|%\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 isVerify = Boolean.TRUE;
             }
@@ -203,8 +202,7 @@ public class UsersDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
                     "SELECT session_id FROM user_details where user_name =\"" + userName + "\" and password=\"" + password + "\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 sessionId = resultSet.getString(1);
             }
@@ -475,8 +473,7 @@ public class UsersDAO {
                     "select * from user_details where user_name = \"").append(userName)
                     .append("\" or email =\"").append(email).append("\" or name=\"").append(name+"\"");
 
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                        .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
                 while (resultSet.next()) {
                   isCreated = true;
                 }
@@ -563,8 +560,7 @@ public class UsersDAO {
             StringBuffer query = new StringBuffer(
                     "select * from role where name = \"").append(name).append("\"");
 
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 isCreated = true;
             }

@@ -17,19 +17,14 @@ public class VersionDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select * from android_version");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
-            int index = 1;
             while (resultSet.next()) {
 
                 versionInfoDTO.setVersionCode(resultSet.getInt("versionCode"));
                 versionInfoDTO.setVersionNumber(resultSet.getString("versionName"));
-                index++;
             }
-            if (index == 1) {
-                throw new SQLException("Error getting version");
-            }
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             throw sqlException;

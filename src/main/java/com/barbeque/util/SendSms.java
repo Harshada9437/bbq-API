@@ -44,8 +44,6 @@ public class SendSms {
         String countryCode = smsSettingDTO.getCountryCode();
 
         String url = UrlFormatter.shortenUrl(ConfigProperties.url + "/" + id + "?SC=1") ;
-        System.out.println("Shorten url:::" + url);
-        System.out.println("long url:::" + ConfigProperties.url);
 
         FeedbackRequestDTO feedback = FeedbackDAO.getfeedbackById(id);
 

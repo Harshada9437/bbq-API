@@ -50,12 +50,8 @@ public class UserService {
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid password or inactive user.");
             }
-        } catch (SQLException e) {
+        }catch (Exception e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to log in");
-        } catch (UserNotFoundException e) {
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid Log in");
-        } catch (Exception e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid Log in");
         }
 
@@ -82,7 +78,6 @@ public class UserService {
             return ResponseGenerator.generateFailureResponse(loginResponse, "Unable to log out the current user.");
         } catch (UserNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(loginResponse, "Invalid user id");
-
         }
     }
 
@@ -128,7 +123,6 @@ public class UserService {
             return ResponseGenerator.generateSuccessResponse(userResponse, "UserInfo");
         } catch (UserNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID UserId ");
-
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "failed to retrieve. ");
@@ -144,12 +138,13 @@ public class UserService {
     public Response getMenuList() {
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         MenuResponseList menuResponseList = new MenuResponseList();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             menuResponseList.setMenus(userRequestHandler.getMenuList());
             return ResponseGenerator.generateSuccessResponse(menuResponseList, "List of menus.");
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(menuResponseList, "Failure.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
         }
     }
 
@@ -181,12 +176,13 @@ public class UserService {
     public Response getRoleList() {
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         RoleResponseList roleResponseList = new RoleResponseList();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             roleResponseList.setRoles(userRequestHandler.getRoleList());
             return ResponseGenerator.generateSuccessResponse(roleResponseList, "List of roles.");
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(roleResponseList, "Failure.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
         }
     }
 
@@ -256,11 +252,8 @@ public class UserService {
                 return ResponseGenerator.generateFailureResponse(createUserResponse, "Role already exists.");
             }
         } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
             return ResponseGenerator.generateFailureResponse(createUserResponse, "Role creation failed");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(createUserResponse, "Role creation failed.");
         }
     }
 

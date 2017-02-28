@@ -1,6 +1,7 @@
 package com.barbeque.dao.answer;
 
 import com.barbeque.dao.ConnectionHandler;
+import com.barbeque.dao.question.QuestionDAO;
 import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.exceptions.QuestionNotFoundException;
 
@@ -69,23 +70,20 @@ public class AnswerDAO {
         return id;
     }
 
-    public  List<AnswerDTO> getAnswer(int questionId) throws SQLException {
+    public static List<AnswerDTO> getAnswer(int questionId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         List<AnswerDTO> answerDTOs = new ArrayList<AnswerDTO>();
         try {
-
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT qa.threshold,qa.question_id,qa.weightage,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
+            String query = "SELECT qa.threshold,qa.question_id,qa.weightage,qb.question_desc as description,qa.answer_id,qa.answer_desc,qa.rating\n" +
                     " FROM question_answer_link qa\n" +
                     " left join question_bank qb\n" +
                     " ON\n" +
                     " qa.question_id=qb.id\n" +
-                    " where question_id="+questionId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-            int index = 1;
+                    " where question_id="+questionId;
+            ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 AnswerDTO answerDTO = new AnswerDTO();
                 answerDTO.setQuestionId(resultSet.getInt("question_id"));
@@ -94,9 +92,7 @@ public class AnswerDAO {
                 answerDTO.setAnswerText(resultSet.getString("answer_desc"));
                 answerDTO.setThreshold(resultSet.getString("threshold"));
                 answerDTO.setRating(resultSet.getInt("rating"));
-                index++;
                 answerDTOs.add(answerDTO);
-
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -113,7 +109,7 @@ public class AnswerDAO {
         return answerDTOs;
     }
 
-    public  static AnswerDTO getAnswerById(int ansId) throws SQLException, QuestionNotFoundException {
+    public  static AnswerDTO getAnswerById(int ansId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         AnswerDTO answerDTO = new AnswerDTO();
@@ -127,9 +123,7 @@ public class AnswerDAO {
                     " ON\n" +
                     " qa.question_id=qb.id\n" +
                     " where qa.answer_id="+ansId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-            int index = 1;
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 answerDTO.setQuestionId(resultSet.getInt("question_id"));
                 answerDTO.setId(resultSet.getInt("answer_id"));

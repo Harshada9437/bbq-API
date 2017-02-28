@@ -70,7 +70,7 @@ public class CustomerDAO {
         }
         return id;
     }
-    
+
     public List<CustomerDTO> getCustomerList() throws SQLException {
         List<CustomerDTO> customerList = new ArrayList<CustomerDTO>();
         Connection connection = null;
@@ -191,3 +191,6 @@ public class CustomerDAO {
         return isProcessed;
     }
 }
+
+
+

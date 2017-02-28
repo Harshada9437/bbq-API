@@ -22,17 +22,16 @@ public class TableDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("SELECT * FROM tables_desc ");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-            int index = 1;
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
             while (resultSet.next()) {
                 TableDTO tableDTO = new TableDTO();
                 tableDTO.setId(resultSet.getInt("id"));
                 tableDTO.setStatus(resultSet.getString("status"));
                 tableDTO.setTableName(resultSet.getString("table_name"));
-                index++;
                 tableDTOs.add(tableDTO);
             }
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         } finally {

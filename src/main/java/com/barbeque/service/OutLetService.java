@@ -51,6 +51,7 @@ public class OutLetService {
                 return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template is already assigned to this outlet.");
             }
         } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
             return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template assignment Failed");
         }
     }
@@ -146,6 +147,7 @@ public class OutLetService {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid store id ");
 
         } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving outlet details. ");
         }
     }

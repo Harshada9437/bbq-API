@@ -112,7 +112,7 @@ public class QueTempDAO {
         Statement statement = connection.createStatement();
 
         StringBuilder query = new StringBuilder("delete from template_question_link where template_id =" + templateId + " and question_id=" + queId);
-        int i = statement.executeUpdate(query.toString().trim());
+        int i = statement.executeUpdate(query.toString());
 
         if (i < 1) {
             throw new TemplateNotFoundException("Invalid template id.");
@@ -135,8 +135,7 @@ public class QueTempDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
                     "SELECT template_id FROM template_question_link where template_id = ").append(templateId).append(" and question_id=").append(questionId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 isExist = true;
             }
@@ -154,36 +153,7 @@ public class QueTempDAO {
         return isExist;
     }
 
-   /* public static boolean isAssigned(int priority) throws SQLException {
-        Connection connection = null;
-        Statement statement = null;
-        boolean isExist = false;
-        try {
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            statement = connection.createStatement();
-            StringBuilder query = new StringBuilder(
-                    "SELECT priority FROM template_question_link where priority = ").append(priority);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-            while (resultSet.next()) {
-                isExist = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            try {
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return isExist;
-    }
-*/
-    public Boolean updateupdateAssignQuestion (UpdateAssignQuestionDTO updateAssignQuestionDTO) throws SQLException
+    public Boolean updateAssignQuestion(UpdateAssignQuestionDTO updateAssignQuestionDTO) throws SQLException
     {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
@@ -198,9 +168,6 @@ public class QueTempDAO {
             preparedStatement.setInt(parameterIndex++, updateAssignQuestionDTO.getPriority());
             preparedStatement.setInt(parameterIndex++, updateAssignQuestionDTO.getTemplateId());
             preparedStatement.setInt(parameterIndex++, updateAssignQuestionDTO.getQuestionId());
-
-
-
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {

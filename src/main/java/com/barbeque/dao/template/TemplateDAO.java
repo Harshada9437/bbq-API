@@ -1,15 +1,12 @@
 package com.barbeque.dao.template;
 
 import com.barbeque.dao.ConnectionHandler;
-import com.barbeque.dto.request.QuestionRequestDTO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.dto.request.TemplateDTO;
-import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
-import java.sql.Date;
 import java.util.*;
 
 /**
@@ -20,7 +17,7 @@ public class TemplateDAO {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO template(template_desc) values (?)");
-        Integer id = 0;
+        Integer id;
         try {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
@@ -75,8 +72,7 @@ public class TemplateDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
                     "SELECT template_id,template_desc FROM template where template_id = ").append(templateId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 templateDTO.setId(resultSet.getInt("template_id"));
                 templateDTO.setTemplateDesc(resultSet.getString("template_desc"));
@@ -153,9 +149,8 @@ public class TemplateDAO {
                     "t.template_id=ol.template_id\n" +
                     "left join outlet o\n" +
                     "on ol.outlet_id=o.id;");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
-            int index = 1;
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
             while (resultSet.next()) {
                 TemplateDTO templateDTO = new TemplateDTO();
                 templateDTO.setId(resultSet.getInt("template_id"));
@@ -164,7 +159,6 @@ public class TemplateDAO {
                 templateDTO.setStatus(resultSet.getString("status"));
                 templateDTO.setOutletDesc(resultSet.getString("outlet_desc"));
                 templateDTO.setShortDesc(resultSet.getString("short_desc"));
-                index++;
                 templateDTOs.add(templateDTO);
 
             }
@@ -193,7 +187,7 @@ public class TemplateDAO {
             StringBuilder query = new StringBuilder(
                     "SELECT * FROM outlet_template_link where outlet_id = ").append(outletId);
             ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+                  );
             while (resultSet.next()) {
                 TempDTO tempDTO = new TempDTO();
                 String toDate = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("to_date"));
@@ -222,8 +216,7 @@ public class TemplateDAO {
                     " left join template t\n" +
                     " on t.template_id=m.template_id\n" +
                     " where m.template_id="+ templateId + " and m.outlet_id=" + outletId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             int index = 1;
             while (resultSet.next()) {
 
@@ -266,8 +259,7 @@ public class TemplateDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder(
                     "SELECT * FROM template where template_desc =\"").append(name).append("\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                isExist = Boolean.TRUE;
             }

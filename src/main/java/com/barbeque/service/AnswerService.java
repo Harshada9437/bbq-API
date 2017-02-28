@@ -21,14 +21,12 @@ public class AnswerService {
     public Response getAnswerList(@PathParam("question_id") int questionId){
         AnswerRequestHandler answerRequestHandler = new AnswerRequestHandler();
         AnswerResponse answerResponse = new AnswerResponse();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             answerResponse.setAnswerResponseList(answerRequestHandler.getAnswer(questionId));
             return ResponseGenerator.generateSuccessResponse(answerResponse, "Answers are available");
-        } catch (QuestionNotFoundException e) {
-            MessageResponse messageResponse = new MessageResponse();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid question id ");
-        } catch (SQLException e) {
-            MessageResponse messageResponse = new MessageResponse();
+        }  catch (SQLException e) {
+            e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "No answers are assigned. ");
         }
     }

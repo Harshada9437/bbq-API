@@ -13,11 +13,12 @@ public class QuestionDAO {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO question_bank(question_desc, question_type, parent_answer_id, parent_question_id, answer_symbol) values (?,?,?,?,?)");
-        Integer id = 0;
+        Integer id ;
         try {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
+
             preparedStatement = connection.prepareStatement(query.toString());
 
             preparedStatement.setString(parameterIndex++, questionRequestDTO.getQuestionDesc());
@@ -159,8 +160,7 @@ public class QuestionDAO {
                             "q.parent_question_id,(select question_desc from question_bank where id = q.parent_question_id) as parent_question_desc, q.answer_symbol FROM question_bank q\n" +
                             "left join question_answer_link a\n" +
                             "on q.parent_answer_id = a.answer_id\n" +
-                            "where id = ")
-                    .append(id);
+                            "where id = ").append(id);
             ResultSet resultSet = statement.executeQuery(query.toString());
             int rowCount = 0;
             while (resultSet.next()) {

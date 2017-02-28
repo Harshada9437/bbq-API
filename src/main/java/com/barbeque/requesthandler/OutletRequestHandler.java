@@ -13,7 +13,6 @@ import com.barbeque.response.outlet.OutletResponseL;
 import com.barbeque.response.outlet.OutletResponseList;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -36,7 +35,7 @@ public class OutletRequestHandler {
 
     public List<OutletResponseL> getOutlate(OutletListRequestBO outletListRequestBO) throws SQLException, UserNotFoundException {
         OutletDAO outletDAO = new OutletDAO();
-        List<OutletResponseL> outletResponseLists = getOutletListDTOsFromBO(outletDAO.getOutlate(outletListRequestBO.getOutletId(), outletListRequestBO.getUserId()));
+        List<OutletResponseL> outletResponseLists = getOutletListDTOsFromBO(outletDAO.getOutlet(outletListRequestBO.getOutletId(), outletListRequestBO.getUserId()));
         return outletResponseLists;
     }
 

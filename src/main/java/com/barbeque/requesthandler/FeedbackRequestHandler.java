@@ -81,8 +81,8 @@ public class FeedbackRequestHandler {
             SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
             SmsSettingDTO smsSettingDTO = SmsDAO.fetchSmsSettingsById(setting.getSmsGatewayId());
             SendSms sendSms = new SendSms();
-            Boolean isSent = sendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(), smsSettingDTO);
-            System.out.println("Successfully sent:::" + isSent);
+            sendSms.sendThresholdSms(id, settingRequestDTO.getSmsTemplate(), smsSettingDTO);
+
 
         }
         return id;
@@ -322,8 +322,8 @@ public class FeedbackRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         Boolean isUpdate;
         FeedbackTrackingDTO feedbackTrackingDTO = buildFeedbackTrackingDTOFromBO(feedbackTrackingRequestBO);
-        FeedbackTrackingDTO feedbackTrackingDTO1 = FeedbackDAO.getcustomer(feedbackTrackingDTO.getManagerMobile(),feedbackTrackingDTO.getFeedbackId());
-        if (feedbackTrackingDTO1.getFeedbackId()==0) {
+        FeedbackTrackingDTO feedbackTrackingDTO1 = FeedbackDAO.getcustomer(feedbackTrackingDTO.getManagerMobile(), feedbackTrackingDTO.getFeedbackId());
+        if (feedbackTrackingDTO1.getFeedbackId() == 0) {
             isUpdate = feedbackDAO.createFeedbackTracking(feedbackTrackingDTO);
 
         } else {
@@ -341,7 +341,7 @@ public class FeedbackRequestHandler {
         feedbackTrackingDTO.setFeedbackId(feedbackTrackingRequestBO.getFeedbackId());
         FeedbackRequestDTO feedbackRequestDTO = FeedbackDAO.getfeedbackById(feedbackTrackingRequestBO.getFeedbackId());
         UpdateSettingsDTO updateSettingsDTO = OutletDAO.getSetting(feedbackRequestDTO.getOutletId());
-        if(updateSettingsDTO.getMgrEmail()== null && updateSettingsDTO.getMgrMobile()== null &&  updateSettingsDTO.getMgrName()== null){
+        if (updateSettingsDTO.getMgrEmail() == null && updateSettingsDTO.getMgrMobile() == null && updateSettingsDTO.getMgrName() == null) {
             feedbackTrackingDTO.setManagerEmail("");
             feedbackTrackingDTO.setManagerMobile("");
             feedbackTrackingDTO.setManagerName("");
@@ -359,20 +359,23 @@ public class FeedbackRequestHandler {
         List<FeedbackTrackingResponseDTO> trackingList = feedbackDAO.getFeedbackTrackingList(feedbackListRequestBO);
 
         for (FeedbackTrackingResponseDTO feedbackTrackingResponseDTO : trackingList) {
-           FeedbackTrackingResponse feedbackTrackingResponse = new FeedbackTrackingResponse(feedbackTrackingResponseDTO.getFeedbackId(),
-                   feedbackTrackingResponseDTO.getOutletId(),
-                   feedbackTrackingResponseDTO.getOutletName(),
-                   feedbackTrackingResponseDTO.getDate(),
-                   feedbackTrackingResponseDTO.getTableNo(),
-                   feedbackTrackingResponseDTO.getCustomerId(),
-                   feedbackTrackingResponseDTO.getCustomerName(),
-                   feedbackTrackingResponseDTO.getPhoneNo(),
-                   feedbackTrackingResponseDTO.getMgrName(),
-                   feedbackTrackingResponseDTO.getMgrMobileNo(),
-                   feedbackTrackingResponseDTO.getMgrEmail(),
-                   feedbackTrackingResponseDTO.getFistViewDate(),
-                   feedbackTrackingResponseDTO.getViewCount(),
-                   feedbackTrackingResponseDTO.getIsAddressed());
+            if (feedbackTrackingResponseDTO.getIsAddressed() > 0) {
+                feedbackTrackingResponseDTO.setIsAddressed(1);
+            }
+            FeedbackTrackingResponse feedbackTrackingResponse = new FeedbackTrackingResponse(feedbackTrackingResponseDTO.getFeedbackId(),
+                    feedbackTrackingResponseDTO.getOutletId(),
+                    feedbackTrackingResponseDTO.getOutletName(),
+                    feedbackTrackingResponseDTO.getDate(),
+                    feedbackTrackingResponseDTO.getTableNo(),
+                    feedbackTrackingResponseDTO.getCustomerId(),
+                    feedbackTrackingResponseDTO.getCustomerName(),
+                    feedbackTrackingResponseDTO.getPhoneNo(),
+                    feedbackTrackingResponseDTO.getMgrName(),
+                    feedbackTrackingResponseDTO.getMgrMobileNo(),
+                    feedbackTrackingResponseDTO.getMgrEmail(),
+                    feedbackTrackingResponseDTO.getFistViewDate(),
+                    feedbackTrackingResponseDTO.getViewCount(),
+                    feedbackTrackingResponseDTO.getIsAddressed());
 
             feedbackTrackingDTOList.add(feedbackTrackingResponse);
         }

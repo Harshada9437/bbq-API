@@ -14,7 +14,7 @@ import java.util.List;
  * Created by System-2 on 12/26/2016.
  */
 public class AnswerRequestHandler {
-    public List<AnswerResponseList> getAnswer(int questionId) throws SQLException, QuestionNotFoundException {
+    public List<AnswerResponseList> getAnswer(int questionId) throws SQLException {
         AnswerDAO answerDAO = new AnswerDAO();
         List<AnswerResponseList> answerResponseLists = getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
         return answerResponseLists;

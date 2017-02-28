@@ -72,7 +72,7 @@ public class QuestionRequestHandler {
         return isProcessed;
     }
 
-    private Boolean updateAnswer(List<UpdateOptionsList> answerOption, int queId) throws SQLException, QuestionNotFoundException {
+    private Boolean updateAnswer(List<UpdateOptionsList> answerOption, int queId) throws SQLException {
         Boolean isCreated = Boolean.FALSE;
         List<AnswerResponseList> savedList = getAnswer(queId);
         AnswerDAO answerDAO = new AnswerDAO();
@@ -133,7 +133,7 @@ public class QuestionRequestHandler {
         return getQuestionResponse;
     }
 
-    public GetQuestionResponse buildQuestionInfoDTOFromBO(QuestionRequestDTO questionRequestDTO) throws SQLException, QuestionNotFoundException {
+    public GetQuestionResponse buildQuestionInfoDTOFromBO(QuestionRequestDTO questionRequestDTO) throws SQLException {
         GetQuestionResponse getQuestionResponse = new GetQuestionResponse();
         getQuestionResponse.setId(questionRequestDTO.getId());
         getQuestionResponse.setAnswerSymbol(questionRequestDTO.getAnswerSymbol());

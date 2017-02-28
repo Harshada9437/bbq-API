@@ -18,7 +18,7 @@ public class DeviceDAO {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO devices(installation_id, android_device_id, store_id, fingerprint, installation_date) values (?,?,?,?,?)");
-        Integer id = 0;
+        Integer id;
         try {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
@@ -67,7 +67,7 @@ public class DeviceDAO {
         return id;
     }
 
-    public DeviceDTO getDeviceByInstallationId(String installId) throws SQLException {
+    public DeviceDTO getDeviceByInstallationId(String installId) throws SQLException, DeviceNotFoundException {
 
         DeviceDTO deviceDTO = new DeviceDTO();
         Connection connection = null;
@@ -78,6 +78,7 @@ public class DeviceDAO {
             statement = connection.createStatement();
             String query = "select * from devices where installation_id='" + installId + "'";
             ResultSet resultSet = statement.executeQuery(query);
+            int index = 1;
             while (resultSet.next()) {
                 deviceDTO.setId(resultSet.getInt("id"));
                 deviceDTO.setAndroidDeviceId(resultSet.getString("android_device_id"));
@@ -86,6 +87,10 @@ public class DeviceDAO {
                 deviceDTO.setInstallationId(resultSet.getString("installation_id"));
                 deviceDTO.setStoreId(resultSet.getString("store_id"));
                 deviceDTO.setStatus(resultSet.getString("status"));
+                index++;
+            }
+            if(index == 1){
+                throw new DeviceNotFoundException("Device not exist.");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -186,13 +191,13 @@ public class DeviceDAO {
         return isCreate;
     }
 
-    private Boolean expireDeviceOtp(int otp, String installationId,int time,Connection connection) throws SQLException {
-        PreparedStatement preparedStatement = null;
+    private Boolean expireDeviceOtp(int otp, String installationId, int flag, Connection connection) throws SQLException {
+        PreparedStatement preparedStatement;
         String where = "";
         Boolean isCreate = Boolean.FALSE;
         try {
 
-            if(time > 0){
+            if(flag > 0){
                 where = " and timest < (NOW() + INTERVAL 30 MINUTE)";
             }
             preparedStatement = connection
@@ -216,7 +221,7 @@ public class DeviceDAO {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
-            getDeviceById(deviceDTO.getAndroidDeviceId());
+            getDeviceByAndroidId(deviceDTO.getAndroidDeviceId());
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
@@ -272,8 +277,7 @@ public class DeviceDAO {
             }
             StringBuilder query = new StringBuilder(
                     "SELECT isExpired,otp FROM device_otp_map where installation_id =\"").append(installationId).append("\"").append(where);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 if(resultSet.getString("isExpired").equals("NO")) {
                     otp1 = resultSet.getInt("otp");
@@ -302,8 +306,7 @@ public class DeviceDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("SELECT * FROM devices where id =" + deviceId);
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             int i = 1;
             while (resultSet.next()) {
                deviceDTO.setStoreId(resultSet.getString("store_id"));
@@ -331,7 +334,7 @@ public class DeviceDAO {
         return deviceDTO;
     }
 
-    public static DeviceDTO getDeviceById(String deviceId) throws SQLException, DeviceNotFoundException {
+    public static DeviceDTO getDeviceByAndroidId(String deviceId) throws SQLException, DeviceNotFoundException {
         Connection connection = null;
         Statement statement = null;
         DeviceDTO deviceDTO = new DeviceDTO();
@@ -340,8 +343,7 @@ public class DeviceDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("SELECT * FROM devices where android_device_id =\"" + deviceId + "\"");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
             int i=1;
             while (resultSet.next()) {
                 deviceDTO.setStoreId(resultSet.getString("store_id"));
@@ -351,7 +353,6 @@ public class DeviceDAO {
                 deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
                 i++;
             }
-
             if(i == 1){
                 throw new DeviceNotFoundException("invalid device id");
             }

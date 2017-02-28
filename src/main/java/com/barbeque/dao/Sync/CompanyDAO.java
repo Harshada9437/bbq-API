@@ -59,8 +59,7 @@ public class CompanyDAO {
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("SELECT id FROM company ");
-            ResultSet resultSet = statement.executeQuery(query.toString()
-                    .trim());
+            ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
