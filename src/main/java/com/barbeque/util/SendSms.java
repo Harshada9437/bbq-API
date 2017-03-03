@@ -44,8 +44,8 @@ public class SendSms {
         String countryCode = smsSettingDTO.getCountryCode();
 
         String url = UrlFormatter.shortenUrl(ConfigProperties.url + "/" + id + "?SC=1") ;
-
-        FeedbackRequestDTO feedback = FeedbackDAO.getfeedbackById(id);
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        FeedbackRequestDTO feedback = feedbackDAO.getfeedbackById(id);
 
         UpdateSettingsDTO dto = OutletDAO.getSetting(feedback.getOutletId());
         //Your message to send, Add URL encoding here.

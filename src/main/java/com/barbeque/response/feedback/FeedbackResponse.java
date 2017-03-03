@@ -20,10 +20,19 @@ public class FeedbackResponse {
     private String mobileNo;
     private String email;
     private String dob;
+    private String viewDate;
     private String doa;
     private String locality;
     private int isAddressed;
+    private int isNegative;
 
+    public int getIsNegative() {
+        return isNegative;
+    }
+
+    public String getViewDate() {
+        return viewDate;
+    }
 
     public int getId() {
         return id;
@@ -65,9 +74,7 @@ public class FeedbackResponse {
         this.feedbacks = feedbacks;
     }
 
-    public String getTableNo() {
-        return tableNo;
-    }
+    public String getTableNo() {return tableNo;}
 
     public void setTableNo(String tableNo) {
         this.tableNo = tableNo;
@@ -145,7 +152,7 @@ public class FeedbackResponse {
         this.isAddressed = isAddressed;
     }
 
-    public FeedbackResponse(int id, int customerId, String feedbackDate, int outletId, String tableNo, String billNo, String customerName, String outletDesc, String mobileNo, String email, String dob, String doa, String locality, int isAddressed) {
+    public FeedbackResponse(int id,int customerId,String feedbackDate,int outletId,String tableNo,String billNo,String customerName,String outletDesc,String mobileNo,String email,String dob,String doa,String locality,int isAddressed,String viewDate,int isNegative) {
         this.id = id;
         this.customerId = customerId;
         this.feedbackDate = feedbackDate;
@@ -160,6 +167,8 @@ public class FeedbackResponse {
         this.doa = doa;
         this.locality = locality;
         this.isAddressed = isAddressed;
+        this.viewDate = viewDate;
+        this.isNegative = isNegative;
     }
 
     @Override
@@ -168,6 +177,7 @@ public class FeedbackResponse {
                 "id=" + id +
                 ", customerId=" + customerId +
                 ", feedbackDate='" + feedbackDate + '\'' +
+                ", viewDate='" + viewDate + '\'' +
                 ", outletId=" + outletId +
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
@@ -180,6 +190,7 @@ public class FeedbackResponse {
                 ", doa='" + doa + '\'' +
                 ", locality='" + locality + '\'' +
                 ", isAddressed=" + isAddressed +
+                ", isNegative=" + isNegative +
                 '}';
     }
 }

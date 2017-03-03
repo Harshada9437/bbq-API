@@ -2,7 +2,6 @@ package com.barbeque.dao.customer;
 
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dto.request.CustomerDTO;
-import com.barbeque.exceptions.CustomerNotFoundException;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;

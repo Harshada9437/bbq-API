@@ -12,10 +12,11 @@ import java.util.List;
 public class FeedbackRequestDTO {
     private char questionType;
     private int id;
+    private int isNegative;
     private int customerId;
     private int deviceId;
     private Timestamp feedbackDate;
-    private String modifiedOn;
+    private String viewDate;
     private int outletId;
     private String date;
     private List<FeedbackDetails> feedbacks;
@@ -37,6 +38,14 @@ public class FeedbackRequestDTO {
     private String dob;
     private String doa;
     private String locality;
+
+    public int getIsNegative() {
+        return isNegative;
+    }
+
+    public void setIsNegative(int isNegative) {
+        this.isNegative = isNegative;
+    }
 
     public int getIsAddressed() {
         return isAddressed;
@@ -192,12 +201,12 @@ public class FeedbackRequestDTO {
         this.feedbackDate = feedbackDate;
     }
 
-    public String getModifiedOn() {
-        return modifiedOn;
+    public String getViewDate() {
+        return viewDate;
     }
 
-    public void setModifiedOn(String modifiedOn) {
-        this.modifiedOn = modifiedOn;
+    public void setViewDate(String viewDate) {
+        this.viewDate = viewDate;
     }
 
     public int getOutletId() {
@@ -277,12 +286,13 @@ public class FeedbackRequestDTO {
         if (isAddressed != that.isAddressed) return false;
         if (deviceId != that.deviceId) return false;
         if (outletId != that.outletId) return false;
+        if (isNegative != that.isNegative) return false;
         if (answerId != that.answerId) return false;
         if (questionId != that.questionId) return false;
         if (rating != that.rating) return false;
         if (weightage != that.weightage) return false;
         if (feedbackDate != null ? !feedbackDate.equals(that.feedbackDate) : that.feedbackDate != null) return false;
-        if (modifiedOn != null ? !modifiedOn.equals(that.modifiedOn) : that.modifiedOn != null) return false;
+        if (viewDate != null ? !viewDate.equals(that.viewDate) : that.viewDate != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (feedbacks != null ? !feedbacks.equals(that.feedbacks) : that.feedbacks != null) return false;
         if (tableNo != null ? !tableNo.equals(that.tableNo) : that.tableNo != null) return false;
@@ -308,8 +318,9 @@ public class FeedbackRequestDTO {
         result = 31 * result + customerId;
         result = 31 * result + isAddressed;
         result = 31 * result + deviceId;
+        result = 31 * result + isNegative;
         result = 31 * result + (feedbackDate != null ? feedbackDate.hashCode() : 0);
-        result = 31 * result + (modifiedOn != null ? modifiedOn.hashCode() : 0);
+        result = 31 * result + (viewDate != null ? viewDate.hashCode() : 0);
         result = 31 * result + outletId;
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (feedbacks != null ? feedbacks.hashCode() : 0);
@@ -343,8 +354,9 @@ public class FeedbackRequestDTO {
                 ", deviceId=" + deviceId +
                 ", isAddressed=" + isAddressed +
                 ", feedbackDate=" + feedbackDate +
-                ", modifiedOn='" + modifiedOn + '\'' +
+                ", viewDate='" + viewDate + '\'' +
                 ", outletId=" + outletId +
+                ", isNegative=" + isNegative +
                 ", date='" + date + '\'' +
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +

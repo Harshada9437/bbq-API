@@ -62,8 +62,7 @@ public class FeedbackDAO {
                     connection.commit();
                 } else {
                     connection.rollback();
-                    throw new SQLException(
-                            "Creating feedback failed, no ID obtained.");
+                    throw new SQLException("Creating feedback failed, no ID obtained.");
                 }
             } catch (SQLException e) {
                 connection.rollback();
@@ -111,6 +110,7 @@ public class FeedbackDAO {
     }
 
     public List<FeedbackRequestDTO> getfeedbackList1(FeedbackListDTO feedbackListDTO) throws SQLException, UserNotFoundException {
+
         List<FeedbackRequestDTO> feedbackList = new ArrayList<FeedbackRequestDTO>();
         Connection connection = null;
         Statement statement = null;
@@ -132,9 +132,12 @@ public class FeedbackDAO {
                 RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
                 where1 += " and fh.outlet_id IN(" + rollRequestDTO.getOutletAccess() + ")";
             }
-            String query = "select f.*,fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
+            String query = "select f.*,fh.date as feedback_date,a.weightage,q.question_type, q.question_desc,a.threshold, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
+                    ",(select count(feedback_id) from feedback_view_tracking t where t.feedback_id=fh.id) as isAddressed,fh.isNegative,\n" +
+                    "(select max(first_view_date) from feedback_view_tracking t where t.feedback_id=fh.id) as view_date\n" +
                     "from feedback f\n" +
                     "left join feedback_head fh on fh.id=f.feedback_id\n" +
+                    "left join feedback_view_tracking ft on ft.feedback_id = fh.id\n" +
                     "left join outlet o on fh.outlet_id = o.id\n" +
                     "left join question_bank q on q.id = f.question_id\n" +
                     "left join customer c on c.id = fh.customer_id\n" +
@@ -165,6 +168,14 @@ public class FeedbackDAO {
                 feedbackRequestDTO.setAnswerDesc(resultSet.getString("answer_desc"));
                 feedbackRequestDTO.setQuestionType(resultSet.getString("question_type").charAt(0));
                 feedbackRequestDTO.setWeightage(resultSet.getInt("weightage"));
+                feedbackRequestDTO.setThreshold(resultSet.getString("threshold"));
+                feedbackRequestDTO.setIsNegative(resultSet.getInt("isNegative"));
+                feedbackRequestDTO.setIsAddressed(resultSet.getInt("isAddressed"));
+                if (resultSet.getTimestamp("view_date") == null) {
+                    feedbackRequestDTO.setViewDate("");
+                } else {
+                    feedbackRequestDTO.setViewDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("view_date")));
+                }
                 feedbackList.add(feedbackRequestDTO);
             }
         } catch (SQLException sqlException) {
@@ -181,7 +192,7 @@ public class FeedbackDAO {
         return feedbackList;
     }
 
-    public static List<FeedbackDetails> getfeedback(int id) throws SQLException {
+    public List<FeedbackDetails> getfeedback(int id) throws SQLException {
         Statement statement = null;
         Connection connection = null;
         List<FeedbackDetails> answerDTOS = new ArrayList<FeedbackDetails>();
@@ -224,7 +235,7 @@ public class FeedbackDAO {
         return answerDTOS;
     }
 
-    public static FeedbackRequestDTO getfeedbackById(int id) throws FeedbackNotFoundException {
+    public FeedbackRequestDTO getfeedbackById(int id) throws FeedbackNotFoundException {
         FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
         Connection connection = null;
         Statement statement = null;
@@ -286,7 +297,7 @@ public class FeedbackDAO {
         return feedbackRequestDTO;
     }
 
-    public static List<FeedbackRequestDTO> getFeedbacksList(int id) throws SQLException, FeedbackNotFoundException {
+    public List<FeedbackRequestDTO> getFeedbacksList(int id) throws SQLException, FeedbackNotFoundException {
         List<FeedbackRequestDTO> feedbackRequestDTOs = new ArrayList<FeedbackRequestDTO>();
         Connection connection = null;
         Statement statement = null;
@@ -304,7 +315,7 @@ public class FeedbackDAO {
                     "left join question_answer_link a on a.answer_id = f.answer_id\n" +
                     "where fh.id=" + id;
             ResultSet resultSet = statement.executeQuery(query);
-            int rowCount = 0;
+
             while (resultSet.next()) {
                 FeedbackRequestDTO feedbackRequestDTO = new FeedbackRequestDTO();
                 feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
@@ -330,12 +341,10 @@ public class FeedbackDAO {
                 feedbackRequestDTO.setWeightage(resultSet.getInt("weightage"));
                 feedbackRequestDTO.setThreshold(resultSet.getString("threshold"));
                 feedbackRequestDTO.setDeviceId(resultSet.getInt("device_id"));
-                rowCount++;
+
                 feedbackRequestDTOs.add(feedbackRequestDTO);
             }
-            if (rowCount == 0) {
-                throw new FeedbackNotFoundException("Feedback id invalid");
-            }
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         } finally {
@@ -349,7 +358,7 @@ public class FeedbackDAO {
         return feedbackRequestDTOs;
     }
 
-    public static List<CountDTO> getcountById(int id) throws SQLException, QuestionNotFoundException {
+    public List<CountDTO> getcountById(int id) throws SQLException, QuestionNotFoundException {
         Connection connection = null;
         Statement statement = null;
         List<CountDTO> countDTOs = new ArrayList<CountDTO>();
@@ -431,7 +440,7 @@ public class FeedbackDAO {
     }
 
 
-    public static CustomerReportDTO getcustomerByPhoneNo(String phoneNo) throws SQLException, CustomerNotFoundException {
+    public CustomerReportDTO getcustomerByPhoneNo(String phoneNo) throws SQLException, CustomerNotFoundException {
         CustomerReportDTO customerReportDTO = new CustomerReportDTO();
 
         Connection connection = null;
@@ -550,7 +559,7 @@ public class FeedbackDAO {
     }
 
 
-    public static Boolean createFeedbackTracking(FeedbackTrackingDTO feedbackTrackingDTO) throws SQLException {
+    public Boolean createFeedbackTracking(FeedbackTrackingDTO feedbackTrackingDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         StringBuilder query = new StringBuilder("INSERT INTO feedback_view_tracking(feedback_id,manager_mobile,manager_name,manager_email) values (?,?,?,?)");
@@ -594,7 +603,7 @@ public class FeedbackDAO {
         return isCreate;
     }
 
-    public static FeedbackTrackingDTO getcustomer(String managerMobile, int feedbackId)
+    public FeedbackTrackingDTO getcustomer(String managerMobile, int feedbackId)
             throws SQLException {
 
         FeedbackTrackingDTO feedbackTrackingDTO = new FeedbackTrackingDTO();
@@ -632,7 +641,7 @@ public class FeedbackDAO {
     }
 
 
-    public static Boolean updateFeedbackTracking(FeedbackTrackingDTO feedbackTrackingDTO) throws SQLException {
+    public Boolean updateFeedbackTracking(FeedbackTrackingDTO feedbackTrackingDTO) throws SQLException {
         boolean isUpdate = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -676,11 +685,11 @@ public class FeedbackDAO {
     }
 
 
-    public List<FeedbackTrackingResponseDTO> getFeedbackTrackingList(FeedbackListRequestBO feedbackListRequestBO) throws SQLException, UserNotFoundException {
+    public List<FeedbackTrackingResponseDTO> getFeedbackTrackingList(FeedbackListRequestBO feedbackListRequestBO, int isNegative) throws SQLException, UserNotFoundException {
         List<FeedbackTrackingResponseDTO> trackingDTOList = new ArrayList<FeedbackTrackingResponseDTO>();
         Connection connection = null;
         Statement statement = null;
-        String where1 = "", ids = "";
+        String where1 = "", where = "", ids = "";
         try {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
@@ -699,15 +708,19 @@ public class FeedbackDAO {
                 where1 += " and f.outlet_id IN(" + rollRequestDTO.getOutletAccess() + ")";
             }
 
-            String query = "select f.id,ft.feedback_id,f.outlet_id,f.date,f.table_no,f.customer_id,ft.manager_name,ft.manager_mobile,ft.manager_email,ft.first_view_date,COALESCE(ft.view_count,0) as view_count,\n" +
+            if (isNegative == 1) {
+                where += " and f.isNegative=1";
+            }
+
+            String query = "select f.isNegative,f.id,ft.feedback_id,f.outlet_id,f.date,f.table_no,f.customer_id,ft.manager_name,ft.manager_mobile,ft.manager_email,ft.first_view_date,COALESCE(ft.view_count,0) as view_count,\n" +
                     "c.name as custoner_name,c.phone_no,o.outlet_desc,\n" +
                     "(select count(feedback_id) from feedback_view_tracking t where t.feedback_id=f.id) as isAddressed\n" +
                     "from feedback_head f\n" +
                     "left join feedback_view_tracking ft on ft.feedback_id = f.id\n" +
                     "left join customer c on f.customer_id = c.id\n" +
                     "left join outlet o on f.outlet_id = o.id\n" +
-                    "where f.isNegative=1 and f.date >= '" + feedbackListRequestBO.getFromDate() + "' AND f.date <='" +
-                    feedbackListRequestBO.getToDate() + "'" + where1;
+                    "where f.date >= '" + feedbackListRequestBO.getFromDate() + "' AND f.date <='" +
+                    feedbackListRequestBO.getToDate() + "'" + where1 + where;
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 FeedbackTrackingResponseDTO feedbackTrackingResponseDTO = new FeedbackTrackingResponseDTO();
@@ -722,13 +735,14 @@ public class FeedbackDAO {
                 feedbackTrackingResponseDTO.setMgrName(resultSet.getString("manager_name"));
                 feedbackTrackingResponseDTO.setMgrMobileNo(resultSet.getString("manager_mobile"));
                 feedbackTrackingResponseDTO.setMgrEmail(resultSet.getString("manager_email"));
-                if(resultSet.getTimestamp("first_view_date") == null){
+                if (resultSet.getTimestamp("first_view_date") == null) {
                     feedbackTrackingResponseDTO.setFistViewDate("");
-                }else {
+                } else {
                     feedbackTrackingResponseDTO.setFistViewDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("first_view_date")));
                 }
                 feedbackTrackingResponseDTO.setViewCount(resultSet.getInt("view_count"));
                 feedbackTrackingResponseDTO.setIsAddressed(resultSet.getInt("isAddressed"));
+                feedbackTrackingResponseDTO.setIsNegative(resultSet.getInt("isNegative"));
                 trackingDTOList.add(feedbackTrackingResponseDTO);
             }
         } catch (SQLException sqlException) {
@@ -745,7 +759,7 @@ public class FeedbackDAO {
         return trackingDTOList;
     }
 
-    public static void updateFeedback(int id)  throws SQLException {
+    public static void updateFeedback(int id) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
@@ -756,7 +770,7 @@ public class FeedbackDAO {
                     .prepareStatement("UPDATE feedback_head SET isNegative =1 WHERE id =?");
 
 
-            preparedStatement.setInt(parameterIndex++,id);
+            preparedStatement.setInt(parameterIndex++, id);
 
 
             int i = preparedStatement.executeUpdate();

@@ -19,11 +19,10 @@ import java.util.List;
  */
 public class ReportRequestHandler {
 
-    public List<CountResponse> getcountById(int id) throws SQLException,QuestionNotFoundException {
+    public List<CountResponse> getcountById(int id) throws SQLException, QuestionNotFoundException {
         List<CountResponse> countList = new ArrayList<CountResponse>();
-
-        List<CountDTO> countDTOList = FeedbackDAO
-                .getcountById(id);
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        List<CountDTO> countDTOList = feedbackDAO.getcountById(id);
 
         for (com.barbeque.dto.request.CountDTO countDTO : countDTOList) {
             CountResponse countResponse = new CountResponse();
@@ -39,7 +38,7 @@ public class ReportRequestHandler {
     }
 
 
-    public List<AverageResponse> getaverageById(int id) throws SQLException,QuestionNotFoundException {
+    public List<AverageResponse> getaverageById(int id) throws SQLException, QuestionNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<AverageResponse> averageList = new ArrayList<AverageResponse>();
 
@@ -59,16 +58,13 @@ public class ReportRequestHandler {
     }
 
 
-
-
-
-
-    public CustomerReportResponseList getcustomerByPhoneNo(String phoneNo) throws SQLException,CustomerNotFoundException{
-       CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(FeedbackDAO.getcustomerByPhoneNo(phoneNo));
+    public CustomerReportResponseList getcustomerByPhoneNo(String phoneNo) throws SQLException, CustomerNotFoundException {
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(feedbackDAO.getcustomerByPhoneNo(phoneNo));
         return customerReportResponseList;
     }
 
-    public CustomerReportResponseList buildFeedbackCustomerFromDTO(CustomerReportDTO customerReportDTO) throws SQLException, CustomerNotFoundException{
+    public CustomerReportResponseList buildFeedbackCustomerFromDTO(CustomerReportDTO customerReportDTO) throws SQLException, CustomerNotFoundException {
         CustomerReportResponseList customerReportResponseList = new CustomerReportResponseList();
         customerReportResponseList.setId(customerReportDTO.getId());
         customerReportResponseList.setName(customerReportDTO.getName());
@@ -77,8 +73,6 @@ public class ReportRequestHandler {
         customerReportResponseList.setDoa(customerReportDTO.getDoa());
         customerReportResponseList.setLocality(customerReportDTO.getLocality());
         customerReportResponseList.setFeedback(FeedbackDAO.getcustomerFeedback(customerReportResponseList.getId()));
-
-
         return customerReportResponseList;
     }
 

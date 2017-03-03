@@ -67,7 +67,7 @@ public class DeviceDAO {
         return id;
     }
 
-    public DeviceDTO getDeviceByInstallationId(String installId) throws SQLException, DeviceNotFoundException {
+    public DeviceDTO getDeviceByInstallationId(String installId) throws SQLException {
 
         DeviceDTO deviceDTO = new DeviceDTO();
         Connection connection = null;
@@ -89,9 +89,7 @@ public class DeviceDAO {
                 deviceDTO.setStatus(resultSet.getString("status"));
                 index++;
             }
-            if(index == 1){
-                throw new DeviceNotFoundException("Device not exist.");
-            }
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             throw sqlException;
@@ -221,7 +219,6 @@ public class DeviceDAO {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
-            getDeviceByAndroidId(deviceDTO.getAndroidDeviceId());
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
@@ -334,7 +331,7 @@ public class DeviceDAO {
         return deviceDTO;
     }
 
-    public static DeviceDTO getDeviceByAndroidId(String deviceId) throws SQLException, DeviceNotFoundException {
+    public static DeviceDTO getDeviceByAndroidId(String deviceId) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         DeviceDTO deviceDTO = new DeviceDTO();
@@ -353,9 +350,7 @@ public class DeviceDAO {
                 deviceDTO.setInstallationDate(DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("installation_date")));
                 i++;
             }
-            if(i == 1){
-                throw new DeviceNotFoundException("invalid device id");
-            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;

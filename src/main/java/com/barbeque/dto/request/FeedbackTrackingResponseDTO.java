@@ -19,6 +19,7 @@ public class FeedbackTrackingResponseDTO {
     private String fistViewDate;
     private int viewCount;
     private int isAddressed;
+    private int isNegative;
 
 
     public int getFeedbackId() {
@@ -133,6 +134,13 @@ public class FeedbackTrackingResponseDTO {
         this.isAddressed = isAddressed;
     }
 
+    public int getIsNegative() {
+        return isNegative;
+    }
+
+    public void setIsNegative(int isNegative) {
+        this.isNegative = isNegative;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -143,6 +151,7 @@ public class FeedbackTrackingResponseDTO {
 
         if (feedbackId != that.feedbackId) return false;
         if (outletId != that.outletId) return false;
+        if (isNegative != that.isNegative) return false;
         if (customerId != that.customerId) return false;
         if (viewCount != that.viewCount) return false;
         if (isAddressed != that.isAddressed) return false;
@@ -161,6 +170,7 @@ public class FeedbackTrackingResponseDTO {
     public int hashCode() {
         int result = feedbackId;
         result = 31 * result + outletId;
+        result = 31 * result + isNegative;
         result = 31 * result + outletName.hashCode();
         result = 31 * result + date.hashCode();
         result = 31 * result + tableNo.hashCode();
@@ -181,6 +191,7 @@ public class FeedbackTrackingResponseDTO {
         return "FeedbackTrackingResponseDTO{" +
                 "feedbackId=" + feedbackId +
                 ", outletId=" + outletId +
+                ", isNegative=" + isNegative +
                 ", outletName='" + outletName + '\'' +
                 ", date='" + date + '\'' +
                 ", tableNo='" + tableNo + '\'' +

@@ -62,7 +62,7 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getfeedbackList(FeedbackListRequest feedbackListRequest ) {
+    public Response getfeedbackList(FeedbackListRequest feedbackListRequest) {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
         try {
@@ -97,9 +97,6 @@ public class FeedbackService {
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
-        } catch (QuestionNotFoundException e) {
-            e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid question id.");
         }
     }
 
@@ -115,9 +112,9 @@ public class FeedbackService {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         try {
             Boolean isCreate = feedbackRequestHandler.createFeedbackTracking(feedbackTrackingRequestBO);
-            if(isCreate) {
+            if (isCreate) {
                 return ResponseGenerator.generateSuccessResponse(createUserResponse, "Negative feedback url tracked.");
-            }else{
+            } else {
                 return ResponseGenerator.generateFailureResponse(createUserResponse, "Feedback tracking creation Failed");
             }
         } catch (Exception e) {
@@ -127,16 +124,14 @@ public class FeedbackService {
     }
 
 
-
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/negativeReport")
 
-    public Response getNegativeReport(FeedbackListRequest feedbackListRequest){
+    public Response getNegativeReport(FeedbackListRequest feedbackListRequest, @QueryParam("isNegative") int isNegative) {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
-      FeedbackTrackingResponseList feedbackTrackingResponseList = new FeedbackTrackingResponseList();
+        FeedbackTrackingResponseList feedbackTrackingResponseList = new FeedbackTrackingResponseList();
         FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
         try {
             feedbackListRequestBO.setFromDate(feedbackListRequest.getFromDate());
@@ -144,15 +139,12 @@ public class FeedbackService {
             feedbackListRequestBO.setOutletId(feedbackListRequest.getOutletId());
             feedbackListRequestBO.setTableNo(feedbackListRequest.getTableNo());
             feedbackListRequestBO.setUserId(feedbackListRequest.getUserId());
-           feedbackTrackingResponseList.setFeedbackTrackingDetails(feedbackRequestHandler.getFeedbackTrackingList(feedbackListRequestBO));
+            feedbackTrackingResponseList.setFeedbackTrackingDetails(feedbackRequestHandler.getFeedbackTrackingList(feedbackListRequestBO, isNegative));
             return ResponseGenerator.generateSuccessResponse(feedbackTrackingResponseList, "List of Negative feedbacks.");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(feedbackTrackingResponseList, "Failed to retrieve the feedbacks.");
         }
     }
-
-
-
 }
 

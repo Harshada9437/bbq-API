@@ -18,6 +18,11 @@ public class FeedbackTrackingResponse {
     private String fistViewDate;
     private int viewCount;
     private int isAddressed;
+    private int isNegative;
+
+    public int getIsNegative() {
+        return isNegative;
+    }
 
     public int getIsAddressed() {
         return isAddressed;
@@ -131,7 +136,7 @@ public class FeedbackTrackingResponse {
         this.viewCount = viewCount;
     }
 
-    public FeedbackTrackingResponse(int feedbackId, int outletId, String outletName, String date, String tableNo, int customerId, String customerName, String phoneNo, String mgrName, String mgrMobileNo, String mgrEmail, String fistViewDate, int viewCount, int isAddressed) {
+    public FeedbackTrackingResponse(int feedbackId, int outletId, String outletName, String date, String tableNo, int customerId, String customerName, String phoneNo, String mgrName, String mgrMobileNo, String mgrEmail, String fistViewDate, int viewCount, int isAddressed, int isNegative) {
         this.feedbackId = feedbackId;
         this.outletId = outletId;
         this.outletName = outletName;
@@ -146,6 +151,7 @@ public class FeedbackTrackingResponse {
         this.fistViewDate = fistViewDate;
         this.viewCount = viewCount;
         this.isAddressed = isAddressed;
+        this.isNegative = isNegative;
     }
 
     @Override
@@ -154,6 +160,7 @@ public class FeedbackTrackingResponse {
                 "feedbackId=" + feedbackId +
                 ", outletId=" + outletId +
                 ", isAddressed=" + isAddressed +
+                ", isNegative=" + isNegative +
                 ", outletName='" + outletName + '\'' +
                 ", date='" + date + '\'' +
                 ", tableNo='" + tableNo + '\'' +
