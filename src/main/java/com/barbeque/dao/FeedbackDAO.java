@@ -380,6 +380,7 @@ public class FeedbackDAO {
                 countDTO.setQuestionDesc(resultSet.getString("question_desc"));
                 countDTO.setAnswerDesc(resultSet.getString("answer_desc"));
                 countDTO.setQuestionType(resultSet.getString("question_type"));
+                countDTO.setRating(resultSet.getInt("rating"));
                 countDTO.setCount(resultSet.getInt("count"));
                 countDTOs.add(countDTO);
             }

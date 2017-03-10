@@ -30,7 +30,7 @@ public class ReportRequestHandler {
             countResponse.setAnswerDesc(countDTO.getAnswerDesc());
             countResponse.setQuestionType(countDTO.getQuestionType());
             countResponse.setCount(countDTO.getCount());
-
+            countResponse.setRating(countDTO.getRating());
             countList.add(countResponse);
         }
 

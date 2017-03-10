@@ -8,6 +8,15 @@ public class CountResponse  {
     private String answerDesc;
     private String  questionType;
     private int count;
+    private int rating;
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 
     public String getQuestionDesc() {
         return questionDesc;
@@ -49,6 +58,7 @@ public class CountResponse  {
                 ", answerDesc='" + answerDesc + '\'' +
                 ", questionType='" + questionType + '\'' +
                 ", count=" + count +
+                ", rating=" + rating +
                 '}';
     }
 }

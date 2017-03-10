@@ -8,7 +8,16 @@ public class CountDTO {
     private String answerDesc;
     private String  questionType;
     private int count;
+    private int rating;
 
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 
     public String getQuestionDesc() {
         return questionDesc;
@@ -50,6 +59,7 @@ public class CountDTO {
         CountDTO countDTO = (CountDTO) o;
 
         if (count != countDTO.count) return false;
+        if (rating != countDTO.rating) return false;
         if (!questionDesc.equals(countDTO.questionDesc)) return false;
         if (!answerDesc.equals(countDTO.answerDesc)) return false;
         return questionType.equals(countDTO.questionType);
@@ -71,6 +81,7 @@ public class CountDTO {
                 ", answerDesc='" + answerDesc + '\'' +
                 ", questionType='" + questionType + '\'' +
                 ", count=" + count +
+                ", rating=" + count +
                 '}';
     }
 }
