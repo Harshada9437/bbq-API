@@ -78,8 +78,8 @@ public class EmailService {
                     InternetAddress.parse(to));
 
             message.setSubject("Daily feedback report update.");message.setContent(message, "text/html; charset=utf-8");
-            Float avgNegative= (float) reportDTO.getNegativeCount() /(float)reportDTO.getTotalCount()*100;
-            Float avgAddressed= (float) reportDTO.getAddressedCount() /(float)reportDTO.getNegativeCount()*100;
+            Float avgNegative= (float) reportDTO.getNegativeCount() /(float)reportDTO.getTotalCount()*100f;
+            Float avgAddressed= (float) reportDTO.getAddressedCount() /(float)reportDTO.getNegativeCount()*100f;
             String msg = "<div>Hi " + reportDTO.getUserName() +",</div>" +
                     " <div>&nbsp; </div>" +
                     "<div>"+ "<b>" +"Feedback counts are:- " + "</b> " + "</div>" +

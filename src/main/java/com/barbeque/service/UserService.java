@@ -63,6 +63,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response logout(@HeaderParam("sessionId") String sessionId) {
         LoginResponse loginResponse = new LoginResponse();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             UserRequestHandler userRequestHandler = new UserRequestHandler();
             String[] sessionIdParts = sessionId.split("@");
@@ -71,13 +72,13 @@ public class UserService {
             if (isLoggedOut) {
                 return ResponseGenerator.generateSuccessResponse(loginResponse, "Log out successfully.");
             } else {
-                return ResponseGenerator.generateFailureResponse(loginResponse, "Unable to log out the current user.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to log out the current user.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(loginResponse, "Unable to log out the current user.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to log out the current user.");
         } catch (UserNotFoundException e) {
-            return ResponseGenerator.generateFailureResponse(loginResponse, "Invalid user id");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid user id");
         }
     }
 
@@ -86,7 +87,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(UpdateUserRequest updateUserRequest) {
-        MessageResponse loginResponse = new MessageResponse();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             UserRequestHandler userRequestHandler = new UserRequestHandler();
             UpdateUserRequestBO updateUserRequestBO = new UpdateUserRequestBO();
@@ -98,14 +99,14 @@ public class UserService {
             Boolean isLoggedOut = userRequestHandler.updateUser(updateUserRequestBO);
 
             if (isLoggedOut) {
-                return ResponseGenerator.generateSuccessResponse(loginResponse, "updated successfully.");
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "updated successfully.");
 
             } else {
-                return ResponseGenerator.generateFailureResponse(loginResponse, "Unable to update user.");
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update user.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(loginResponse, "Unable to update user.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Unable to update user.");
         }
     }
 

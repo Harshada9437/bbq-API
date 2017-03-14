@@ -3,11 +3,9 @@ package com.barbeque.service;
 import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.FeedbackTrackingRequestBO;
-import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
-import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
@@ -143,8 +141,9 @@ public class FeedbackService {
             feedbackTrackingResponseList.setFeedbackTrackingDetails(feedbackRequestHandler.getFeedbackTrackingList(feedbackListRequestBO, isNegative));
             return ResponseGenerator.generateSuccessResponse(feedbackTrackingResponseList, "List of Negative feedbacks.");
         } catch (Exception e) {
+            MessageResponse messageResponse = new MessageResponse();
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(feedbackTrackingResponseList, "Failed to retrieve the feedbacks.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve the feedbacks.");
         }
     }
 
@@ -153,7 +152,7 @@ public class FeedbackService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Response getDailyReport() throws UserNotFoundException {
+    public Response getDailyReport() {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {
@@ -163,7 +162,7 @@ public class FeedbackService {
             }else{
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to send the mails. ");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
         }

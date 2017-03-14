@@ -173,8 +173,9 @@ public class TemplateService {
             templateResponse.setTemplateResponseList(templateRequestHandler.getTemplate());
             return ResponseGenerator.generateSuccessResponse(templateResponse, "Template are available");
         } catch (SQLException e) {
+            MessageResponse messageResponse = new MessageResponse();
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(templateResponse, "Failed to retrieve.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
         }
     }
 

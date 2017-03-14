@@ -42,8 +42,8 @@ public class QuestionService {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Question creation failed.");
             }
         } catch (SQLException sqlException) {
-            MessageResponse MessageResponse = new MessageResponse();
-            return ResponseGenerator.generateFailureResponse(MessageResponse, "Question creation failed.");
+            sqlException.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Question creation failed.");
         }
     }
 

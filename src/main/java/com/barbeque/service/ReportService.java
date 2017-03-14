@@ -11,6 +11,7 @@ import com.barbeque.requesthandler.ReportRequestHandler;
 import com.barbeque.response.report.AverageResponseList;
 import com.barbeque.response.report.CountResponseList;
 import com.barbeque.response.report.CustomerReportResponseList;
+import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
 
 import javax.ws.rs.*;
@@ -28,14 +29,15 @@ public class ReportService {
     public Response getcountById(@PathParam("id") int id) throws Exception {
         ReportRequestHandler reportRequestHandler = new ReportRequestHandler();
         CountResponseList countResponseList = new CountResponseList();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             countResponseList.setCount(reportRequestHandler.getcountById(id));
             return ResponseGenerator.generateSuccessResponse(countResponseList, "List of counts.");
         } catch (QuestionNotFoundException e) {
-            return ResponseGenerator.generateFailureResponse(countResponseList, "INVALID Question Id ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID Question Id ");
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(countResponseList, "Failure.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failure.");
         }
     }
 
@@ -47,14 +49,15 @@ public class ReportService {
     public Response getaverageById(@PathParam("id") int id) throws Exception {
         ReportRequestHandler reportRequestHandler = new ReportRequestHandler();
         AverageResponseList averageResponseList = new AverageResponseList();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             averageResponseList.setAverage(reportRequestHandler.getaverageById(id));
             return ResponseGenerator.generateSuccessResponse(averageResponseList, "List of average rating.");
         } catch (QuestionNotFoundException e) {
-            return ResponseGenerator.generateFailureResponse(averageResponseList, "INVALID Question Id ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID Question Id ");
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(averageResponseList, "Failure.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failure.");
         }
     }
 
@@ -66,14 +69,15 @@ public class ReportService {
     public Response getcustomerByPhoneNo(@PathParam("phoneNo") String phoneNo) throws Exception {
         ReportRequestHandler reportRequestHandler = new ReportRequestHandler();
        CustomerReportResponseList customerReportResponseList = new CustomerReportResponseList();
+       MessageResponse messageResponse = new MessageResponse();
         try {
             customerReportResponseList = reportRequestHandler.getcustomerByPhoneNo(phoneNo);
             return ResponseGenerator.generateSuccessResponse(customerReportResponseList, "Personal Details.");
         } catch (CustomerNotFoundException e) {
-            return ResponseGenerator.generateFailureResponse(customerReportResponseList, "INVALID Phone No. ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID Phone No. ");
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseGenerator.generateFailureResponse(customerReportResponseList, "Failure.");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failure.");
         }
     }
 
