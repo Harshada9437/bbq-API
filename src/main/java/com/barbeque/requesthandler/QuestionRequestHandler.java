@@ -169,15 +169,12 @@ public class QuestionRequestHandler {
 
     public static List<AnswerResponseList> getAnswer(int questionId) throws SQLException {
         AnswerDAO answerDAO = new AnswerDAO();
-        List<AnswerResponseList> answerResponseLists = getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
-        return answerResponseLists;
+        return getAnswerListDTOFromBO(answerDAO.getAnswer(questionId));
     }
 
     public static List<AnswerResponseList> getAnswerListDTOFromBO(List<AnswerDTO> answerDTOs) throws SQLException {
         List<AnswerResponseList> answerResponseLists = new ArrayList<AnswerResponseList>();
-        Iterator<AnswerDTO> answerDTOIterator = answerDTOs.iterator();
-        while (answerDTOIterator.hasNext()) {
-            AnswerDTO answerDTO = answerDTOIterator.next();
+        for (AnswerDTO answerDTO : answerDTOs) {
             AnswerResponseList answerResponseList = new AnswerResponseList(answerDTO.getAnswerText(),
                     answerDTO.getRating(), answerDTO.getId(), answerDTO.getWeightage(), answerDTO.getThreshold());
             answerResponseLists.add(answerResponseList);

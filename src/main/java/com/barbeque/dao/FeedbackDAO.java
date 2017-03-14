@@ -132,9 +132,10 @@ public class FeedbackDAO {
                 RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
                 where1 += " and fh.outlet_id IN(" + rollRequestDTO.getOutletAccess() + ")";
             }
-            String query = "select f.*,fh.date as feedback_date,a.weightage,q.question_type, q.question_desc,a.threshold, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
-                    ",(select count(feedback_id) from feedback_view_tracking t where t.feedback_id=fh.id) as isAddressed,fh.isNegative,\n" +
-                    "(select max(first_view_date) from feedback_view_tracking t where t.feedback_id=fh.id) as view_date\n" +
+            String query = "select f.feedback_id,f.question_id,f.rating,f.answer_text,f.answer_id,fh.date as feedback_date," +
+                    "a.weightage,q.question_type, q.question_desc,a.threshold, a.answer_desc,fh.outlet_id,o.outlet_desc ," +
+                    "fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
+                    ",ft.feedback_id as isAddressed,fh.isNegative,ft.first_view_date as view_date\n" +
                     "from feedback f\n" +
                     "left join feedback_head fh on fh.id=f.feedback_id\n" +
                     "left join feedback_view_tracking ft on ft.feedback_id = fh.id\n" +
@@ -244,7 +245,7 @@ public class FeedbackDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
 
-            String query = "select f.*, fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
+            String query = "select f.feedback_id,f.question_id,f.rating,f.answer_text,f.answer_id, fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
                     "from feedback f\n" +
                     "left join feedback_head fh on fh.id=f.feedback_id\n" +
                     "left join outlet o on fh.outlet_id = o.id\n" +
@@ -306,7 +307,7 @@ public class FeedbackDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
 
-            String query = "select f.*,fh.device_id,a.threshold, fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
+            String query = "select f.feedback_id,f.question_id,f.rating,f.answer_text,f.answer_id,fh.device_id,a.threshold, fh.date as feedback_date,a.weightage,q.question_type, q.question_desc, a.answer_desc,fh.outlet_id,o.outlet_desc ,fh.customer_id,c.name,c.phone_no,c.email_id,c.dob,c.doa,c.locality, fh.table_no,fh.bill_no\n" +
                     "from feedback f\n" +
                     "left join feedback_head fh on fh.id=f.feedback_id\n" +
                     "left join outlet o on fh.outlet_id = o.id\n" +
@@ -569,16 +570,11 @@ public class FeedbackDAO {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement(query.toString());
-            preparedStatement.setInt(parameterIndex++,
-                    feedbackTrackingDTO.getFeedbackId());
-            preparedStatement.setString(parameterIndex++,
-                    feedbackTrackingDTO.getManagerMobile());
-            preparedStatement.setString(parameterIndex++,
-                    feedbackTrackingDTO.getManagerName());
-            preparedStatement.setString(parameterIndex++,
-                    feedbackTrackingDTO.getManagerEmail());
+            preparedStatement = connection.prepareStatement(query.toString());
+            preparedStatement.setInt(parameterIndex++, feedbackTrackingDTO.getFeedbackId());
+            preparedStatement.setString(parameterIndex++, feedbackTrackingDTO.getManagerMobile());
+            preparedStatement.setString(parameterIndex++, feedbackTrackingDTO.getManagerName());
+            preparedStatement.setString(parameterIndex++, feedbackTrackingDTO.getManagerEmail());
 
 
             int i = preparedStatement.executeUpdate();
@@ -604,8 +600,7 @@ public class FeedbackDAO {
         return isCreate;
     }
 
-    public FeedbackTrackingDTO getcustomer(String managerMobile, int feedbackId)
-            throws SQLException {
+    public FeedbackTrackingDTO getcustomer(int feedbackId) throws SQLException {
 
         FeedbackTrackingDTO feedbackTrackingDTO = new FeedbackTrackingDTO();
         Statement statement = null;
@@ -615,8 +610,7 @@ public class FeedbackDAO {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             StringBuffer query = new StringBuffer(
-                    "select * from feedback_view_tracking where manager_mobile = \"").append(managerMobile)
-                    .append("\" and feedback_id=").append(feedbackId);
+                    "select * from feedback_view_tracking where feedback_id=").append(feedbackId);
 
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
@@ -651,18 +645,16 @@ public class FeedbackDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE feedback_view_tracking SET view_count =? " +
-                            "WHERE feedback_id =? and manager_mobile=?");
+                    .prepareStatement("UPDATE feedback_view_tracking SET manager_name=?,manager_email=?,manager_mobile=?,view_count =? WHERE feedback_id =? ");
 
-            FeedbackTrackingDTO feedbackTrackingDTO1 = getcustomer(feedbackTrackingDTO.getManagerMobile(), feedbackTrackingDTO.getFeedbackId());
+            FeedbackTrackingDTO feedbackTrackingDTO1 = getcustomer(feedbackTrackingDTO.getFeedbackId());
 
+            preparedStatement.setString(parameterIndex++, feedbackTrackingDTO.getManagerName());
+            preparedStatement.setString(parameterIndex++, feedbackTrackingDTO.getManagerEmail());
+            preparedStatement.setString(parameterIndex++, feedbackTrackingDTO.getManagerMobile());
             int count = feedbackTrackingDTO1.getViewCount();
             preparedStatement.setInt(parameterIndex++, count + 1);
-
-
             preparedStatement.setInt(parameterIndex++, feedbackTrackingDTO.getFeedbackId());
-            preparedStatement.setString(parameterIndex++, feedbackTrackingDTO.getManagerMobile());
-
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -713,9 +705,8 @@ public class FeedbackDAO {
                 where += " and f.isNegative=1";
             }
 
-            String query = "select f.isNegative,f.id,ft.feedback_id,f.outlet_id,f.date,f.table_no,f.customer_id,ft.manager_name,ft.manager_mobile,ft.manager_email,ft.first_view_date,COALESCE(ft.view_count,0) as view_count,\n" +
-                    "c.name as custoner_name,c.phone_no,o.outlet_desc,\n" +
-                    "(select count(feedback_id) from feedback_view_tracking t where t.feedback_id=f.id) as isAddressed\n" +
+            String query = "select f.isNegative,f.id,f.outlet_id,f.date,f.table_no,f.customer_id,ft.manager_name,ft.manager_mobile,ft.manager_email,ft.first_view_date,COALESCE(ft.view_count,0) as view_count,\n" +
+                    "c.name as custoner_name,c.phone_no,o.outlet_desc,ft.feedback_id as isAddressed\n" +
                     "from feedback_head f\n" +
                     "left join feedback_view_tracking ft on ft.feedback_id = f.id\n" +
                     "left join customer c on f.customer_id = c.id\n" +
@@ -767,9 +758,7 @@ public class FeedbackDAO {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement("UPDATE feedback_head SET isNegative =1 WHERE id =?");
-
+            preparedStatement = connection.prepareStatement("UPDATE feedback_head SET isNegative =1 WHERE id =?");
 
             preparedStatement.setInt(parameterIndex++, id);
 
@@ -793,4 +782,37 @@ public class FeedbackDAO {
         }
     }
 
+    public ReportDTO getDailyReport(String outlets, String from, String to) throws SQLException {
+        ReportDTO reportDTO = new ReportDTO();
+        Statement statement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection
+                    ();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuffer query = new StringBuffer(
+                    "SELECT COUNT(f.id) as total_count,coalesce (SUM(f.isNegative=1),0) as negative_count,count(t.feedback_id) as addressed_count\n" +
+                            "from feedback_head f\n" +
+                            "left join feedback_view_tracking t on f.id = t.feedback_id\n" +
+                            "where f.date >='" + from + "' and f.date <= '" + to + "' and f.outlet_id in(" +outlets+") ");
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                reportDTO.setTotalCount(resultSet.getInt("total_count"));
+                reportDTO.setNegativeCount(resultSet.getInt("negative_count"));
+                reportDTO.setAddressedCount(resultSet.getInt("addressed_count"));
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reportDTO;
+    }
 }

@@ -7,8 +7,9 @@ import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dao.question.QuestionDAO;
-import com.barbeque.dto.request.UpdateSettingsDTO;
+import com.barbeque.dao.user.UsersDAO;
 import com.barbeque.dto.request.*;
+import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
@@ -17,19 +18,20 @@ import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackTrackingResponse;
-import com.barbeque.response.util.ResponseGenerator;
+import java.util.Date;
 import com.barbeque.util.DateUtil;
+import com.barbeque.util.EmailService;
 import com.barbeque.util.SendSms;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
  * Created by user on 10/18/2016.
  */
 public class FeedbackRequestHandler {
-    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException,
-            QuestionNotFoundException, FeedbackNotFoundException {
+    public Integer addFeedback(FeedbackRequestBO feedbackRequestBO) throws SQLException, QuestionNotFoundException, FeedbackNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         int customerId;
 
@@ -104,13 +106,13 @@ public class FeedbackRequestHandler {
 
         CustomerDAO customerDAO = new CustomerDAO();
         int id = customerDAO.addCustomer(createCustomer.getLocality(), createCustomer.getName(),
-                createCustomer.getPhoneNo(), createCustomer.getEmailId(), createCustomer.getDob(), createCustomer.getDoa());
+                createCustomer.getPhoneNo(), createCustomer.getEmailId(), createCustomer.getDob(),
+                createCustomer.getDoa());
         return id;
 
     }
 
-    public List<FeedbackResponse> getfeedbackList1(FeedbackListRequestBO feedbackListRequestBO) throws
-            SQLException, UserNotFoundException {
+    public List<FeedbackResponse> getfeedbackList1(FeedbackListRequestBO feedbackListRequestBO) throws SQLException, UserNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
 
         List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList1(buildFeedbackDTO
@@ -248,8 +250,7 @@ public class FeedbackRequestHandler {
         return feedbackByIdResponse;
     }
 
-    public FeedbackByIdResponse buildResponseFromDTO(List<FeedbackRequestDTO> feedbackRequestDTOs) throws
-            SQLException, FeedbackNotFoundException {
+    public FeedbackByIdResponse buildResponseFromDTO(List<FeedbackRequestDTO> feedbackRequestDTOs) throws SQLException, FeedbackNotFoundException {
         FeedbackByIdResponse feedbackResp = null;
         List<FeedbackByIdResponse> uniqueList = new ArrayList<FeedbackByIdResponse>();
         List<Integer> uniqueIds = new ArrayList<Integer>();
@@ -369,12 +370,11 @@ public class FeedbackRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         Boolean isUpdate;
         FeedbackTrackingDTO feedbackTrackingDTO = buildFeedbackTrackingDTOFromBO(feedbackTrackingRequestBO);
-        FeedbackTrackingDTO feedbackTrackingDTO1 = feedbackDAO.getcustomer(feedbackTrackingDTO.getManagerMobile(), feedbackTrackingDTO.getFeedbackId());
+        FeedbackTrackingDTO feedbackTrackingDTO1 = feedbackDAO.getcustomer(feedbackTrackingDTO.getFeedbackId());
         if (feedbackTrackingDTO1.getFeedbackId() == 0) {
             isUpdate = feedbackDAO.createFeedbackTracking(feedbackTrackingDTO);
-
         } else {
-            isUpdate = feedbackDAO.updateFeedbackTracking(feedbackTrackingDTO1);
+            isUpdate = feedbackDAO.updateFeedbackTracking(feedbackTrackingDTO);
         }
         return isUpdate;
     }
@@ -428,13 +428,30 @@ public class FeedbackRequestHandler {
         }
         return feedbackTrackingDTOList;
     }
+
+    public Boolean getDailyReport() throws SQLException,UserNotFoundException {
+        Boolean isSent = Boolean.FALSE;
+        UsersDAO usersDAO = new UsersDAO();
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+
+        Date date1 = new Date();
+        Timestamp t1 = new Timestamp(date1.getTime());
+        String currentDate = DateUtil.getDateStringFromTimeStamp(t1);
+
+        final Calendar cal = Calendar.getInstance();
+        cal.setTime(date1);
+        cal.add(Calendar.DATE, -1);
+        Date date2 = cal.getTime();
+        Timestamp t2 = new Timestamp(date2.getTime());
+        String previousDate = DateUtil.getDateStringFromTimeStamp(t2);
+
+        List<LoginResponseDTO> users = usersDAO.getUserList();
+        for (LoginResponseDTO user : users) {
+            String outlets = user.getOutletAccess();
+            ReportDTO reportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
+            reportDTO.setUserName(user.getName());
+            isSent = EmailService.sendReport(user.getEmail(), reportDTO);
+        }
+        return isSent;
+    }
 }
-
-
-
-
-
-
-
-
-

@@ -33,8 +33,6 @@ public class ReportService {
             return ResponseGenerator.generateSuccessResponse(countResponseList, "List of counts.");
         } catch (QuestionNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(countResponseList, "INVALID Question Id ");
-
-
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(countResponseList, "Failure.");
@@ -54,7 +52,6 @@ public class ReportService {
             return ResponseGenerator.generateSuccessResponse(averageResponseList, "List of average rating.");
         } catch (QuestionNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(averageResponseList, "INVALID Question Id ");
-
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(averageResponseList, "Failure.");
@@ -74,7 +71,6 @@ public class ReportService {
             return ResponseGenerator.generateSuccessResponse(customerReportResponseList, "Personal Details.");
         } catch (CustomerNotFoundException e) {
             return ResponseGenerator.generateFailureResponse(customerReportResponseList, "INVALID Phone No. ");
-
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(customerReportResponseList, "Failure.");

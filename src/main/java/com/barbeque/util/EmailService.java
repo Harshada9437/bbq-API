@@ -1,6 +1,7 @@
 package com.barbeque.util;
 
 import com.barbeque.config.ConfigProperties;
+import com.barbeque.dto.request.ReportDTO;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -30,7 +31,9 @@ public class EmailService {
 
             message.setSubject("Otp Verification");
 
-            message.setText("Hello " + name + ",\n\nYou have requested to  register your device for Barbeque Nation. Kindly see the otp mentioned below.\n\nOne Time Password: \"" + otp + "\"\n\nNote: If you haven't requested this, please contact us immediately.\n\nThanks,\nBBQ");
+            message.setText("Hello " + name + ",\n\nYou have requested to  register your device for Barbeque Nation. Kindly" +
+                    " see the otp mentioned below.\n\nOne Time Password: \""
+                    + otp + "\"\n\nNote: If you haven't requested this, please contact us immediately.\n\nThanks,\nBBQ");
 
             Transport.send(message);
 
@@ -61,5 +64,43 @@ public class EmailService {
         } else {
             return session;
         }
+    }
+
+    public static Boolean sendReport(String to, ReportDTO reportDTO) {
+        Boolean isProcessed = Boolean.FALSE;
+
+        try {
+            Message message = new MimeMessage(session);
+
+            message.setFrom(new InternetAddress(FROM));
+
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(to));
+
+            message.setSubject("Daily feedback report update.");message.setContent(message, "text/html; charset=utf-8");
+            Float avgNegative= (float) reportDTO.getNegativeCount() /(float)reportDTO.getTotalCount()*100;
+            Float avgAddressed= (float) reportDTO.getAddressedCount() /(float)reportDTO.getNegativeCount()*100;
+            String msg = "<div>Hi " + reportDTO.getUserName() +",</div>" +
+                    " <div>&nbsp; </div>" +
+                    "<div>"+ "<b>" +"Feedback counts are:- " + "</b> " + "</div>" +
+                    " <div>Total count:-&nbsp;" + reportDTO.getTotalCount() + "</div>" +
+                    " <div>Negative count:-&nbsp;" + reportDTO.getNegativeCount() + "&nbsp;("+ avgNegative + "%)</div>" +
+                    " <div>Addressed count:-&nbsp;" + reportDTO.getAddressedCount() + "&nbsp;("+ avgAddressed + "%)</div>" +
+                    " <div>&nbsp; </div>" +
+                    "<div>Please login to your Barbeque Nation account for further details.</div>" +
+                    " <div>&nbsp; </div>" +
+                    "<div>Thanks,</div>" +
+                    "<div>BBQ</div>";
+            message.setContent(msg, "text/html; charset=utf-8");
+
+            Transport.send(message);
+
+            isProcessed = Boolean.TRUE;
+
+        } catch (MessagingException e) {
+            isProcessed = Boolean.FALSE;
+            e.printStackTrace();
+        }
+        return isProcessed;
     }
 }

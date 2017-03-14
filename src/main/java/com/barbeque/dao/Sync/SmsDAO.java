@@ -271,7 +271,7 @@ public class SmsDAO {
         }
     }
 
-    public static Boolean getSettingsByUpdateName(String name,int id) throws SQLException {
+    public static Boolean getSettingsByUpdateName(String name, int id) throws SQLException {
         Boolean isProcessed = Boolean.FALSE;
         Connection connection = null;
         Statement statement = null;

@@ -8,6 +8,7 @@ import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
+import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.feedback.FeedbackListRequest;
 import com.barbeque.request.feedback.FeedbackRequest;
 import com.barbeque.request.feedback.FeedbackTrackingRequest;
@@ -144,6 +145,27 @@ public class FeedbackService {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(feedbackTrackingResponseList, "Failed to retrieve the feedbacks.");
+        }
+    }
+
+    @GET
+    @Path("/dailyReport")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public Response getDailyReport() throws UserNotFoundException {
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            Boolean isProcessed = feedbackRequestHandler.getDailyReport();
+            if (isProcessed) {
+                return ResponseGenerator.generateSuccessResponse(messageResponse, "Mails are sent to all users.");
+            }else{
+                return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to send the mails. ");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
         }
     }
 }
