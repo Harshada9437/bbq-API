@@ -1,6 +1,5 @@
 package com.barbeque.service;
 
-
 import com.barbeque.bo.SettingRequestBO;
 import com.barbeque.bo.SmsSettingRequestBO;
 import com.barbeque.bo.UpdateSettingRequestBO;

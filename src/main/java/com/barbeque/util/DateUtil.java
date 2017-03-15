@@ -7,6 +7,7 @@ import org.joda.time.DateTimeZone;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class DateUtil {
@@ -47,5 +48,10 @@ public class DateUtil {
                 DateTimeZone.forID("Asia/Kolkata"));
         DateTimeComparator comparator = DateTimeComparator.getInstance();
         return comparator.compare(dt,currentDate);
+    }
+
+    public static String format(Timestamp value, String format) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(format, Locale.ENGLISH);
+        return dateFormatter.format(value.getTime());
     }
 }

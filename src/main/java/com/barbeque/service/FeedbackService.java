@@ -6,21 +6,19 @@ import com.barbeque.bo.FeedbackTrackingRequestBO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
-import com.barbeque.exceptions.UserNotFoundException;
-import com.barbeque.request.feedback.FeedbackListRequest;
-import com.barbeque.request.feedback.FeedbackRequest;
-import com.barbeque.request.feedback.FeedbackTrackingRequest;
+import com.barbeque.request.feedback.*;
+import com.barbeque.request.report.BillData;
 import com.barbeque.requesthandler.FeedbackRequestHandler;
-import com.barbeque.response.feedback.FeedbackByIdResponse;
-import com.barbeque.response.feedback.FeedbackResponseList;
-import com.barbeque.response.feedback.FeedbackTrackingResponseList;
+import com.barbeque.response.feedback.*;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
+import com.barbeque.sync.Synchronize;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
+
 
 /**
  * Created by user on 10/18/2016.
@@ -156,10 +154,11 @@ public class FeedbackService {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            Boolean isProcessed = feedbackRequestHandler.getDailyReport();
+            BillData data = Synchronize.callData("http://crm.bnhl.in/CRMProfile/Service1.svc/GetBillCount/");
+            Boolean isProcessed = feedbackRequestHandler.getDailyReport(data);
             if (isProcessed) {
                 return ResponseGenerator.generateSuccessResponse(messageResponse, "Mails are sent to all users.");
-            }else{
+            } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to send the mails. ");
             }
         } catch (Exception e) {

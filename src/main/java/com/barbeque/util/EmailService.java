@@ -66,7 +66,7 @@ public class EmailService {
         }
     }
 
-    public static Boolean sendReport(String to, ReportDTO reportDTO) {
+    public static Boolean sendReport(String to, ReportDTO dailyReportDTO, ReportDTO monthlyReportDTO) {
         Boolean isProcessed = Boolean.FALSE;
 
         try {
@@ -77,20 +77,27 @@ public class EmailService {
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(to));
 
-            message.setSubject("Daily feedback report update.");message.setContent(message, "text/html; charset=utf-8");
-            Float avgNegative= (float) reportDTO.getNegativeCount() /(float)reportDTO.getTotalCount()*100f;
-            Float avgAddressed= (float) reportDTO.getAddressedCount() /(float)reportDTO.getNegativeCount()*100f;
-            String msg = "<div>Hi " + reportDTO.getUserName() +",</div>" +
+            message.setSubject("Daily feedback report update.");
+            message.setContent(message, "text/html; charset=utf-8");
+
+            Float avgNegative= (float) dailyReportDTO.getNegativeCount() /(float)dailyReportDTO.getTotalCount()*100f;
+            Float avgAddressed= (float) dailyReportDTO.getUnAddressedCount() /(float)dailyReportDTO.getNegativeCount()*100f;
+
+            Float avgN= (float) monthlyReportDTO.getNegativeCount() /(float)monthlyReportDTO.getTotalCount()*100f;
+            Float avgA= (float) monthlyReportDTO.getUnAddressedCount() /(float)monthlyReportDTO.getNegativeCount()*100f;
+
+            String msg = "<div>Hi " + dailyReportDTO.getUserName() +",</div>" +
                     " <div>&nbsp; </div>" +
                     "<div>"+ "<b>" +"Feedback counts are:- " + "</b> " + "</div>" +
-                    " <div>Total count:-&nbsp;" + reportDTO.getTotalCount() + "</div>" +
-                    " <div>Negative count:-&nbsp;" + reportDTO.getNegativeCount() + "&nbsp;("+ avgNegative + "%)</div>" +
-                    " <div>Addressed count:-&nbsp;" + reportDTO.getAddressedCount() + "&nbsp;("+ avgAddressed + "%)</div>" +
+                    " <div>Total count:-&nbsp;" + dailyReportDTO.getTotalCount() + "</div>" +
+                    " <div>Negative count:-&nbsp;" + dailyReportDTO.getNegativeCount() + "&nbsp;("+ avgNegative + "%)</div>" +
+                    " <div>Addressed count:-&nbsp;" + dailyReportDTO.getUnAddressedCount() + "&nbsp;("+ avgAddressed + "%)</div>" +
                     " <div>&nbsp; </div>" +
                     "<div>Please login to your Barbeque Nation account for further details.</div>" +
                     " <div>&nbsp; </div>" +
                     "<div>Thanks,</div>" +
                     "<div>BBQ</div>";
+
             message.setContent(msg, "text/html; charset=utf-8");
 
             Transport.send(message);

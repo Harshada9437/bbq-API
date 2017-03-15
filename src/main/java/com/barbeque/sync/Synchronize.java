@@ -1,5 +1,8 @@
 package com.barbeque.sync;
 
+import com.barbeque.request.report.BillData;
+import com.barbeque.request.report.ReportData;
+import com.barbeque.util.DateUtil;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -9,7 +12,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -119,6 +125,63 @@ public class Synchronize {
         data.setCompanies(companies);
         data.setRegions(regions);
         data.setOutlets(outlets);
+        return data;
+    }
+
+    public static BillData callData(String myURL) throws JSONException {
+        BillData data = new BillData();
+        StringBuilder sb = new StringBuilder();
+        URLConnection urlConn = null;
+        InputStreamReader in = null;
+        List<ReportData> reportDatas = new ArrayList<ReportData>();
+
+        Date date1 = new Date();
+
+        final Calendar cal = Calendar.getInstance();
+        cal.setTime(date1);
+        cal.add(Calendar.DATE, -1);
+        Date date2 = cal.getTime();
+        Timestamp t2 = new Timestamp(date2.getTime());
+        String currentDate = DateUtil.format(t2,"yyyy.MM.dd");
+
+        try {
+            URL url = new URL(myURL + currentDate);
+            urlConn = url.openConnection();
+            if (urlConn != null)
+                urlConn.setReadTimeout(60 * 1000);
+            if (urlConn != null && urlConn.getInputStream() != null) {
+                in = new InputStreamReader(urlConn.getInputStream(),
+                        Charset.defaultCharset());
+                BufferedReader bufferedReader = new BufferedReader(in);
+                if (bufferedReader != null) {
+                    int cp;
+                    while ((cp = bufferedReader.read()) != -1) {
+                        sb.append((char) cp);
+                    }
+                    bufferedReader.close();
+                }
+            }
+            in.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Exception while calling URL:" + myURL, e);
+        }
+
+        if (sb != null) {
+            JSONObject jsonObj = new JSONObject(sb.toString());
+            JSONArray clusterJSONList = jsonObj.getJSONArray("storebill");
+
+            for (int i = 0; i < clusterJSONList.length(); i++) {
+                JSONObject object = clusterJSONList.getJSONObject(i);
+                ReportData newObject = new ReportData();
+                newObject.setStoreId(object.getString("StoreId"));
+                newObject.setMonthlyBillCount(object.getInt("Monthly"));
+                newObject.setDailyBillCount(object.getInt("Daily"));
+                reportDatas.add(newObject);
+            }
+
+
+            data.setOutlets(reportDatas);
+        }
         return data;
     }
 }

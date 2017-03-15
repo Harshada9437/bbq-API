@@ -14,10 +14,16 @@ import com.barbeque.exceptions.FeedbackNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.feedback.FeedbackDetails;
+import com.barbeque.request.report.BillData;
+import com.barbeque.request.report.ReportData;
 import com.barbeque.response.feedback.CreateCustomer;
 import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackTrackingResponse;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.barbeque.util.DateUtil;
 import com.barbeque.util.EmailService;
@@ -429,10 +435,15 @@ public class FeedbackRequestHandler {
         return feedbackTrackingDTOList;
     }
 
-    public Boolean getDailyReport() throws SQLException,UserNotFoundException {
+    public Boolean getDailyReport(BillData data) throws SQLException,UserNotFoundException {
         Boolean isSent = Boolean.FALSE;
         UsersDAO usersDAO = new UsersDAO();
         FeedbackDAO feedbackDAO = new FeedbackDAO();
+        OutletDAO outletDAO = new OutletDAO();
+
+        for(ReportData reportData : data.getOutlets()) {
+            outletDAO.updateBillCount(reportData);
+        }
 
         Date date1 = new Date();
         Timestamp t1 = new Timestamp(date1.getTime());
@@ -445,12 +456,23 @@ public class FeedbackRequestHandler {
         Timestamp t2 = new Timestamp(date2.getTime());
         String previousDate = DateUtil.getDateStringFromTimeStamp(t2);
 
+        cal.setTime(date1);
+        cal.add(Calendar.MONTH, -1);
+        Date date3 = cal.getTime();
+        Timestamp t3 = new Timestamp(date3.getTime());
+        String previousMonth = DateUtil.getDateStringFromTimeStamp(t3);
+
         List<LoginResponseDTO> users = usersDAO.getUserList();
         for (LoginResponseDTO user : users) {
             String outlets = user.getOutletAccess();
-            ReportDTO reportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
-            reportDTO.setUserName(user.getName());
-            isSent = EmailService.sendReport(user.getEmail(), reportDTO);
+            ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
+            List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(outlets, previousDate, currentDate);
+            dailyReportDTO.setOutlets(dailyOutletReport);
+            ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(outlets, previousMonth, currentDate);
+            List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(outlets, previousMonth, currentDate);
+            monthlyReportDTO.setOutlets(monthlyOutletReport);
+            dailyReportDTO.setUserName(user.getName());
+            isSent = EmailService.sendReport(user.getEmail(), dailyReportDTO,monthlyReportDTO);
         }
         return isSent;
     }

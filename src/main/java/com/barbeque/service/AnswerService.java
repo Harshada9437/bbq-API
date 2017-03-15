@@ -1,6 +1,5 @@
 package com.barbeque.service;
 
-import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.requesthandler.AnswerRequestHandler;
 import com.barbeque.response.Answer.AnswerResponse;
 import com.barbeque.response.util.MessageResponse;

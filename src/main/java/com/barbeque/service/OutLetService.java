@@ -4,7 +4,6 @@ import com.barbeque.bo.OutletListRequestBO;
 import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
-import com.barbeque.exceptions.TemplateNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.outlet.AssignTemplateRequest;
 import com.barbeque.request.outlet.OutletListRequest;
@@ -16,13 +15,11 @@ import com.barbeque.response.outlet.OutletResponse;
 import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.bo.AssignTemplateRequestBO;
 import com.barbeque.bo.UpdateSettingsRequestBO;
-import com.barbeque.util.DateUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 
 /**

@@ -1,9 +1,6 @@
 package com.barbeque.service;
 
-import com.barbeque.bo.CustomerRequestBO;
 import com.barbeque.bo.UpdateCustomerRequestBO;
-import com.barbeque.dao.customer.CustomerDAO;
-import com.barbeque.request.customer.CustomerRequest;
 import com.barbeque.request.customer.UpdateCustomerRequest;
 import com.barbeque.requesthandler.CustomerRequestHandler;
 import com.barbeque.response.customer.CustomerResponseList;

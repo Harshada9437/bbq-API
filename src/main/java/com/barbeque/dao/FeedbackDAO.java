@@ -1,23 +1,25 @@
 package com.barbeque.dao;
 
-import com.barbeque.bo.FeedbackListRequestBO;
-import com.barbeque.dao.customer.CustomerDAO;
-import com.barbeque.dao.question.QuestionDAO;
-import com.barbeque.dao.user.UsersDAO;
-import com.barbeque.dto.request.*;
-import com.barbeque.dto.response.LoginResponseDTO;
-import com.barbeque.exceptions.CustomerNotFoundException;
-import com.barbeque.exceptions.FeedbackNotFoundException;
+        import com.barbeque.bo.FeedbackListRequestBO;
+        import com.barbeque.bo.ReportRequestBO;
+        import com.barbeque.dao.customer.CustomerDAO;
+        import com.barbeque.dao.question.QuestionDAO;
+        import com.barbeque.dao.user.UsersDAO;
+        import com.barbeque.dto.request.*;
+        import com.barbeque.dto.response.LoginResponseDTO;
+        import com.barbeque.exceptions.CustomerNotFoundException;
+        import com.barbeque.exceptions.FeedbackNotFoundException;
 
-import com.barbeque.exceptions.QuestionNotFoundException;
-import com.barbeque.exceptions.UserNotFoundException;
-import com.barbeque.request.feedback.FeedbackDetails;
-import com.barbeque.request.report.Feedback;
-import com.barbeque.util.CommaSeparatedString;
-import com.barbeque.util.DateUtil;
+        import com.barbeque.exceptions.QuestionNotFoundException;
+        import com.barbeque.exceptions.UserNotFoundException;
+        import com.barbeque.request.feedback.FeedbackDetails;
+        import com.barbeque.request.report.Feedback;
+        import com.barbeque.request.report.ReportData;
+        import com.barbeque.util.CommaSeparatedString;
+        import com.barbeque.util.DateUtil;
 
-import java.sql.*;
-import java.util.*;
+        import java.sql.*;
+        import java.util.*;
 
 /**
  * Created by System-2 on 12/13/2016.
@@ -793,14 +795,17 @@ public class FeedbackDAO {
             statement = connection.createStatement();
             StringBuffer query = new StringBuffer(
                     "SELECT COUNT(f.id) as total_count,coalesce (SUM(f.isNegative=1),0) as negative_count,count(t.feedback_id) as addressed_count\n" +
-                            "from feedback_head f\n" +
+                            ",sum(distinct o.daily_bill_count) as dailyBill,sum(distinct o.monthly_bill_count) as monthlyBill from feedback_head f\n" +
                             "left join feedback_view_tracking t on f.id = t.feedback_id\n" +
-                            "where f.date >='" + from + "' and f.date <= '" + to + "' and f.outlet_id in(" +outlets+") ");
+                            "join outlet o on o.id = f.outlet_id\n" +
+                            "where f.date >='" + from + "' and f.date <= '" + to + "' and f.outlet_id in(" + outlets + ") ");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 reportDTO.setTotalCount(resultSet.getInt("total_count"));
                 reportDTO.setNegativeCount(resultSet.getInt("negative_count"));
-                reportDTO.setAddressedCount(resultSet.getInt("addressed_count"));
+                reportDTO.setUnAddressedCount(reportDTO.getNegativeCount() - resultSet.getInt("addressed_count"));
+                reportDTO.setDailyBillCount(resultSet.getInt("dailyBill"));
+                reportDTO.setMonthlyBillCount(resultSet.getInt("monthlyBill"));
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -814,5 +819,45 @@ public class FeedbackDAO {
             }
         }
         return reportDTO;
+    }
+
+    public List<ReportData> getOutletReport(String outlets, String from, String to) throws SQLException {
+        List<ReportData> reports = new ArrayList<ReportData>();
+        Statement statement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuffer query = new StringBuffer(
+                    "SELECT COUNT(f.id) as total_count,coalesce (SUM(f.isNegative=1),0) as negative_count,count(t.feedback_id) as addressed_count\n" +
+                            ",o.outlet_desc,o.daily_bill_count, o.monthly_bill_count from feedback_head f\n" +
+                            "left join feedback_view_tracking t on f.id = t.feedback_id\n" +
+                            "join outlet o on o.id = f.outlet_id\n" +
+                            "where f.date >='" + from + "' and f.date <= '" + to + "' and f.outlet_id in(" + outlets + ")\n " +
+                            "group by f.outlet_id");
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                ReportData report = new ReportData();
+                report.setTotalCount(resultSet.getInt("total_count"));
+                report.setStoreId(resultSet.getString("outlet_desc"));
+                report.setNegativeCount(resultSet.getInt("negative_count"));
+                report.setUnAddressedCount(report.getNegativeCount() - resultSet.getInt("addressed_count"));
+                report.setDailyBillCount(resultSet.getInt("daily_bill_count"));
+                report.setMonthlyBillCount(resultSet.getInt("monthly_bill_count"));
+                reports.add(report);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reports;
     }
 }

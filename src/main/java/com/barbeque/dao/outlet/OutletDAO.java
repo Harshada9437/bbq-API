@@ -7,6 +7,7 @@ import com.barbeque.dto.request.*;
 import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.OutletNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
+import com.barbeque.request.report.ReportData;
 import com.barbeque.sync.Outlet;
 
 import java.sql.*;
@@ -538,5 +539,41 @@ public class OutletDAO {
             }
         }
         return isCreated;
+    }
+
+    public void updateBillCount(ReportData reportData) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE outlet SET  daily_bill_count=?, monthly_bill_count=?" +
+                            " WHERE pos_store_id=?");
+
+            preparedStatement.setInt(parameterIndex++, reportData.getDailyBillCount());
+            preparedStatement.setInt(parameterIndex++, reportData.getMonthlyBillCount());
+            preparedStatement.setString(parameterIndex++, reportData.getStoreId());
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            connection.rollback();
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
