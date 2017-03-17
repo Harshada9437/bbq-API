@@ -9,9 +9,13 @@ import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.response.report.AverageResponse;
 import com.barbeque.response.report.CountResponse;
 import com.barbeque.response.report.CustomerReportResponseList;
+import com.barbeque.util.DateUtil;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,7 +26,18 @@ public class ReportRequestHandler {
     public List<CountResponse> getcountById(int id) throws SQLException, QuestionNotFoundException {
         List<CountResponse> countList = new ArrayList<CountResponse>();
         FeedbackDAO feedbackDAO = new FeedbackDAO();
-        List<CountDTO> countDTOList = feedbackDAO.getcountById(id);
+
+        Date date1 = new Date();
+        Timestamp t1 = new Timestamp(date1.getTime());
+        String to = DateUtil.getDateStringFromTimeStamp(t1);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date date = cal.getTime();
+        Timestamp t2 = new Timestamp(date.getTime());
+        String from = DateUtil.getDateStringFromTimeStamp(t2);
+
+        List<CountDTO> countDTOList = feedbackDAO.getcountById(id,from,to);
 
         for (com.barbeque.dto.request.CountDTO countDTO : countDTOList) {
             CountResponse countResponse = new CountResponse();
@@ -42,8 +57,18 @@ public class ReportRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<AverageResponse> averageList = new ArrayList<AverageResponse>();
 
-        List<AverageDTO> averageDTOList = feedbackDAO
-                .getaverageById(id);
+        Date date1 = new Date();
+        Timestamp t1 = new Timestamp(date1.getTime());
+        String to = DateUtil.getDateStringFromTimeStamp(t1);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date date = cal.getTime();
+        Timestamp t2 = new Timestamp(date.getTime());
+        String from = DateUtil.getDateStringFromTimeStamp(t2);
+
+
+        List<AverageDTO> averageDTOList = feedbackDAO.getaverageById(id,from,to);
 
         for (com.barbeque.dto.request.AverageDTO averageDTO : averageDTOList) {
             AverageResponse averageResponse = new AverageResponse();
@@ -60,7 +85,18 @@ public class ReportRequestHandler {
 
     public CustomerReportResponseList getcustomerByPhoneNo(String phoneNo) throws SQLException, CustomerNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
-        CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(feedbackDAO.getcustomerByPhoneNo(phoneNo));
+
+        Date date1 = new Date();
+        Timestamp t1 = new Timestamp(date1.getTime());
+        String to = DateUtil.getDateStringFromTimeStamp(t1);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date date = cal.getTime();
+        Timestamp t2 = new Timestamp(date.getTime());
+        String from = DateUtil.getDateStringFromTimeStamp(t2);
+
+        CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(feedbackDAO.getcustomerByPhoneNo(phoneNo,from,to));
         return customerReportResponseList;
     }
 

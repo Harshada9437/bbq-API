@@ -5,6 +5,7 @@ package com.barbeque.request.report;
  */
 public class ReportData {
     private String storeId;
+    private String city;
     private String firstFeedback;
     private String lastFeedback;
     private int dailyBillCount;
@@ -12,6 +13,14 @@ public class ReportData {
     private int totalCount;
     private int negativeCount;
     private int unAddressedCount;
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getFirstFeedback() {
         return firstFeedback;
@@ -82,6 +91,7 @@ public class ReportData {
     public String toString() {
         return "ReportData{" +
                 "storeId='" + storeId + '\'' +
+                ", city='" + city + '\'' +
                 ", firstFeedback='" + firstFeedback + '\'' +
                 ", lastFeedback='" + lastFeedback + '\'' +
                 ", dailyBillCount=" + dailyBillCount +

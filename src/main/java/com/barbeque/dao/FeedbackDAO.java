@@ -361,7 +361,7 @@ public class FeedbackDAO {
         return feedbackRequestDTOs;
     }
 
-    public List<CountDTO> getcountById(int id) throws SQLException, QuestionNotFoundException {
+    public List<CountDTO> getcountById(int id,String from,String to) throws SQLException, QuestionNotFoundException {
         Connection connection = null;
         Statement statement = null;
         List<CountDTO> countDTOs = new ArrayList<CountDTO>();
@@ -373,9 +373,11 @@ public class FeedbackDAO {
                     "select q.question_desc,q.question_type,a.weightage,f.rating,a.answer_desc,f.question_id,f.answer_id,coalesce(count(f.rating),0) as count from feedback f\n" +
                             "join question_bank q\n" +
                             "on f.question_id=q.id\n" +
+                            "join feedback_head fh\n" +
+                            "on f.feedback_id=fh.id\n" +
                             "join question_answer_link a\n" +
                             "on f.answer_id=a.answer_id\n" +
-                            "where f.question_id=" + id + " and f.rating<>0\n" +
+                            "where f.question_id=" + id + " and f.rating<>0 and fh.date >='" + from + "' and fh.date <= '" + to + "'\n" +
                             "group by f.answer_id,f.rating ");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
@@ -402,7 +404,7 @@ public class FeedbackDAO {
     }
 
 
-    public List<AverageDTO> getaverageById(int id) throws SQLException, QuestionNotFoundException {
+    public List<AverageDTO> getaverageById(int id,String from,String to) throws SQLException, QuestionNotFoundException {
         Connection connection = null;
         Statement statement = null;
         List<AverageDTO> averageDTOs = new ArrayList<AverageDTO>();
@@ -414,9 +416,11 @@ public class FeedbackDAO {
                     "select q.question_desc,q.question_type,a.weightage,a.answer_desc,f.question_id,f.answer_id,coalesce(ROUND(avg(f.rating),0),0) as average from feedback f\n" +
                             "join question_bank q\n" +
                             "on f.question_id=q.id\n" +
+                            "join feedback_head fh\n" +
+                            "on f.feedback_id=fh.id\n" +
                             "join question_answer_link a\n" +
                             "on f.answer_id=a.answer_id\n" +
-                            "where f.question_id=" + id + " and f.rating<>0\n" +
+                            "where f.question_id=" + id + " and f.rating<>0 and fh.date >='" + from + "' and fh.date <= '" + to + "'\n" +
                             "group by f.answer_id;"
             );
             ResultSet resultSet = statement.executeQuery(query.toString());
@@ -444,7 +448,7 @@ public class FeedbackDAO {
     }
 
 
-    public CustomerReportDTO getcustomerByPhoneNo(String phoneNo) throws SQLException, CustomerNotFoundException {
+    public CustomerReportDTO getcustomerByPhoneNo(String phoneNo,String from,String to) throws SQLException, CustomerNotFoundException {
         CustomerReportDTO customerReportDTO = new CustomerReportDTO();
 
         Connection connection = null;
@@ -457,7 +461,7 @@ public class FeedbackDAO {
                     "select c.id,c.name,c.email_id,c.dob,c.doa,c.locality,f.id as feedback_id,fh.customer_id from customer c\n" +
                             "left join feedback_head fh on fh.customer_id = c.id\n" +
                             "left join feedback f on f.feedback_id=fh.id\n" +
-                            "where c.phone_no=\"" + phoneNo + "\"\n" +
+                            "where c.phone_no=\"" + phoneNo + "\"and fh.date >='" + from + "' and fh.date <= '" + to + "'\n" +
                             "group by f.feedback_id"
             );
             ResultSet resultSet = statement.executeQuery(query.toString());
@@ -795,10 +799,9 @@ public class FeedbackDAO {
             statement = connection.createStatement();
             StringBuffer query = new StringBuffer(
                     "SELECT COUNT(f.id) as total_count,coalesce (SUM(f.isNegative=1),0) as negative_count,count(t.feedback_id) as addressed_count\n" +
-                            ",sum(distinct o.daily_bill_count) as dailyBill,sum(distinct o.monthly_bill_count) as monthlyBill from feedback_head f\n" +
-                            "left join feedback_view_tracking t on f.id = t.feedback_id\n" +
-                            "join outlet o on o.id = f.outlet_id\n" +
-                            "where f.date >='" + from + "' and f.date <= '" + to + "' and f.outlet_id in(" + outlets + ") ");
+                            ",sum(distinct o.daily_bill_count) as dailyBill, sum(distinct o.monthly_bill_count) as monthlyBill from (select daily_bill_count, monthly_bill_count,id from outlet where id in("+outlets+")) as o\n" +
+                            "left join feedback_head f  on o.id = f.outlet_id and f.date >='"+from+"' and f.date <= '"+to+"'\n" +
+                            "left join feedback_view_tracking t on f.id = t.feedback_id");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 reportDTO.setTotalCount(resultSet.getInt("total_count"));
@@ -831,16 +834,18 @@ public class FeedbackDAO {
             statement = connection.createStatement();
             StringBuffer query = new StringBuffer(
                     "SELECT COUNT(f.id) as total_count,coalesce (SUM(f.isNegative=1),0) as negative_count,count(t.feedback_id) as addressed_count\n" +
-                            ",o.outlet_desc,o.daily_bill_count, o.monthly_bill_count from feedback_head f\n" +
+                            ",c.cluster_desc,o.outlet_desc,o.daily_bill_count, o.monthly_bill_count,o.id from (select cluster_id,outlet_desc,daily_bill_count, monthly_bill_count,id from outlet where id in("+outlets+")) as o\n" +
+                            "join cluster c on c.id=o.cluster_id\n" +
+                            "left join feedback_head f  on o.id = f.outlet_id and f.date >='"+from+"' and f.date <= '"+to+"'\n" +
                             "left join feedback_view_tracking t on f.id = t.feedback_id\n" +
-                            "join outlet o on o.id = f.outlet_id\n" +
-                            "where f.date >='" + from + "' and f.date <= '" + to + "' and f.outlet_id in(" + outlets + ")\n " +
-                            "group by f.outlet_id");
+                            "group by o.id\n" +
+                            "order by negative_count desc");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 ReportData report = new ReportData();
                 report.setTotalCount(resultSet.getInt("total_count"));
                 report.setStoreId(resultSet.getString("outlet_desc"));
+                report.setCity(resultSet.getString("cluster_desc"));
                 report.setNegativeCount(resultSet.getInt("negative_count"));
                 report.setUnAddressedCount(report.getNegativeCount() - resultSet.getInt("addressed_count"));
                 report.setDailyBillCount(resultSet.getInt("daily_bill_count"));
