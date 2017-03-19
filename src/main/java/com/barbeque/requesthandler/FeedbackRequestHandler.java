@@ -25,6 +25,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import com.barbeque.util.DateUtil;
 import com.barbeque.util.EmailService;
 import com.barbeque.util.SendSms;
@@ -127,7 +128,7 @@ public class FeedbackRequestHandler {
         List<Integer> uniqueIds = new ArrayList<Integer>();
         for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
             if (!uniqueIds.contains(feedbackRequestDTO.getId())) {
-                if(feedbackRequestDTO.getIsAddressed()>0){
+                if (feedbackRequestDTO.getIsAddressed() > 0) {
                     feedbackRequestDTO.setIsAddressed(1);
                 }
                 FeedbackResponse feedbackResp = new FeedbackResponse(feedbackRequestDTO.getId(),
@@ -405,10 +406,10 @@ public class FeedbackRequestHandler {
     }
 
 
-    public List<FeedbackTrackingResponse> getFeedbackTrackingList(FeedbackListRequestBO feedbackListRequestBO,int isNegative) throws SQLException, UserNotFoundException {
+    public List<FeedbackTrackingResponse> getFeedbackTrackingList(FeedbackListRequestBO feedbackListRequestBO, int isNegative) throws SQLException, UserNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<FeedbackTrackingResponse> feedbackTrackingDTOList = new ArrayList<FeedbackTrackingResponse>();
-        List<FeedbackTrackingResponseDTO> trackingList = feedbackDAO.getFeedbackTrackingList(feedbackListRequestBO,isNegative);
+        List<FeedbackTrackingResponseDTO> trackingList = feedbackDAO.getFeedbackTrackingList(feedbackListRequestBO, isNegative);
 
         for (FeedbackTrackingResponseDTO feedbackTrackingResponseDTO : trackingList) {
             if (feedbackTrackingResponseDTO.getIsAddressed() > 0) {
@@ -435,35 +436,36 @@ public class FeedbackRequestHandler {
         return feedbackTrackingDTOList;
     }
 
-    public Boolean getDailyReport(BillData data) throws SQLException,UserNotFoundException {
+    public Boolean getDailyReport(BillData data) throws SQLException, UserNotFoundException {
         Boolean isSent = Boolean.FALSE;
         UsersDAO usersDAO = new UsersDAO();
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         OutletDAO outletDAO = new OutletDAO();
 
-        for(ReportData reportData : data.getOutlets()) {
+        for (ReportData reportData : data.getOutlets()) {
             outletDAO.updateBillCount(reportData);
         }
 
         Date date1 = new Date();
         Timestamp t1 = new Timestamp(date1.getTime());
-        String currentDate = DateUtil.getDateStringFromTimeStamp(t1);
+        String currentDate = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
 
         final Calendar cal = Calendar.getInstance();
         cal.setTime(date1);
         cal.add(Calendar.DATE, -1);
         Date date2 = cal.getTime();
         Timestamp t2 = new Timestamp(date2.getTime());
-        String previousDate = DateUtil.getDateStringFromTimeStamp(t2);
+        String previousDate = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
 
         cal.setTime(date1);
         cal.add(Calendar.MONTH, -1);
         Date date3 = cal.getTime();
         Timestamp t3 = new Timestamp(date3.getTime());
-        String previousMonth = DateUtil.getDateStringFromTimeStamp(t3);
+        String previousMonth = DateUtil.getCurrentServerTimeByRemoteTimestamp(t3);
 
         List<LoginResponseDTO> users = usersDAO.getUserList();
         for (LoginResponseDTO user : users) {
+
             String outlets = user.getOutletAccess();
             ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
             List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(outlets, previousDate, currentDate);
