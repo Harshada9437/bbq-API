@@ -50,10 +50,22 @@ public class EmailService {
     private static Session getSession() {
         if (session == null) {
             Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "false");
+
+            String MAIL_SMTP_CONNECTIONTIMEOUT ="mail.smtp.connectiontimeout";
+            String MAIL_SMTP_TIMEOUT = "mail.smtp.timeout";
+            String MAIL_SMTP_WRITETIMEOUT = "mail.smtp.writetimeout";
+            String MAIL_SOCKET_TIMEOUT = "60000";
+            props.put(MAIL_SMTP_CONNECTIONTIMEOUT, MAIL_SOCKET_TIMEOUT);
+            props.put(MAIL_SMTP_TIMEOUT, MAIL_SOCKET_TIMEOUT);
+            props.put(MAIL_SMTP_WRITETIMEOUT, MAIL_SOCKET_TIMEOUT);
+
             props.put("mail.smtp.host", HOST);
-            props.put("mail.smtp.port", "587");
+            props.put("mail.smtp.socketFactory.port", "465");
+            props.put("mail.smtp.socketFactory.class",
+                    "javax.net.ssl.SSLSocketFactory");
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.port", "465");
+            //java.security.Security.setProperty("networkaddress.cache.ttl","10");
 
             Session session = Session.getInstance(props,
                     new Authenticator() {
@@ -90,7 +102,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(FROM));
 
             message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(to));
+                    InternetAddress.parse("it@barbequenation.com"));
 
             message.setSubject("Daily feedback report update.");
             message.setContent(message, "text/html; charset=utf-8");
@@ -102,7 +114,7 @@ public class EmailService {
             float avgMUnadd= calAverage(monthlyReportDTO.getUnAddressedCount(),monthlyReportDTO.getNegativeCount());
 
             String table = "",row="";
-            for (int i = 1; i < monthlyReportDTO.getOutlets().size(); i++){
+            for (int i = 0; i < monthlyReportDTO.getOutlets().size(); i++){
                 ReportData dailyData =  dailyReportDTO.getOutlets().get(i);
                 ReportData monthlyData = monthlyReportDTO.getOutlets().get(i);
 
@@ -132,7 +144,7 @@ public class EmailService {
                 table=table+row;
             }
 
-            String msg="<!DOCTYPE html >\n" +
+            String msg = "<!DOCTYPE html >\n" +
                     "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                     "<head>\n" +
                     "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" +
@@ -215,7 +227,7 @@ public class EmailService {
                     "<table border=\"0\" cellpadding=\"10\" cellspacing=\"0\" width=\"100%\">\n" +
                     "<tr>\n" +
                     "<td align=\"center\" valign=\"top\" class=\"textContent\">\n" +
-                    "<h1 style=\"color:#FFFFFF;line-height:100%;font-family:Helvetica;font-size:25px;font-weight:normal;margin-bottom:5px;text-align:center;\">Feedbacks Summary As on "+currentDate+" </h1>\n" +
+                    "<h1 style=\"color:#FFFFFF;line-height:100%;font-family:Helvetica;font-size:25px;font-weight:normal;margin-bottom:5px;text-align:center;\">Feedbacks summary as on "+DateUtil.format(DateUtil.getTimeStampFromString(currentDate),"dd-MMM-yyyy")+" </h1>\n" +
                     "</td>\n" +
                     "</tr>\n" +
                     "</table>\n" +
@@ -412,7 +424,7 @@ public class EmailService {
                     "Bills\n" +
                     "</td>\n" +
                     "<td align=\"center\"  valign=\"top\" class=\"textContent\">\n" +
-                    "%\n" +
+                    "(Feedback / Bills)%\n" +
                     "</td>\n" +
                     "</tr>\n" +
                     "<tr style=\"background: #ea6314;color: white; font-size:12px\">\n" +
@@ -429,7 +441,7 @@ public class EmailService {
                     "Daily <small>( MTD )</small>\n" +
                     "</td>\n" +
                     "<td align=\"center\"  valign=\"top\" class=\"textContent\">\n" +
-                    " Total Feedback / Bills <small>( MTD )</small>\n" +
+                    " Total <small>( MTD )</small>\n" +
                     "</td>\n" +
                     "</tr>\n" + table +
                     "</table>\n" +
@@ -451,7 +463,7 @@ public class EmailService {
 
             message.setContent(msg, "text/html; charset=utf-8");
 
-            Transport.send(message);
+          //  Transport.send(message);
 
             isProcessed = Boolean.TRUE;
 

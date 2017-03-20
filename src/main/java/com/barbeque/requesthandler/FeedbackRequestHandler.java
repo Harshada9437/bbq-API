@@ -457,8 +457,7 @@ public class FeedbackRequestHandler {
         Timestamp t2 = new Timestamp(date2.getTime());
         String previousDate = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
 
-        cal.setTime(date1);
-        cal.add(Calendar.MONTH, -1);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
         Date date3 = cal.getTime();
         Timestamp t3 = new Timestamp(date3.getTime());
         String previousMonth = DateUtil.getCurrentServerTimeByRemoteTimestamp(t3);

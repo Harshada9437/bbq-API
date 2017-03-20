@@ -1,7 +1,6 @@
 package com.barbeque.dao;
 
         import com.barbeque.bo.FeedbackListRequestBO;
-        import com.barbeque.bo.ReportRequestBO;
         import com.barbeque.dao.customer.CustomerDAO;
         import com.barbeque.dao.question.QuestionDAO;
         import com.barbeque.dao.user.UsersDAO;

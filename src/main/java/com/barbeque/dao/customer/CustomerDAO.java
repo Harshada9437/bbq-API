@@ -32,7 +32,7 @@ public class CustomerDAO {
 
             java.util.Date date1 = new java.util.Date();
             Timestamp t1 = new Timestamp(date1.getTime());
-            String updated_date = DateUtil.getDateStringFromTimeStamp(t1);
+            String updated_date = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
             preparedStatement.setString(parameterIndex++,updated_date);
 
             int i = preparedStatement.executeUpdate();
@@ -133,7 +133,7 @@ public class CustomerDAO {
 
             java.util.Date date1 = new java.util.Date();
             Timestamp t1 = new Timestamp(date1.getTime());
-            String updated_date = DateUtil.getDateStringFromTimeStamp(t1);
+            String updated_date = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
             preparedStatement.setString(parameterIndex++,updated_date);
 
             preparedStatement.setInt(parameterIndex++, customerDTO.getId());

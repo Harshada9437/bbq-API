@@ -7,12 +7,16 @@ package com.barbeque.service;
 import com.barbeque.exceptions.CustomerNotFoundException;
 
 import com.barbeque.exceptions.QuestionNotFoundException;
+import com.barbeque.request.report.BillData;
+import com.barbeque.requesthandler.FeedbackRequestHandler;
 import com.barbeque.requesthandler.ReportRequestHandler;
 import com.barbeque.response.report.AverageResponseList;
 import com.barbeque.response.report.CountResponseList;
 import com.barbeque.response.report.CustomerReportResponseList;
+import com.barbeque.response.report.SummaryResponse;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
+import com.barbeque.sync.Synchronize;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -68,8 +72,8 @@ public class ReportService {
 
     public Response getcustomerByPhoneNo(@PathParam("phoneNo") String phoneNo) throws Exception {
         ReportRequestHandler reportRequestHandler = new ReportRequestHandler();
-       CustomerReportResponseList customerReportResponseList = new CustomerReportResponseList();
-       MessageResponse messageResponse = new MessageResponse();
+        CustomerReportResponseList customerReportResponseList = new CustomerReportResponseList();
+        MessageResponse messageResponse = new MessageResponse();
         try {
             customerReportResponseList = reportRequestHandler.getcustomerByPhoneNo(phoneNo);
             return ResponseGenerator.generateSuccessResponse(customerReportResponseList, "Personal Details.");
@@ -81,8 +85,23 @@ public class ReportService {
         }
     }
 
+    @GET
+    @Path("/dailyReport/{user_id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
 
+    public Response getDailyReport(@PathParam("user_id") int userId) {
+        ReportRequestHandler reportRequestHandler = new ReportRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            SummaryResponse isProcessed = reportRequestHandler.getReport(userId);
+            return ResponseGenerator.generateSuccessResponse(isProcessed, "Mails are sent to all users.");
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
+        }
+    }
 }
 
 
