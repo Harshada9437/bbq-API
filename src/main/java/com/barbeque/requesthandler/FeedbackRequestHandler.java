@@ -466,14 +466,16 @@ public class FeedbackRequestHandler {
         for (LoginResponseDTO user : users) {
 
             String outlets = user.getOutletAccess();
-            ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
-            List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(outlets, previousDate, currentDate);
-            dailyReportDTO.setOutlets(dailyOutletReport);
-            ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(outlets, previousMonth, currentDate);
-            List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(outlets, previousMonth, currentDate);
-            monthlyReportDTO.setOutlets(monthlyOutletReport);
-            dailyReportDTO.setUserName(user.getName());
-            isSent = EmailService.sendReport(currentDate,user.getEmail(), dailyReportDTO,monthlyReportDTO);
+            if(outlets!=null && !outlets.equals("")){
+                ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
+                List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(outlets, previousDate, currentDate);
+                dailyReportDTO.setOutlets(dailyOutletReport);
+                ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(outlets, previousMonth, currentDate);
+                List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(outlets, previousMonth, currentDate);
+                monthlyReportDTO.setOutlets(monthlyOutletReport);
+                dailyReportDTO.setUserName(user.getName());
+                isSent = EmailService.sendReport(currentDate,user.getEmail(), dailyReportDTO,monthlyReportDTO);
+            }
         }
         return isSent;
     }

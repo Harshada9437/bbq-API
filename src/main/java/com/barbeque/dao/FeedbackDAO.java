@@ -796,11 +796,23 @@ public class FeedbackDAO {
                     ();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
+
             StringBuffer query = new StringBuffer(
-                    "SELECT COUNT(f.id) as total_count,coalesce (SUM(f.isNegative=1),0) as negative_count,count(t.feedback_id) as addressed_count\n" +
-                            ",sum(distinct o.daily_bill_count) as dailyBill, sum(distinct o.monthly_bill_count) as monthlyBill from (select daily_bill_count, monthly_bill_count,id from outlet where id in("+outlets+")) as o\n" +
-                            "left join feedback_head f  on o.id = f.outlet_id and f.date >='"+from+"' and f.date <= '"+to+"'\n" +
-                            "left join feedback_view_tracking t on f.id = t.feedback_id");
+                    "Select sum(tbl.total_count) as total_count, sum(tbl.negative_count) as negative_count, \n" +
+                            "count(tbl.addressed_count) as addressed_count,\n" +
+                            "sum(o.daily_bill_count) as dailyBill, \n" +
+                            "sum(o.monthly_bill_count) as monthlyBill\n" +
+                            "from outlet o\n" +
+                            "join (select\n" +
+                            "f.outlet_id,\n" +
+                            "COUNT(f.id) as total_count,\n" +
+                            "coalesce (SUM(f.isNegative=1),0) as negative_count,\n" +
+                            "count(t.feedback_id) as addressed_count\n" +
+                            "from feedback_head f\n" +
+                            "left join feedback_view_tracking t on f.id = t.feedback_id\n" +
+                            "where f.outlet_id in ("+outlets+")\n" +
+                            "and f.date >='"+from+"' and f.date <= '"+to+"'\n" +
+                            "group by f.outlet_id) tbl on o.id = tbl.outlet_id");
             ResultSet resultSet = statement.executeQuery(query.toString());
             while (resultSet.next()) {
                 reportDTO.setTotalCount(resultSet.getInt("total_count"));

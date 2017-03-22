@@ -14,6 +14,7 @@ public class ConfigProperties {
     public static String smtp_host;
     public static String smtp_password;
     public static String smtp_from;
+    public static String smtp_port;
     public static String db_username;
     public static String db_password;
     public static String url;
@@ -36,6 +37,7 @@ public class ConfigProperties {
             db_port = prop.getProperty("db_port");
             db_name = prop.getProperty("db_name");
             smtp_host = prop.getProperty("smtp_host");
+            smtp_port = prop.getProperty("smtp_port");
             smtp_from = prop.getProperty("smtp_from");
             smtp_name = prop.getProperty("smtp_name");
             smtp_password = prop.getProperty("smtp_password");

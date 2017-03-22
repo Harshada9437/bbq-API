@@ -124,7 +124,7 @@ public class ReportRequestHandler {
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR_OF_DAY, 10);
+        cal.set(Calendar.HOUR_OF_DAY, 5);
         Date date1 = cal.getTime();
         Timestamp t1 = new Timestamp(date1.getTime());
         String currentDate = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);

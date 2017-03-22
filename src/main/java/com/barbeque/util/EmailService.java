@@ -18,6 +18,7 @@ public class EmailService {
     private static final String PASSWORD = ConfigProperties.smtp_password;
     private static final String HOST = ConfigProperties.smtp_host;
     private static final String FROM = ConfigProperties.smtp_from;
+    private static final String PORT = ConfigProperties.smtp_port;
     private static final Session session = getSession();
 
     public static Boolean sendOtp(String to,String name, int otp) {
@@ -60,11 +61,12 @@ public class EmailService {
             props.put(MAIL_SMTP_WRITETIMEOUT, MAIL_SOCKET_TIMEOUT);
 
             props.put("mail.smtp.host", HOST);
-            props.put("mail.smtp.socketFactory.port", "465");
+            /*props.put("mail.smtp.socketFactory.port", PORT);
             props.put("mail.smtp.socketFactory.class",
-                    "javax.net.ssl.SSLSocketFactory");
+                    "javax.net.ssl.SSLSocketFactory");*/
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.port", "465");
+            props.put("mail.smtp.port", PORT);
+            props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
             //java.security.Security.setProperty("networkaddress.cache.ttl","10");
 
             Session session = Session.getInstance(props,
@@ -102,9 +104,8 @@ public class EmailService {
             message.setFrom(new InternetAddress(FROM));
 
             message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse("it@barbequenation.com"));
-
-            message.setSubject("Daily feedback report update.");
+                    InternetAddress.parse(to));
+            message.setSubject("Daily feedback report update");
             message.setContent(message, "text/html; charset=utf-8");
 
             float avgDFeed= calAverage(dailyReportDTO.getTotalCount(), dailyReportDTO.getDailyBillCount());
@@ -463,7 +464,7 @@ public class EmailService {
 
             message.setContent(msg, "text/html; charset=utf-8");
 
-          //  Transport.send(message);
+            Transport.send(message);
 
             isProcessed = Boolean.TRUE;
 
