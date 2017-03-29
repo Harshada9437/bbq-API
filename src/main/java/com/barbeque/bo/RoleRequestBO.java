@@ -3,18 +3,18 @@ package com.barbeque.bo;
 /**
  * Created by System-3 on 2/9/2017.
  */
-public class RollRequestBO {
-    private int roleId;
+public class RoleRequestBO {
+    private int isAll;
     private String name;
     private String menuAccess;
     private String outletAccess;
 
-    public int getRoleId() {
-        return roleId;
+    public int getIsAll() {
+        return isAll;
     }
 
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
+    public void setIsAll(int isAll) {
+        this.isAll = isAll;
     }
 
     public String getName() {
@@ -46,9 +46,9 @@ public class RollRequestBO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RollRequestBO that = (RollRequestBO) o;
+        RoleRequestBO that = (RoleRequestBO) o;
 
-        if (roleId != that.roleId) return false;
+        if (isAll != that.isAll) return false;
         if (!name.equals(that.name)) return false;
         if (!menuAccess.equals(that.menuAccess)) return false;
         return outletAccess.equals(that.outletAccess);
@@ -56,7 +56,7 @@ public class RollRequestBO {
 
     @Override
     public int hashCode() {
-        int result = roleId;
+        int result = isAll;
         result = 31 * result + name.hashCode();
         result = 31 * result + menuAccess.hashCode();
         result = 31 * result + outletAccess.hashCode();
@@ -65,8 +65,8 @@ public class RollRequestBO {
 
     @Override
     public String toString() {
-        return "RollRequestBO{" +
-                "roleId=" + roleId +
+        return "RoleRequestBO{" +
+                "isAll=" + isAll +
                 ", name='" + name + '\'' +
                 ", menuAccess='" + menuAccess + '\'' +
                 ", outletAccess='" + outletAccess + '\'' +

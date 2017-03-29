@@ -7,6 +7,15 @@ public class RollRequest {
     private String name;
     private String menuAccess;
     private String outletAccess;
+    private int isAll;
+
+    public int getIsAll() {
+        return isAll;
+    }
+
+    public void setIsAll(int isAll) {
+        this.isAll = isAll;
+    }
 
     public String getName() {
         return name;
@@ -39,16 +48,18 @@ public class RollRequest {
 
         RollRequest that = (RollRequest) o;
 
-        if (!name.equals(that.name)) return false;
-        if (!menuAccess.equals(that.menuAccess)) return false;
-        return outletAccess.equals(that.outletAccess);
+        if (isAll != that.isAll) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (menuAccess != null ? !menuAccess.equals(that.menuAccess) : that.menuAccess != null) return false;
+        return outletAccess != null ? outletAccess.equals(that.outletAccess) : that.outletAccess == null;
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + menuAccess.hashCode();
-        result = 31 * result + outletAccess.hashCode();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (menuAccess != null ? menuAccess.hashCode() : 0);
+        result = 31 * result + (outletAccess != null ? outletAccess.hashCode() : 0);
+        result = 31 * result + isAll;
         return result;
     }
 
@@ -57,7 +68,8 @@ public class RollRequest {
         return "RollRequest{" +
                 "name='" + name + '\'' +
                 ", menuAccess='" + menuAccess + '\'' +
-                ", outleAccess='" + outletAccess + '\'' +
+                ", outletAccess='" + outletAccess + '\'' +
+                ", isAll=" + isAll +
                 '}';
     }
 }

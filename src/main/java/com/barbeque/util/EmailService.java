@@ -90,7 +90,7 @@ public class EmailService {
             result = result * 100;
             result = Math.round(result*100)/100f;
         }else{
-             result = 0;
+            result = 0;
         }
         return result;
     }
@@ -105,7 +105,8 @@ public class EmailService {
 
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(to));
-            message.setSubject("Daily feedback report update");
+
+            message.setSubject("Daily feedback report update.");
             message.setContent(message, "text/html; charset=utf-8");
 
             float avgDFeed= calAverage(dailyReportDTO.getTotalCount(), dailyReportDTO.getDailyBillCount());
@@ -117,7 +118,13 @@ public class EmailService {
             String table = "",row="";
             for (int i = 0; i < monthlyReportDTO.getOutlets().size(); i++){
                 ReportData dailyData =  dailyReportDTO.getOutlets().get(i);
-                ReportData monthlyData = monthlyReportDTO.getOutlets().get(i);
+                ReportData monthlyData = new ReportData();
+                for(ReportData data : monthlyReportDTO.getOutlets()) {
+                    if(dailyData.getStoreId().equals(data.getStoreId())) {
+                        monthlyData = data;
+                        break;
+                    }
+                }
 
                 float avgMtotal= calAverage(monthlyData.getTotalCount(),monthlyData.getMonthlyBillCount());
 
@@ -464,7 +471,7 @@ public class EmailService {
 
             message.setContent(msg, "text/html; charset=utf-8");
 
-            Transport.send(message);
+        Transport.send(message);
 
             isProcessed = Boolean.TRUE;
 

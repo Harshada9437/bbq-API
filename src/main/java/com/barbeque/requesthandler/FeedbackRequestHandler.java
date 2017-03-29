@@ -474,7 +474,7 @@ public class FeedbackRequestHandler {
                 List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(outlets, previousMonth, currentDate);
                 monthlyReportDTO.setOutlets(monthlyOutletReport);
                 dailyReportDTO.setUserName(user.getName());
-                isSent = EmailService.sendReport(currentDate,user.getEmail(), dailyReportDTO,monthlyReportDTO);
+                isSent = EmailService.sendReport(currentDate,"it@barbequenation.com", dailyReportDTO,monthlyReportDTO);
             }
         }
         return isSent;
