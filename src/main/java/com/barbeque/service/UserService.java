@@ -237,17 +237,17 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/createRole")
     public Response createRoll(RollRequest rollRequest) {
-        RoleRequestBO roleRequestBO = new RoleRequestBO();
-        roleRequestBO.setIsAll(rollRequest.getIsAll());
-        roleRequestBO.setName(rollRequest.getName());
-        roleRequestBO.setMenuAccess(rollRequest.getMenuAccess());
-        roleRequestBO.setOutletAccess(rollRequest.getOutletAccess());
+        RollRequestBO rollRequestBO = new RollRequestBO();
+        rollRequestBO.setName(rollRequest.getName());
+        rollRequestBO.setMenuAccess(rollRequest.getMenuAccess());
+        rollRequestBO.setOutletAccess(rollRequest.getOutletAccess());
+
 
         MessageResponse createUserResponse = new MessageResponse();
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         try {
             if (!UsersDAO.getRole(rollRequest.getName())) {
-                int userId = userRequestHandler.createRole(roleRequestBO);
+                int userId = userRequestHandler.createRoll(rollRequestBO);
                 return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
             } else {
                 return ResponseGenerator.generateFailureResponse(createUserResponse, "Role already exists.");

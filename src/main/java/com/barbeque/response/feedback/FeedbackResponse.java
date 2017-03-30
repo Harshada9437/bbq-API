@@ -9,12 +9,10 @@ import java.util.List;
  */
 public class FeedbackResponse {
     private int id;
-    private int customerId;
+    private int viewCount;
     private String feedbackDate;
-    private int outletId;
     private List<FeedbackDetails> feedbacks;
     private String tableNo;
-    private String billNo;
     private String customerName;
     private String outletDesc;
     private String mobileNo;
@@ -25,6 +23,22 @@ public class FeedbackResponse {
     private String locality;
     private int isAddressed;
     private int isNegative;
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public void setViewDate(String viewDate) {
+        this.viewDate = viewDate;
+    }
+
+    public void setIsNegative(int isNegative) {
+        this.isNegative = isNegative;
+    }
 
     public int getIsNegative() {
         return isNegative;
@@ -42,28 +56,12 @@ public class FeedbackResponse {
         this.id = id;
     }
 
-    public int getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-
     public String getFeedbackDate() {
         return feedbackDate;
     }
 
     public void setFeedbackDate(String feedbackDate) {
         this.feedbackDate = feedbackDate;
-    }
-
-    public int getOutletId() {
-        return outletId;
-    }
-
-    public void setOutletId(int outletId) {
-        this.outletId = outletId;
     }
 
     public List<FeedbackDetails> getFeedbacks() {
@@ -78,14 +76,6 @@ public class FeedbackResponse {
 
     public void setTableNo(String tableNo) {
         this.tableNo = tableNo;
-    }
-
-    public String getBillNo() {
-        return billNo;
-    }
-
-    public void setBillNo(String billNo) {
-        this.billNo = billNo;
     }
 
     public String getCustomerName() {
@@ -152,13 +142,11 @@ public class FeedbackResponse {
         this.isAddressed = isAddressed;
     }
 
-    public FeedbackResponse(int id,int customerId,String feedbackDate,int outletId,String tableNo,String billNo,String customerName,String outletDesc,String mobileNo,String email,String dob,String doa,String locality,int isAddressed,String viewDate,int isNegative) {
+    public FeedbackResponse(int id,int viewCount,String feedbackDate,String tableNo,String customerName,String outletDesc,String mobileNo,String email,String dob,String doa,String locality,int isAddressed,String viewDate,int isNegative) {
         this.id = id;
-        this.customerId = customerId;
+        this.viewCount = viewCount;
         this.feedbackDate = feedbackDate;
-        this.outletId = outletId;
         this.tableNo = tableNo;
-        this.billNo = billNo;
         this.customerName = customerName;
         this.outletDesc = outletDesc;
         this.mobileNo = mobileNo;
@@ -175,13 +163,10 @@ public class FeedbackResponse {
     public String toString() {
         return "FeedbackResponse{" +
                 "id=" + id +
-                ", customerId=" + customerId +
                 ", feedbackDate='" + feedbackDate + '\'' +
                 ", viewDate='" + viewDate + '\'' +
-                ", outletId=" + outletId +
                 ", feedbacks=" + feedbacks +
                 ", tableNo='" + tableNo + '\'' +
-                ", billNo='" + billNo + '\'' +
                 ", customerName='" + customerName + '\'' +
                 ", outletDesc='" + outletDesc + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
@@ -190,7 +175,9 @@ public class FeedbackResponse {
                 ", doa='" + doa + '\'' +
                 ", locality='" + locality + '\'' +
                 ", isAddressed=" + isAddressed +
+                ", viewCount=" + viewCount +
                 ", isNegative=" + isNegative +
                 '}';
     }
 }
+

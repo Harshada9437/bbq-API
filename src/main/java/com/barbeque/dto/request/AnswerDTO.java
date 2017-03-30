@@ -5,6 +5,7 @@ package com.barbeque.dto.request;
  */
 public class AnswerDTO {
     private int id;
+    private int isPoor;
     private int questionId;
     private String answerText;
     private String answerDesc;
@@ -12,6 +13,14 @@ public class AnswerDTO {
     private String threshold;
     private int rating;
     private int weightage;
+
+    public int getIsPoor() {
+        return isPoor;
+    }
+
+    public void setIsPoor(int isPoor) {
+        this.isPoor = isPoor;
+    }
 
     public String getThreshold() {
         return threshold;
@@ -85,6 +94,7 @@ public class AnswerDTO {
         AnswerDTO answerDTO = (AnswerDTO) o;
 
         if (id != answerDTO.id) return false;
+        if (isPoor != answerDTO.isPoor) return false;
         if (questionId != answerDTO.questionId) return false;
         if (rating != answerDTO.rating) return false;
         if (weightage != answerDTO.weightage) return false;
@@ -98,6 +108,7 @@ public class AnswerDTO {
     public int hashCode() {
         int result = id;
         result = 31 * result + questionId;
+        result = 31 * result + isPoor;
         result = 31 * result + (answerText != null ? answerText.hashCode() : 0);
         result = 31 * result + (answerDesc != null ? answerDesc.hashCode() : 0);
         result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
@@ -117,6 +128,7 @@ public class AnswerDTO {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", threshold='" + threshold + '\'' +
                 ", rating=" + rating +
+                ", isPoor=" + isPoor +
                 ", weightage=" + weightage +
                 '}';
     }

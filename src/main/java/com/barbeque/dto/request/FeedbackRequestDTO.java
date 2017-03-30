@@ -15,7 +15,7 @@ public class FeedbackRequestDTO {
     private int isNegative;
     private int customerId;
     private int deviceId;
-    private Timestamp feedbackDate;
+    private String feedbackDate;
     private String viewDate;
     private int outletId;
     private String date;
@@ -32,12 +32,21 @@ public class FeedbackRequestDTO {
     private String questionDesc;
     private int rating;
     private int isAddressed;
+    private int isPoor;
     private int weightage;
     private String email;
     private String threshold;
     private String dob;
     private String doa;
     private String locality;
+
+    public int getIsPoor() {
+        return isPoor;
+    }
+
+    public void setIsPoor(int isPoor) {
+        this.isPoor = isPoor;
+    }
 
     public int getIsNegative() {
         return isNegative;
@@ -193,11 +202,11 @@ public class FeedbackRequestDTO {
         this.customerId = customerId;
     }
 
-    public Timestamp getFeedbackDate() {
+    public String getFeedbackDate() {
         return feedbackDate;
     }
 
-    public void setFeedbackDate(Timestamp feedbackDate) {
+    public void setFeedbackDate(String feedbackDate) {
         this.feedbackDate = feedbackDate;
     }
 
@@ -282,6 +291,7 @@ public class FeedbackRequestDTO {
 
         if (questionType != that.questionType) return false;
         if (id != that.id) return false;
+        if (isPoor != that.isPoor) return false;
         if (customerId != that.customerId) return false;
         if (isAddressed != that.isAddressed) return false;
         if (deviceId != that.deviceId) return false;
@@ -316,6 +326,7 @@ public class FeedbackRequestDTO {
         int result = (int) questionType;
         result = 31 * result + id;
         result = 31 * result + customerId;
+        result = 31 * result + isPoor;
         result = 31 * result + isAddressed;
         result = 31 * result + deviceId;
         result = 31 * result + isNegative;
@@ -350,10 +361,11 @@ public class FeedbackRequestDTO {
         return "FeedbackRequestDTO{" +
                 "questionType=" + questionType +
                 ", id=" + id +
+                ", isPoor=" + isPoor +
                 ", customerId=" + customerId +
                 ", deviceId=" + deviceId +
                 ", isAddressed=" + isAddressed +
-                ", feedbackDate=" + feedbackDate +
+                ", feedbackDate='" + feedbackDate + '\'' +
                 ", viewDate='" + viewDate + '\'' +
                 ", outletId=" + outletId +
                 ", isNegative=" + isNegative +

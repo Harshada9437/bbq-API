@@ -10,9 +10,9 @@ import java.util.List;
  * Created by System-3 on 2/15/2017.
  */
 public class CustomerReportResponseList implements GenericResponse {
-    private int id;
     private String name;
     private String emailId;
+    private String mobile;
     private String dob;
     private String doa;
     private String locality;
@@ -20,13 +20,12 @@ public class CustomerReportResponseList implements GenericResponse {
     private String messageType;
     private String message;
 
-
-    public int getId() {
-        return id;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getName() {
@@ -98,9 +97,9 @@ public class CustomerReportResponseList implements GenericResponse {
     @Override
     public String toString() {
         return "CustomerReportResponseList{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", emailId='" + emailId + '\'' +
+                ", mobile='" + mobile + '\'' +
                 ", dob='" + dob + '\'' +
                 ", doa='" + doa + '\'' +
                 ", locality='" + locality + '\'' +

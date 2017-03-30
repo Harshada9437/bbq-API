@@ -1,8 +1,10 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.bo.*;
+import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.Sync.SmsDAO;
+import com.barbeque.dao.Sync.SyncDAO;
 import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dao.outlet.OutletDAO;
@@ -21,14 +23,10 @@ import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackTrackingResponse;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Connection;
 import java.util.Date;
 
-import com.barbeque.util.DateUtil;
-import com.barbeque.util.EmailService;
-import com.barbeque.util.SendSms;
+import com.barbeque.util.*;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -121,111 +119,112 @@ public class FeedbackRequestHandler {
 
     public List<FeedbackResponse> getfeedbackList1(FeedbackListRequestBO feedbackListRequestBO) throws SQLException, UserNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
+        List<FeedbackDTO> feedbackRequestDTOS;
+        String limit, where1 = "", ids;
+        int threshold = 10000, base = 10000;
 
-        List<FeedbackRequestDTO> feedbackRequestDTOS = feedbackDAO.getfeedbackList1(buildFeedbackDTO
-                (feedbackListRequestBO));
-        List<FeedbackResponse> uniqueList = new ArrayList<FeedbackResponse>();
-        List<Integer> uniqueIds = new ArrayList<Integer>();
-        for (FeedbackRequestDTO feedbackRequestDTO : feedbackRequestDTOS) {
-            if (!uniqueIds.contains(feedbackRequestDTO.getId())) {
-                if (feedbackRequestDTO.getIsAddressed() > 0) {
-                    feedbackRequestDTO.setIsAddressed(1);
-                }
-                FeedbackResponse feedbackResp = new FeedbackResponse(feedbackRequestDTO.getId(),
-                        feedbackRequestDTO.getCustomerId(),
-                        DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
-                        feedbackRequestDTO.getOutletId(),
-                        feedbackRequestDTO.getTableNo(),
-                        feedbackRequestDTO.getBillNo(),
-                        feedbackRequestDTO.getCustomerName(),
-                        feedbackRequestDTO.getOutletDesc(),
-                        feedbackRequestDTO.getMobileNo(),
-                        feedbackRequestDTO.getEmail(),
-                        feedbackRequestDTO.getDob(),
-                        feedbackRequestDTO.getDoa(),
-                        feedbackRequestDTO.getLocality(),
-                        feedbackRequestDTO.getIsAddressed(),
-                        feedbackRequestDTO.getViewDate(),
-                        feedbackRequestDTO.getIsNegative());
-                List<FeedbackDetails> newAnswerList = new ArrayList<FeedbackDetails>();
-                FeedbackDetails answer = new FeedbackDetails();
-                answer.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
-                answer.setAnswerText(feedbackRequestDTO.getAnswerText());
-                answer.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
-                answer.setRating(feedbackRequestDTO.getRating());
-                answer.setAnswerId(feedbackRequestDTO.getAnswerId());
-                answer.setQuestionId(feedbackRequestDTO.getQuestionId());
-                answer.setQuestionType(feedbackRequestDTO.getQuestionType());
-                answer.setWeightage(feedbackRequestDTO.getWeightage());
-                answer.setThreshold(feedbackRequestDTO.getThreshold());
-                AnswerDTO answerDTO = AnswerDAO.getAnswerById(answer.getAnswerId());
-                if (answer.getThreshold() != null && !answer.getThreshold().equals("")) {
-                    if ((answer.getQuestionType() == '2' || answer.getQuestionType() == '3') && answer.getRating()
-                            != 0) {
-                        int ans = answerDTO.getRating() / answerDTO.getWeightage();
-                        int weightage = answer.getRating() / ans;
-                        if (weightage <= Integer.parseInt(answerDTO.getThreshold())) {
-                            answer.setIsNegative(1);
-                        } else {
-                            answer.setIsNegative(0);
-                        }
-                    }
-                    if ((answer.getQuestionType() == '1' || answer.getQuestionType() == '5' ||
-                            answer.getQuestionType() == '6')) {
-                        if (answerDTO.getThreshold().equals("1")) {
-                            answer.setIsNegative(1);
-                        } else {
-                            answer.setIsNegative(0);
-                        }
-                    }
+        Timestamp t1 = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
+        String date = DateUtil.format(t1, "MM-yyyy");
+
+        Connection connection = null;
+
+        if (feedbackListRequestBO.getTableNo() != null && !feedbackListRequestBO.getTableNo().equals("")) {
+            where1 = " and f.table_no=\"" + feedbackListRequestBO.getTableNo() + "\"\n";
+        }
+        if (feedbackListRequestBO.getOutletId() != null && feedbackListRequestBO.getOutletId().size() > 0) {
+            ids = CommaSeparatedString.generate(feedbackListRequestBO.getOutletId());
+            where1 += " and f.outlet_id IN(" + ids + ")\n";
+        }
+        if (feedbackListRequestBO.getOutletId() == null || feedbackListRequestBO.getOutletId().size() == 0) {
+            LoginResponseDTO loginResponseDTO = UsersDAO.getuserById(feedbackListRequestBO.getUserId());
+            RoleRequestDTO rollRequestDTO = UsersDAO.getroleById(loginResponseDTO.getRoleId());
+            where1 += " and f.outlet_id IN(" + rollRequestDTO.getOutletAccess() + ")\n";
+        }
+
+        SyncDAO syncDAO = new SyncDAO();
+        int max = syncDAO.getCount(where1, date, feedbackListRequestBO.getFromDate(), feedbackListRequestBO.getToDate());
+
+        int length = max / threshold;
+        if (max % threshold > 0) {
+            length = length + 1;
+        }
+
+        List<FeedbackResponse> uniqueList = new ArrayList<FeedbackResponse>(max);
+
+        try {
+            connection = new ConnectionHandler().getConnection();
+
+            for (int i = 0; i < length - 1; i++) {
+
+                if (i == 0) {
+                    limit = "limit 10000";
                 } else {
-                    answer.setIsNegative(0);
+                    limit = "limit " + base + "," + threshold;
                 }
-                newAnswerList.add(answer);
-                feedbackResp.setFeedbacks(newAnswerList);
 
-                uniqueIds.add(feedbackRequestDTO.getId());
-                uniqueList.add(feedbackResp);
-            } else {
-                FeedbackResponse existingResp = getResponseFromList(uniqueList, feedbackRequestDTO.getId());
-                if (existingResp != null) {
-                    List<FeedbackDetails> curAnswerList = existingResp.getFeedbacks();
-                    FeedbackDetails answer = new FeedbackDetails();
-                    answer.setAnswerDesc(feedbackRequestDTO.getAnswerDesc());
-                    answer.setAnswerText(feedbackRequestDTO.getAnswerText());
-                    answer.setQuestionDesc(feedbackRequestDTO.getQuestionDesc());
-                    answer.setRating(feedbackRequestDTO.getRating());
-                    answer.setAnswerId(feedbackRequestDTO.getAnswerId());
-                    answer.setQuestionId(feedbackRequestDTO.getQuestionId());
-                    answer.setQuestionType(feedbackRequestDTO.getQuestionType());
-                    answer.setWeightage(feedbackRequestDTO.getWeightage());
-                    answer.setThreshold(feedbackRequestDTO.getThreshold());
-                    AnswerDTO answerDTO = AnswerDAO.getAnswerById(answer.getAnswerId());
-                    if (answer.getThreshold() != null && !answer.getThreshold().equals("")) {
-                        if ((answer.getQuestionType() == '2' || answer.getQuestionType() == '3') &&
-                                answer.getRating() != 0) {
-                            int ans = answerDTO.getRating() / answerDTO.getWeightage();
-                            int weightage = answer.getRating() / ans;
-                            if (weightage <= Integer.parseInt(answerDTO.getThreshold())) {
-                                answer.setIsNegative(1);
-                            } else {
-                                answer.setIsNegative(0);
-                            }
-                        }
-                        if ((answer.getQuestionType() == '1' || answer.getQuestionType() == '5' ||
-                                answer.getQuestionType() == '6')) {
-                            if (answerDTO.getThreshold().equals("1")) {
-                                answer.setIsNegative(1);
-                            } else {
-                                answer.setIsNegative(0);
-                            }
-                        }
-                    } else {
-                        answer.setIsNegative(0);
+                if (i == length - 1) {
+                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, connection, buildFeedbackDTO
+                            (feedbackListRequestBO), date, max % threshold, limit);
+                } else {
+                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, connection, buildFeedbackDTO
+                            (feedbackListRequestBO), date, threshold, limit);
+                }
+
+                List<Integer> uniqueIds = new ArrayList<Integer>();
+                for (int j = 0; j < feedbackRequestDTOS.size(); j++) {
+                    if (feedbackRequestDTOS.get(j).getIsAddressed() > 0) {
+                        feedbackRequestDTOS.get(j).setIsAddressed(1);
                     }
-                    curAnswerList.add(answer);
+                    if (!uniqueIds.contains(feedbackRequestDTOS.get(j).getId())) {
+                        FeedbackResponse feedbackResp = new FeedbackResponse(feedbackRequestDTOS.get(j).getId(),
+                                feedbackRequestDTOS.get(j).getViewCount(),
+                                feedbackRequestDTOS.get(j).getFeedbackDate(),
+                                feedbackRequestDTOS.get(j).getTableNo(),
+                                feedbackRequestDTOS.get(j).getCustomerName(),
+                                feedbackRequestDTOS.get(j).getOutletDesc(),
+                                feedbackRequestDTOS.get(j).getMobileNo(),
+                                feedbackRequestDTOS.get(j).getEmail(),
+                                feedbackRequestDTOS.get(j).getDob(),
+                                feedbackRequestDTOS.get(j).getDoa(),
+                                feedbackRequestDTOS.get(j).getLocality(),
+                                feedbackRequestDTOS.get(j).getIsAddressed(),
+                                feedbackRequestDTOS.get(j).getViewDate(),
+                                feedbackRequestDTOS.get(j).getIsNegative());
+                        List<FeedbackDetails> newAnswerList = new ArrayList<FeedbackDetails>();
+                        FeedbackDetails answer = new FeedbackDetails();
+                        answer.setAnswerDesc(feedbackRequestDTOS.get(j).getAnswerDesc());
+                        answer.setAnswerText(feedbackRequestDTOS.get(j).getAnswerText());
+                        answer.setQuestionDesc(feedbackRequestDTOS.get(j).getQuestionDesc());
+                        answer.setRating(feedbackRequestDTOS.get(j).getRating());
+                        answer.setIsNegative(feedbackRequestDTOS.get(j).getIsPoor());
+                        answer.setQuestionType(feedbackRequestDTOS.get(j).getQuestionType());
+                        newAnswerList.add(answer);
+                        feedbackResp.setFeedbacks(newAnswerList);
+                        uniqueIds.add(feedbackRequestDTOS.get(j).getId());
+                        uniqueList.add(feedbackResp);
+                    } else {
+                        FeedbackResponse existingResp = getResponseFromList(uniqueList, feedbackRequestDTOS.get(j).getId());
+                        if (existingResp != null) {
+                            List<FeedbackDetails> curAnswerList = existingResp.getFeedbacks();
+                            FeedbackDetails answer = new FeedbackDetails();
+                            answer.setAnswerDesc(feedbackRequestDTOS.get(j).getAnswerDesc());
+                            answer.setAnswerText(feedbackRequestDTOS.get(j).getAnswerText());
+                            answer.setQuestionDesc(feedbackRequestDTOS.get(j).getQuestionDesc());
+                            answer.setRating(feedbackRequestDTOS.get(j).getRating());
+                            answer.setIsNegative(feedbackRequestDTOS.get(j).getIsPoor());
+                            answer.setQuestionType(feedbackRequestDTOS.get(j).getQuestionType());
+                            curAnswerList.add(answer);
+                        }
+                    }
+                }
+                if (i > 0) {
+                    base = base + threshold;
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            connection.close();
         }
         return uniqueList;
     }
@@ -266,7 +265,7 @@ public class FeedbackRequestHandler {
                 feedbackResp = new FeedbackByIdResponse(feedbackRequestDTO.getQuestionType(),
                         feedbackRequestDTO.getId(),
                         feedbackRequestDTO.getDeviceId(),
-                        DateUtil.getDateStringFromTimeStamp(feedbackRequestDTO.getFeedbackDate()),
+                        feedbackRequestDTO.getFeedbackDate(),
                         feedbackRequestDTO.getOutletId(),
                         feedbackRequestDTO.getTableNo(),
                         feedbackRequestDTO.getBillNo(),
@@ -408,8 +407,13 @@ public class FeedbackRequestHandler {
 
     public List<FeedbackTrackingResponse> getFeedbackTrackingList(FeedbackListRequestBO feedbackListRequestBO, int isNegative) throws SQLException, UserNotFoundException {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
+
+        Timestamp t1 = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
+        String date = DateUtil.format(t1, "MM-yyyy");
+
+
         List<FeedbackTrackingResponse> feedbackTrackingDTOList = new ArrayList<FeedbackTrackingResponse>();
-        List<FeedbackTrackingResponseDTO> trackingList = feedbackDAO.getFeedbackTrackingList(feedbackListRequestBO, isNegative);
+        List<FeedbackTrackingResponseDTO> trackingList = feedbackDAO.getFeedbackTrackingList(feedbackListRequestBO, isNegative, date);
 
         for (FeedbackTrackingResponseDTO feedbackTrackingResponseDTO : trackingList) {
             if (feedbackTrackingResponseDTO.getIsAddressed() > 0) {
@@ -418,6 +422,7 @@ public class FeedbackRequestHandler {
             FeedbackTrackingResponse feedbackTrackingResponse = new FeedbackTrackingResponse(feedbackTrackingResponseDTO.getFeedbackId(),
                     feedbackTrackingResponseDTO.getOutletId(),
                     feedbackTrackingResponseDTO.getOutletName(),
+                    feedbackTrackingResponseDTO.getEmail(),
                     feedbackTrackingResponseDTO.getDate(),
                     feedbackTrackingResponseDTO.getTableNo(),
                     feedbackTrackingResponseDTO.getCustomerId(),
@@ -449,6 +454,7 @@ public class FeedbackRequestHandler {
         Date date1 = new Date();
         Timestamp t1 = new Timestamp(date1.getTime());
         String currentDate = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
+        String date = DateUtil.format(t1, "MM-yyyy");
 
         final Calendar cal = Calendar.getInstance();
         cal.setTime(date1);
@@ -464,17 +470,16 @@ public class FeedbackRequestHandler {
 
         List<LoginResponseDTO> users = usersDAO.getUserList();
         for (LoginResponseDTO user : users) {
-
-            String outlets = user.getOutletAccess();
-            if(outlets!=null && !outlets.equals("")){
-                ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
-                List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(outlets, previousDate, currentDate);
+            if (!user.getOutletAccess().equals("")) {
+                String outlets = user.getOutletAccess();
+                ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(date, outlets, previousDate, currentDate);
+                List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(date, outlets, previousDate, currentDate);
                 dailyReportDTO.setOutlets(dailyOutletReport);
-                ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(outlets, previousMonth, currentDate);
-                List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(outlets, previousMonth, currentDate);
+                ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(date, outlets, previousMonth, currentDate);
+                List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(date, outlets, previousMonth, currentDate);
                 monthlyReportDTO.setOutlets(monthlyOutletReport);
                 dailyReportDTO.setUserName(user.getName());
-                isSent = EmailService.sendReport(currentDate,"it@barbequenation.com", dailyReportDTO,monthlyReportDTO);
+                isSent = EmailService.sendReport(currentDate, user.getEmail(), dailyReportDTO, monthlyReportDTO);
             }
         }
         return isSent;

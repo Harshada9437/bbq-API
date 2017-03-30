@@ -41,10 +41,11 @@ public class FeedbackService {
 
         MessageResponse messageResponse = new MessageResponse();
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+        int feedbackId=0;
         try {
             DeviceDTO deviceDTO = DeviceDAO.getDevice(feedbackRequestBO.getDeviceId());
             if (deviceDTO.getStatus().equals("A")) {
-                int feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO);
+                 feedbackId = feedbackRequestHandler.addFeedback(feedbackRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(feedbackId));
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Inactive device.");
@@ -52,6 +53,8 @@ public class FeedbackService {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "feedback creation failed.");
+        }finally {
+            return ResponseGenerator.generateSuccessResponse(messageResponse, String.valueOf(feedbackId));
         }
     }
 

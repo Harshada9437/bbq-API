@@ -3,21 +3,20 @@ package com.barbeque.requesthandler;
 import com.barbeque.bo.SettingRequestBO;
 import com.barbeque.bo.SmsSettingRequestBO;
 import com.barbeque.bo.UpdateSettingRequestBO;
+import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.Sync.*;
 import com.barbeque.dao.outlet.OutletDAO;
-import com.barbeque.dao.user.UsersDAO;
-import com.barbeque.dto.request.VersionInfoDTO;
-import com.barbeque.dto.request.SettingRequestDTO;
-import com.barbeque.dto.request.SmsSettingDTO;
+import com.barbeque.dto.request.*;
 import com.barbeque.response.user.SettingResponse;
 import com.barbeque.response.user.SmsSettingResponse;
 import com.barbeque.response.util.VersionInfoResponse;
 import com.barbeque.sync.*;
-import com.barbeque.util.CommaSeparatedString;
+import com.barbeque.util.DateUtil;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * Created by System-2 on 1/9/2017.
@@ -84,8 +83,6 @@ public class SyncRequestHandler {
                 OutletDAO.createOutlet(outlet);
             }
         }
-        UsersDAO usersDAO = new UsersDAO();
-        usersDAO.updateAccess(CommaSeparatedString.generate(OutletDAO.getOutletIds()));
     }
 
     public Boolean saveSetting(SettingRequestBO settingRequestBO) throws SQLException {
@@ -140,4 +137,89 @@ public class SyncRequestHandler {
         settingRequestDTO.setId(settingRequestBO.getId());
         SmsDAO.updateSmsSettings(settingRequestDTO);
     }
+
+    public void archiveFeedback() throws SQLException {
+
+        SyncDAO syncDAO = new SyncDAO();
+        String current = "", previous = "", table = "";
+
+        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time archiveTime = settingRequestDTO.getArchiveTime();
+
+        final Calendar c = Calendar.getInstance();
+        Date today = c.getTime();
+        Timestamp timestamp1 = new Timestamp(today.getTime());
+        String currentDay = DateUtil.format(timestamp1, "yyyy-MM-dd");
+
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.SECOND, archiveTime.getSeconds());
+        c.set(Calendar.MINUTE, archiveTime.getMinutes());
+        c.set(Calendar.HOUR_OF_DAY, archiveTime.getHours());
+        Date lastDate = c.getTime();
+        Timestamp timestamp2 = new Timestamp(lastDate.getTime());
+        String lastDay = DateUtil.format(timestamp2, "yyyy-MM-dd");
+
+        if (currentDay.equals(lastDay) && timestamp1.before(timestamp2)) {
+            c.setTime(today);
+            c.add(Calendar.MONTH, -1);
+            Date date2 = c.getTime();
+            Timestamp t2 = new Timestamp(date2.getTime());
+            previous = DateUtil.format(t2, "MM-yyyy");
+            table = syncDAO.createArchive(previous);
+        } else {
+            current = DateUtil.format(timestamp1, "MM-yyyy");
+            table = syncDAO.createArchive(current);
+        }
+
+
+        int id = syncDAO.getMaxId(current);
+        if (id == 0) {
+            c.setTime(today);
+            c.add(Calendar.MONTH, -1);
+            Date date2 = c.getTime();
+            Timestamp t2 = new Timestamp(date2.getTime());
+            previous = DateUtil.format(t2, "MM-yyyy");
+            id = syncDAO.getMaxId(previous);
+        }
+
+        List<FeedbackDTO> feedbackResponses = getfeedback(id);
+
+        syncDAO.addArchiveData(table, feedbackResponses);
+
+
+    }
+
+    public List<FeedbackDTO> getfeedback(int id) throws SQLException {
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+
+        List<FeedbackDTO> feedbackRequestDTOS = feedbackDAO.getArchiveData(id);
+        for (FeedbackDTO feedbackRequestDTO : feedbackRequestDTOS) {
+            if (feedbackRequestDTO.getIsAddressed() > 0) {
+                feedbackRequestDTO.setIsAddressed(1);
+            }
+            if (feedbackRequestDTO.getThreshold() != null && !feedbackRequestDTO.getThreshold().equals("")) {
+                if ((feedbackRequestDTO.getQuestionType() == '2' || feedbackRequestDTO.getQuestionType() == '3') && feedbackRequestDTO.getRating() != 0) {
+                    int ans = feedbackRequestDTO.getAnsRating() / feedbackRequestDTO.getWeightage();
+                    int weightage = feedbackRequestDTO.getRating() / ans;
+                    if (weightage <= Integer.parseInt(feedbackRequestDTO.getThreshold())) {
+                        feedbackRequestDTO.setIsPoor(1);
+                    } else {
+                        feedbackRequestDTO.setIsPoor(0);
+                    }
+                }
+                if ((feedbackRequestDTO.getQuestionType() == '1' || feedbackRequestDTO.getQuestionType() == '5' ||
+                        feedbackRequestDTO.getQuestionType() == '6')) {
+                    if (feedbackRequestDTO.getThreshold().equals("1")) {
+                        feedbackRequestDTO.setIsPoor(1);
+                    } else {
+                        feedbackRequestDTO.setIsPoor(0);
+                    }
+                }
+            } else {
+                feedbackRequestDTO.setIsPoor(0);
+            }
+        }
+        return feedbackRequestDTOS;
+    }
+
 }

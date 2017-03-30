@@ -12,6 +12,7 @@ public class FeedbackTrackingResponse {
     private int customerId;
     private String customerName;
     private String phoneNo;
+    private String email;
     private String mgrName;
     private String mgrMobileNo;
     private String mgrEmail;
@@ -19,6 +20,18 @@ public class FeedbackTrackingResponse {
     private int viewCount;
     private int isAddressed;
     private int isNegative;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setIsNegative(int isNegative) {
+        this.isNegative = isNegative;
+    }
 
     public int getIsNegative() {
         return isNegative;
@@ -136,10 +149,11 @@ public class FeedbackTrackingResponse {
         this.viewCount = viewCount;
     }
 
-    public FeedbackTrackingResponse(int feedbackId, int outletId, String outletName, String date, String tableNo, int customerId, String customerName, String phoneNo, String mgrName, String mgrMobileNo, String mgrEmail, String fistViewDate, int viewCount, int isAddressed, int isNegative) {
+    public FeedbackTrackingResponse(int feedbackId, int outletId, String outletName,String email, String date, String tableNo, int customerId, String customerName, String phoneNo, String mgrName, String mgrMobileNo, String mgrEmail, String fistViewDate, int viewCount, int isAddressed, int isNegative) {
         this.feedbackId = feedbackId;
         this.outletId = outletId;
         this.outletName = outletName;
+        this.email = email;
         this.date = date;
         this.tableNo = tableNo;
         this.customerId = customerId;
@@ -167,6 +181,7 @@ public class FeedbackTrackingResponse {
                 ", customerId=" + customerId +
                 ", customerName='" + customerName + '\'' +
                 ", phoneNo='" + phoneNo + '\'' +
+                ", email='" + email + '\'' +
                 ", mgrName='" + mgrName + '\'' +
                 ", mgrMobileNo='" + mgrMobileNo + '\'' +
                 ", mgrEmail='" + mgrEmail + '\'' +

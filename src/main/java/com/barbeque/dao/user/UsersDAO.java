@@ -3,7 +3,7 @@ package com.barbeque.dao.user;
 import com.barbeque.bo.ChangePasswordBO;
 import com.barbeque.bo.ResetPasswordRequestBO;
 import com.barbeque.dao.ConnectionHandler;
-import com.barbeque.dto.request.CreateRoleDTO;
+import com.barbeque.dto.request.CreateRollDTO;
 import com.barbeque.dto.request.MenuRequestDTO;
 import com.barbeque.dto.request.RoleRequestDTO;
 import com.barbeque.exceptions.RoleNotFoundException;
@@ -342,7 +342,7 @@ public class UsersDAO {
             ResultSet resultSet = statement.executeQuery(query);
             int rowCount = 0;
             while (resultSet.next()) {
-                roleRequestDTO.setIsAll(resultSet.getInt("isAll"));
+                RoleRequestDTO roleRequestDTO1 = new RoleRequestDTO();
                 roleRequestDTO.setRoleId(resultSet.getInt("role_id"));
                 roleRequestDTO.setName(resultSet.getString("name"));
                 roleRequestDTO.setMenuAccess(resultSet.getString("menu_access"));
@@ -385,7 +385,6 @@ public class UsersDAO {
                 roleRequestDTO.setName(resultSet.getString("name"));
                 roleRequestDTO.setMenuAccess(resultSet.getString("menu_access"));
                 roleRequestDTO.setOutletAccess(resultSet.getString("outlet_access"));
-                roleRequestDTO.setIsAll(resultSet.getInt("isAll"));
                 roleRequestDTOList.add(roleRequestDTO);
             }
         } catch (SQLException sqlException) {
@@ -495,10 +494,10 @@ public class UsersDAO {
 
 
 
-    public Integer createRole(CreateRoleDTO createRoleDTO) throws SQLException {
+    public Integer createRoll(CreateRollDTO createRollDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO role(name,menu_access,outlet_access,isAll) values (?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO role(name,menu_access,outlet_access) values (?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -507,13 +506,12 @@ public class UsersDAO {
             preparedStatement = connection
                     .prepareStatement(query.toString());
             preparedStatement.setString(parameterIndex++,
-                    createRoleDTO.getName());
+                    createRollDTO.getName());
             preparedStatement.setString(parameterIndex++,
-                    createRoleDTO.getMenuAccess());
+                    createRollDTO.getMenuAccess());
             preparedStatement.setString(parameterIndex++,
-                   createRoleDTO.getOutletAccess());
-           preparedStatement.setInt(parameterIndex++,
-                  createRoleDTO.getIsAll());
+                   createRollDTO.getOutletAccess());
+
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -683,7 +681,7 @@ public class UsersDAO {
     }
 
 
-    public Boolean updateRole(RoleRequestDTO roleRequestDTO) throws SQLException {
+    public Boolean updateRoll(RoleRequestDTO roleRequestDTO) throws SQLException {
         boolean isCreated = false;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -725,41 +723,6 @@ public class UsersDAO {
         }
         return isCreated;
     }
-
-    public Boolean updateAccess(String outlets) throws SQLException {
-        boolean isCreated = false;
-        PreparedStatement preparedStatement = null;
-        Connection connection = null;
-        try {
-            int parameterIndex = 1;
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            preparedStatement = connection
-                    .prepareStatement("UPDATE role SET outlet_access=? WHERE isAll=1");
-
-            preparedStatement.setString(parameterIndex++,outlets);
-
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                connection.commit();
-                isCreated = Boolean.TRUE;
-            } else {
-                connection.rollback();
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            throw sqlException;
-        } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return isCreated;
-    }
-
 
 
     public List<LoginResponseDTO> getUserList() throws SQLException {

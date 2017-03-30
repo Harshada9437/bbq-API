@@ -5,6 +5,7 @@ package com.barbeque.request.feedback;
  */
 public class FeedbackDetails {
     private int questionId;
+    private int id;
     private int weightage;
     private char questionType;
     private int answerId;
@@ -14,7 +15,14 @@ public class FeedbackDetails {
     private String questionDesc;
     private int rating;
     private int isNegative;
-    private String feedbackDate;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getIsNegative() {
         return isNegative;
@@ -46,14 +54,6 @@ public class FeedbackDetails {
 
     public void setQuestionType(char questionType) {
         this.questionType = questionType;
-    }
-
-    public String getFeedbackDate() {
-        return feedbackDate;
-    }
-
-    public void setFeedbackDate(String feedbackDate) {
-        this.feedbackDate = feedbackDate;
     }
 
     public String getAnswerDesc() {
@@ -109,6 +109,7 @@ public class FeedbackDetails {
         return "FeedbackDetails{" +
                 "questionId=" + questionId +
                 ", weightage=" + weightage +
+                ", id=" + id +
                 ", questionType=" + questionType +
                 ", answerId=" + answerId +
                 ", answerText='" + answerText + '\'' +
@@ -117,7 +118,6 @@ public class FeedbackDetails {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
                 ", isNegative=" + isNegative +
-                ", feedbackDate='" + feedbackDate + '\'' +
                 '}';
     }
 }

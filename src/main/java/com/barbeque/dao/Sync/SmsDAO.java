@@ -21,9 +21,13 @@ public class SmsDAO {
 
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            statement = connection.prepareStatement("UPDATE global_settings SET  sms_template=? ");
+            statement = connection.prepareStatement("UPDATE global_settings SET archive_time=?,report_time=?, sms_template=? ");
 
             statement.setString(parameterIndex++,settingRequestDTO.getSmsTemplate());
+
+            statement.setTime(parameterIndex++,settingRequestDTO.getArchiveTime());
+
+            statement.setTime(parameterIndex++,settingRequestDTO.getReportTime());
 
             int i = statement.executeUpdate();
             if (i > 0) {
@@ -62,6 +66,8 @@ public class SmsDAO {
             while (resultSet.next()) {
 
                 settingRequestDTO.setSmsTemplate(resultSet.getString("sms_template"));
+                settingRequestDTO.setArchiveTime(resultSet.getTime("archive_time"));
+                settingRequestDTO.setReportTime(resultSet.getTime("report_time"));
 
                 index++;
             }

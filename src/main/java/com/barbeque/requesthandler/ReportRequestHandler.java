@@ -1,11 +1,9 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.dao.FeedbackDAO;
+import com.barbeque.dao.Sync.SmsDAO;
 import com.barbeque.dao.user.UsersDAO;
-import com.barbeque.dto.request.CustomerReportDTO;
-import com.barbeque.dto.request.AverageDTO;
-import com.barbeque.dto.request.CountDTO;
-import com.barbeque.dto.request.ReportDTO;
+import com.barbeque.dto.request.*;
 import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.CustomerNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
@@ -15,6 +13,7 @@ import com.barbeque.response.report.*;
 import com.barbeque.util.DateUtil;
 
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,14 +32,21 @@ public class ReportRequestHandler {
         Date date1 = new Date();
         Timestamp t1 = new Timestamp(date1.getTime());
         String to = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
+        String tab = DateUtil.format(t1,"MM-yyyy");
+
+        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time archiveTime = settingRequestDTO.getArchiveTime();
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.SECOND, archiveTime.getSeconds());
+        cal.set(Calendar.MINUTE, archiveTime.getMinutes());
+        cal.set(Calendar.HOUR_OF_DAY, archiveTime.getHours());
         Date date = cal.getTime();
         Timestamp t2 = new Timestamp(date.getTime());
         String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
 
-        List<CountDTO> countDTOList = feedbackDAO.getcountById(id, from, to);
+        List<CountDTO> countDTOList = feedbackDAO.getcountById(tab,id, from, to);
 
         for (com.barbeque.dto.request.CountDTO countDTO : countDTOList) {
             CountResponse countResponse = new CountResponse();
@@ -63,15 +69,22 @@ public class ReportRequestHandler {
         Date date1 = new Date();
         Timestamp t1 = new Timestamp(date1.getTime());
         String to = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
+        String tab = DateUtil.format(t1,"MM-yyyy");
+
+        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time archiveTime = settingRequestDTO.getArchiveTime();
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.SECOND, archiveTime.getSeconds());
+        cal.set(Calendar.MINUTE, archiveTime.getMinutes());
+        cal.set(Calendar.HOUR_OF_DAY, archiveTime.getHours());
         Date date = cal.getTime();
         Timestamp t2 = new Timestamp(date.getTime());
         String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
 
 
-        List<AverageDTO> averageDTOList = feedbackDAO.getaverageById(id, from, to);
+        List<AverageDTO> averageDTOList = feedbackDAO.getaverageById(tab,id, from, to);
 
         for (com.barbeque.dto.request.AverageDTO averageDTO : averageDTOList) {
             AverageResponse averageResponse = new AverageResponse();
@@ -92,26 +105,33 @@ public class ReportRequestHandler {
         Date date1 = new Date();
         Timestamp t1 = new Timestamp(date1.getTime());
         String to = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
+        String tab = DateUtil.format(t1,"MM-yyyy");
+
+        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time archiveTime = settingRequestDTO.getArchiveTime();
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.SECOND, archiveTime.getSeconds());
+        cal.set(Calendar.MINUTE, archiveTime.getMinutes());
+        cal.set(Calendar.HOUR_OF_DAY, archiveTime.getHours());
         Date date = cal.getTime();
         Timestamp t2 = new Timestamp(date.getTime());
         String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
 
-        CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(feedbackDAO.getcustomerByPhoneNo(phoneNo, from, to));
+        CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(tab,feedbackDAO.getcustomerByPhoneNo(tab,phoneNo, from, to));
         return customerReportResponseList;
     }
 
-    public CustomerReportResponseList buildFeedbackCustomerFromDTO(CustomerReportDTO customerReportDTO) throws SQLException, CustomerNotFoundException {
+    public CustomerReportResponseList buildFeedbackCustomerFromDTO(String tab,CustomerReportDTO customerReportDTO) throws SQLException, CustomerNotFoundException {
         CustomerReportResponseList customerReportResponseList = new CustomerReportResponseList();
-        customerReportResponseList.setId(customerReportDTO.getId());
+        customerReportResponseList.setMobile(customerReportDTO.getMobile());
         customerReportResponseList.setName(customerReportDTO.getName());
         customerReportResponseList.setEmailId(customerReportDTO.getEmailId());
         customerReportResponseList.setDob(customerReportDTO.getDob());
         customerReportResponseList.setDoa(customerReportDTO.getDoa());
         customerReportResponseList.setLocality(customerReportDTO.getLocality());
-        customerReportResponseList.setFeedback(FeedbackDAO.getcustomerFeedback(customerReportResponseList.getId()));
+        customerReportResponseList.setFeedback(FeedbackDAO.getcustomerFeedback(tab,customerReportResponseList.getName()));
         return customerReportResponseList;
     }
 
@@ -120,14 +140,17 @@ public class ReportRequestHandler {
         SummaryResponse summaryResponse = new SummaryResponse();
         FeedbackDAO feedbackDAO = new FeedbackDAO();
 
+        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time reportTime = settingRequestDTO.getReportTime();
+
         final Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR_OF_DAY, 5);
+        cal.set(Calendar.SECOND, reportTime.getSeconds());
+        cal.set(Calendar.MINUTE, reportTime.getMinutes());
+        cal.set(Calendar.HOUR_OF_DAY, reportTime.getHours());
         Date date1 = cal.getTime();
         Timestamp t1 = new Timestamp(date1.getTime());
-        String currentDate = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
+        String currentDate = DateUtil.getDateStringFromTimeStamp(t1);
+        String date = DateUtil.format(t1,"MM-yyyy");
 
 
         cal.setTime(date1);
@@ -143,11 +166,11 @@ public class ReportRequestHandler {
 
         LoginResponseDTO user = UsersDAO.getuserById(userId);
         String outlets = user.getOutletAccess();
-        ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(outlets, previousDate, currentDate);
-        List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(outlets, previousDate, currentDate);
+        ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(date,outlets, previousDate, currentDate);
+        List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(date,outlets, previousDate, currentDate);
         dailyReportDTO.setOutlets(dailyOutletReport);
-        ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(outlets, previousMonth, currentDate);
-        List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(outlets, previousMonth, currentDate);
+        ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(date,outlets, previousMonth, currentDate);
+        List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(date,outlets, previousMonth, currentDate);
         monthlyReportDTO.setOutlets(monthlyOutletReport);
         dailyReportDTO.setUserName(user.getName());
 

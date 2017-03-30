@@ -56,7 +56,7 @@ public class SendSms {
         message = message.replace("%cm%", feedback.getMobileNo());
         message = message.replace("%tn%", feedback.getTableNo());
         message = message.replace("%url%", url);
-        String date = format(feedback.getFeedbackDate(), "dd-MMM-yyyy HH:mm:ss");
+        String date = format(DateUtil.getTimeStampFromString(feedback.getFeedbackDate()), "dd-MMM-yyyy HH:mm:ss");
         message = message.replace("%fd%", date);
 
         //encoding message

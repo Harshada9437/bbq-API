@@ -1,17 +1,13 @@
-package com.barbeque.response.user;
-
-import com.barbeque.response.util.GenericResponse;
+package com.barbeque.bo;
 
 /**
- * Created by System-3 on 2/8/2017.
+ * Created by System-3 on 2/9/2017.
  */
-public class RoleByIdResponse implements GenericResponse {
+public class RollRequestBO {
     private int roleId;
     private String name;
     private String menuAccess;
     private String outletAccess;
-    private String message;
-    private String messageType;
 
     public int getRoleId() {
         return roleId;
@@ -45,36 +41,35 @@ public class RoleByIdResponse implements GenericResponse {
         this.outletAccess = outletAccess;
     }
 
-    public String getMessage() {
-        return message;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RollRequestBO that = (RollRequestBO) o;
+
+        if (roleId != that.roleId) return false;
+        if (!name.equals(that.name)) return false;
+        if (!menuAccess.equals(that.menuAccess)) return false;
+        return outletAccess.equals(that.outletAccess);
     }
 
     @Override
-    public void setMessage(String message) {
-        this.message = message;
+    public int hashCode() {
+        int result = roleId;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + menuAccess.hashCode();
+        result = 31 * result + outletAccess.hashCode();
+        return result;
     }
-
-    public String getMessageType() {
-        return messageType;
-    }
-
-    @Override
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
-    }
-
 
     @Override
     public String toString() {
-        return "RoleByIdResponse{" +
+        return "RollRequestBO{" +
                 "roleId=" + roleId +
                 ", name='" + name + '\'' +
                 ", menuAccess='" + menuAccess + '\'' +
                 ", outletAccess='" + outletAccess + '\'' +
-                ", message='" + message + '\'' +
-                ", messageType='" + messageType + '\'' +
                 '}';
     }
-
-
 }

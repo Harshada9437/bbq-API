@@ -1,6 +1,5 @@
 package com.barbeque.dto.request;
 
-import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.request.report.Feedback;
 
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
  * Created by System-3 on 2/15/2017.
  */
 public class CustomerReportDTO {
-    private int id;
+    private String mobile;
     private String name;
     private String emailId;
     private String dob;
@@ -17,12 +16,12 @@ public class CustomerReportDTO {
     private String locality;
     private List<Feedback> feedback;
 
-    public int getId() {
-        return id;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getName() {
@@ -80,32 +79,31 @@ public class CustomerReportDTO {
 
         CustomerReportDTO that = (CustomerReportDTO) o;
 
-        if (id != that.id) return false;
-        if (!name.equals(that.name)) return false;
-        if (!emailId.equals(that.emailId)) return false;
-        if (!dob.equals(that.dob)) return false;
-        if (!doa.equals(that.doa)) return false;
-        if (!locality.equals(that.locality)) return false;
-        return feedback.equals(that.feedback);
+        if (mobile != null ? !mobile.equals(that.mobile) : that.mobile != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (emailId != null ? !emailId.equals(that.emailId) : that.emailId != null) return false;
+        if (dob != null ? !dob.equals(that.dob) : that.dob != null) return false;
+        if (doa != null ? !doa.equals(that.doa) : that.doa != null) return false;
+        if (locality != null ? !locality.equals(that.locality) : that.locality != null) return false;
+        return feedback != null ? feedback.equals(that.feedback) : that.feedback == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + name.hashCode();
-        result = 31 * result + emailId.hashCode();
-        result = 31 * result + dob.hashCode();
-        result = 31 * result + doa.hashCode();
-        result = 31 * result + locality.hashCode();
-        result = 31 * result + feedback.hashCode();
+        int result = mobile != null ? mobile.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (emailId != null ? emailId.hashCode() : 0);
+        result = 31 * result + (dob != null ? dob.hashCode() : 0);
+        result = 31 * result + (doa != null ? doa.hashCode() : 0);
+        result = 31 * result + (locality != null ? locality.hashCode() : 0);
+        result = 31 * result + (feedback != null ? feedback.hashCode() : 0);
         return result;
     }
-
 
     @Override
     public String toString() {
         return "CustomerReportDTO{" +
-                "id=" + id +
+                "mobile='" + mobile + '\'' +
                 ", name='" + name + '\'' +
                 ", emailId='" + emailId + '\'' +
                 ", dob='" + dob + '\'' +

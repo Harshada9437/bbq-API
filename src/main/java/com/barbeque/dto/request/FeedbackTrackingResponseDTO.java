@@ -13,6 +13,7 @@ public class FeedbackTrackingResponseDTO {
     private int customerId;
     private String customerName;
     private String phoneNo;
+    private String email;
     private String mgrName;
     private String mgrMobileNo;
     private String mgrEmail;
@@ -21,6 +22,13 @@ public class FeedbackTrackingResponseDTO {
     private int isAddressed;
     private int isNegative;
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public int getFeedbackId() {
         return feedbackId;
@@ -159,6 +167,7 @@ public class FeedbackTrackingResponseDTO {
         if (!date.equals(that.date)) return false;
         if (!tableNo.equals(that.tableNo)) return false;
         if (!customerName.equals(that.customerName)) return false;
+        if (!email.equals(that.email)) return false;
         if (!phoneNo.equals(that.phoneNo)) return false;
         if (!mgrName.equals(that.mgrName)) return false;
         if (!mgrMobileNo.equals(that.mgrMobileNo)) return false;
@@ -172,6 +181,7 @@ public class FeedbackTrackingResponseDTO {
         result = 31 * result + outletId;
         result = 31 * result + isNegative;
         result = 31 * result + outletName.hashCode();
+        result = 31 * result + email.hashCode();
         result = 31 * result + date.hashCode();
         result = 31 * result + tableNo.hashCode();
         result = 31 * result + customerId;
@@ -193,6 +203,7 @@ public class FeedbackTrackingResponseDTO {
                 ", outletId=" + outletId +
                 ", isNegative=" + isNegative +
                 ", outletName='" + outletName + '\'' +
+                ", email='" + email + '\'' +
                 ", date='" + date + '\'' +
                 ", tableNo='" + tableNo + '\'' +
                 ", customerId=" + customerId +

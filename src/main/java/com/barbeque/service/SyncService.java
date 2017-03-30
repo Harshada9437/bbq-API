@@ -167,4 +167,20 @@ public class SyncService {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Error in retrieving details.");
         }
     }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/createArchive")
+    public Response archiveFeedback() {
+        SyncRequestHandler syncRequestHandler = new SyncRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            syncRequestHandler.archiveFeedback();
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Data is archived.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Error in creation.");
+        }
+    }
 }
