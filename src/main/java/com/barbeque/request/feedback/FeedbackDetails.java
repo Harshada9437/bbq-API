@@ -15,6 +15,15 @@ public class FeedbackDetails {
     private String questionDesc;
     private int rating;
     private int isNegative;
+    private int clientId;
+
+    public int getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(int questionId) {
+        this.questionId = questionId;
+    }
 
     public int getId() {
         return id;
@@ -22,22 +31,6 @@ public class FeedbackDetails {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getIsNegative() {
-        return isNegative;
-    }
-
-    public void setIsNegative(int isNegative) {
-        this.isNegative = isNegative;
-    }
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
     }
 
     public int getWeightage() {
@@ -56,30 +49,6 @@ public class FeedbackDetails {
         this.questionType = questionType;
     }
 
-    public String getAnswerDesc() {
-        return answerDesc;
-    }
-
-    public void setAnswerDesc(String answerDesc) {
-        this.answerDesc = answerDesc;
-    }
-
-    public String getQuestionDesc() {
-        return questionDesc;
-    }
-
-    public void setQuestionDesc(String questionDesc) {
-        this.questionDesc = questionDesc;
-    }
-
-    public int getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(int questionId) {
-        this.questionId = questionId;
-    }
-
     public int getAnswerId() {
         return answerId;
     }
@@ -96,6 +65,30 @@ public class FeedbackDetails {
         this.answerText = answerText;
     }
 
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
+    }
+
+    public String getAnswerDesc() {
+        return answerDesc;
+    }
+
+    public void setAnswerDesc(String answerDesc) {
+        this.answerDesc = answerDesc;
+    }
+
+    public String getQuestionDesc() {
+        return questionDesc;
+    }
+
+    public void setQuestionDesc(String questionDesc) {
+        this.questionDesc = questionDesc;
+    }
+
     public int getRating() {
         return rating;
     }
@@ -104,12 +97,67 @@ public class FeedbackDetails {
         this.rating = rating;
     }
 
+    public int getIsNegative() {
+        return isNegative;
+    }
+
+    public void setIsNegative(int isNegative) {
+        this.isNegative = isNegative;
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FeedbackDetails that = (FeedbackDetails) o;
+
+        if (questionId != that.questionId) return false;
+        if (id != that.id) return false;
+        if (weightage != that.weightage) return false;
+        if (questionType != that.questionType) return false;
+        if (answerId != that.answerId) return false;
+        if (rating != that.rating) return false;
+        if (isNegative != that.isNegative) return false;
+        if (clientId != that.clientId) return false;
+        if (!answerText.equals(that.answerText)) return false;
+        if (!threshold.equals(that.threshold)) return false;
+        if (!answerDesc.equals(that.answerDesc)) return false;
+        return questionDesc.equals(that.questionDesc);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = questionId;
+        result = 31 * result + id;
+        result = 31 * result + weightage;
+        result = 31 * result + (int) questionType;
+        result = 31 * result + answerId;
+        result = 31 * result + answerText.hashCode();
+        result = 31 * result + threshold.hashCode();
+        result = 31 * result + answerDesc.hashCode();
+        result = 31 * result + questionDesc.hashCode();
+        result = 31 * result + rating;
+        result = 31 * result + isNegative;
+        result = 31 * result + clientId;
+        return result;
+    }
+
     @Override
     public String toString() {
         return "FeedbackDetails{" +
                 "questionId=" + questionId +
-                ", weightage=" + weightage +
                 ", id=" + id +
+                ", weightage=" + weightage +
                 ", questionType=" + questionType +
                 ", answerId=" + answerId +
                 ", answerText='" + answerText + '\'' +
@@ -118,6 +166,7 @@ public class FeedbackDetails {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
                 ", isNegative=" + isNegative +
+                ", clientId=" + clientId +
                 '}';
     }
 }

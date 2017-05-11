@@ -7,6 +7,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import javax.xml.ws.Response;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -135,6 +136,7 @@ public class Synchronize {
         InputStreamReader in = null;
         List<ReportData> reportDatas = new ArrayList<ReportData>();
 
+
         Date date1 = new Date();
 
         final Calendar cal = Calendar.getInstance();
@@ -148,7 +150,7 @@ public class Synchronize {
             URL url = new URL(myURL + currentDate);
             urlConn = url.openConnection();
             if (urlConn != null)
-                urlConn.setReadTimeout(10000);
+                urlConn.setReadTimeout(60 * 1000);
             if (urlConn != null && urlConn.getInputStream() != null) {
                 in = new InputStreamReader(urlConn.getInputStream(),
                         Charset.defaultCharset());
@@ -183,6 +185,39 @@ public class Synchronize {
             data.setOutlets(reportDatas);
         }
         return data;
+    }
+
+    public static JSONObject callCustomer(String myURL) throws JSONException {
+        StringBuilder sb = new StringBuilder();
+        InputStreamReader in = null;
+        JSONObject jsonObj = null;
+
+        try {
+            URL url = new URL(myURL );
+            URLConnection urlConn = url.openConnection();
+            if (urlConn != null)
+                urlConn.setReadTimeout(60 * 1000);
+            if (urlConn != null && urlConn.getInputStream() != null) {
+                in = new InputStreamReader(urlConn.getInputStream(),
+                        Charset.defaultCharset());
+                BufferedReader bufferedReader = new BufferedReader(in);
+                if (bufferedReader != null) {
+                    int cp;
+                    while ((cp = bufferedReader.read()) != -1) {
+                        sb.append((char) cp);
+                    }
+                    bufferedReader.close();
+                }
+            }
+            in.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Exception while calling URL:" + myURL, e);
+        }
+
+        if (sb != null) {
+             jsonObj = new JSONObject(sb.toString());
+        }
+        return jsonObj;
     }
 }
 

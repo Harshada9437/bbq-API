@@ -18,6 +18,38 @@ import java.util.List;
  * Created by System-2 on 12/20/2016.
  */
 public class OutletDAO {
+    public static List<String> getOutlets(String outletAccess) throws SQLException {
+        List<String> outlets = new ArrayList<String>();
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+
+            String query = "SELECT outlet_desc from outlet where id in("+outletAccess+")";
+
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("outlet_desc");
+                outlets.add(name);
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+         return outlets;
+    }
+
     public Boolean assignTemplate(TempDTO tempDTO, int outletId) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
@@ -44,6 +76,45 @@ public class OutletDAO {
             connection.rollback();
             sqlException.printStackTrace();
             throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                if (preparedStatement != null)
+                    preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
+    }
+
+    public Boolean updateAssignTemplate(TempDTO tempDTO, int outletId) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        StringBuilder query = new StringBuilder("UPDATE outlet_template_link SET template_id=?,from_date=?,to_date=? where outlet_id=?");
+        Boolean isCreated = Boolean.FALSE;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(query.toString());
+
+            preparedStatement.setInt(parameterIndex++, tempDTO.getTemplateId());
+            preparedStatement.setString(parameterIndex++, tempDTO.getFromDate());
+            preparedStatement.setString(parameterIndex++, tempDTO.getToDate());
+            preparedStatement.setInt(parameterIndex++, outletId);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                isCreated = Boolean.TRUE;
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException e) {
+            connection.rollback();
+            e.printStackTrace();
+            throw e;
         } finally {
             try {
                 connection.close();
@@ -232,7 +303,7 @@ public class OutletDAO {
             statement = connection.createStatement();
             StringBuilder query = new StringBuilder("select o.id,o.outlet_desc,o.short_desc,o.cluster_id,o.region_id,o.company_id\n" +
                     ",o.group_id,o.pos_store_id,s.table_no_range,c.cluster_desc,r.region_desc,cp.company_desc,s.mgr_name,s.mgr_mobile,s.mgr_email\n" +
-                    ",g.group_desc,m.template_id,t.template_desc,s.banner_url,s.mobile_no_length,s.poc_name,s.poc_email,s.poc_mobile,s.sms_gateway_id from outlet o\n" +
+                    ",s.refer_type,s.programme_id,g.group_desc,m.template_id,t.template_desc,s.banner_url,s.mobile_no_length,s.poc_name,s.poc_email,s.poc_mobile,s.sms_gateway_id from outlet o\n" +
                     "left join outlet_template_link m\n" +
                     "on m.outlet_id=o.id\n" +
                     "left join cluster c\n" +
@@ -276,6 +347,8 @@ public class OutletDAO {
                 outletDTO.setMgrName(resultSet.getString("mgr_name"));
                 outletDTO.setMgrMobile(resultSet.getString("mgr_mobile"));
                 outletDTO.setSmsGatewayId(resultSet.getInt("sms_gateway_id"));
+                outletDTO.setProgrammeId(resultSet.getString("programme_id"));
+                outletDTO.setReferType(resultSet.getInt("refer_type"));
                 index++;
             }
             if (index == 1) {
@@ -306,7 +379,7 @@ public class OutletDAO {
             preparedStatement = connection
                     .prepareStatement("UPDATE outlet_setting SET table_no_range=?, mobile_no_length =?, banner_url =?," +
                             " poc_name=?, poc_mobile=?, poc_email=?,mgr_name=?,mgr_mobile=?,mgr_email=?," +
-                            "sms_gateway_id=? WHERE outlet_id =?");
+                            "sms_gateway_id=?,programme_id=?,refer_type=? WHERE outlet_id =?");
 
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getTableNoRange());
 
@@ -327,6 +400,10 @@ public class OutletDAO {
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getMgrEmail());
 
             preparedStatement.setInt(parameterIndex++, updateSettingsDTO.getSmsGatewayId());
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getProgramId());
+
+            preparedStatement.setInt(parameterIndex++, updateSettingsDTO.getReferType());
 
             preparedStatement.setInt(parameterIndex++, outletId);
 
@@ -471,6 +548,8 @@ public class OutletDAO {
                 updateSettingsDTO.setBannerUrl(resultSet.getString("banner_url"));
                 updateSettingsDTO.setMobileNoLength(resultSet.getInt("mobile_no_length"));
                 updateSettingsDTO.setSmsGatewayId(resultSet.getInt("sms_gateway_id"));
+                updateSettingsDTO.setProgramId(resultSet.getString("programme_id"));
+                updateSettingsDTO.setReferType(resultSet.getInt("refer_type"));
                 updateSettingsDTO.setTableNoRange(resultSet.getString("table_no_range"));
 
             }
@@ -496,7 +575,7 @@ public class OutletDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("INSERT  INTO outlet_setting (table_no_range, mobile_no_length , banner_url, outlet_id, poc_name, poc_mobile, poc_email,mgr_name,mgr_mobile,mgr_email,sms_gateway_id) VALUES(?,?,?,?,?,?,?,?,?,?,?) ");
+                    .prepareStatement("INSERT  INTO outlet_setting (table_no_range, mobile_no_length , banner_url, outlet_id, poc_name, poc_mobile, poc_email,mgr_name,mgr_mobile,mgr_email,sms_gateway_id,programme_id,refer_type) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ");
 
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getTableNoRange());
 
@@ -519,6 +598,10 @@ public class OutletDAO {
             preparedStatement.setString(parameterIndex++, updateSettingsDTO.getMgrEmail());
 
             preparedStatement.setInt(parameterIndex++, updateSettingsDTO.getSmsGatewayId());
+
+            preparedStatement.setString(parameterIndex++, updateSettingsDTO.getProgramId());
+
+            preparedStatement.setInt(parameterIndex++, updateSettingsDTO.getReferType());
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {

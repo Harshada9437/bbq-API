@@ -9,6 +9,7 @@ import com.barbeque.exceptions.CustomerNotFoundException;
 import com.barbeque.exceptions.QuestionNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.report.ReportData;
+import com.barbeque.response.device.DeviceSummaryResponse;
 import com.barbeque.response.report.*;
 import com.barbeque.util.DateUtil;
 
@@ -34,19 +35,19 @@ public class ReportRequestHandler {
         String to = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
         String tab = DateUtil.format(t1,"MM-yyyy");
 
-        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
-        Time archiveTime = settingRequestDTO.getArchiveTime();
+        /*SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time archiveTime = settingRequestDTO.getArchiveTime();*/
 
-        Calendar cal = Calendar.getInstance();
+       /* Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.SECOND, archiveTime.getSeconds());
         cal.set(Calendar.MINUTE, archiveTime.getMinutes());
         cal.set(Calendar.HOUR_OF_DAY, archiveTime.getHours());
         Date date = cal.getTime();
         Timestamp t2 = new Timestamp(date.getTime());
-        String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
+        String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);*/
 
-        List<CountDTO> countDTOList = feedbackDAO.getcountById(tab,id, from, to);
+        List<CountDTO> countDTOList = feedbackDAO.getcountById(tab,id);
 
         for (com.barbeque.dto.request.CountDTO countDTO : countDTOList) {
             CountResponse countResponse = new CountResponse();
@@ -71,20 +72,20 @@ public class ReportRequestHandler {
         String to = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
         String tab = DateUtil.format(t1,"MM-yyyy");
 
-        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
-        Time archiveTime = settingRequestDTO.getArchiveTime();
+        /*SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time archiveTime = settingRequestDTO.getArchiveTime();*/
 
-        Calendar cal = Calendar.getInstance();
+       /* Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.SECOND, archiveTime.getSeconds());
         cal.set(Calendar.MINUTE, archiveTime.getMinutes());
         cal.set(Calendar.HOUR_OF_DAY, archiveTime.getHours());
         Date date = cal.getTime();
         Timestamp t2 = new Timestamp(date.getTime());
-        String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
+        String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);*/
 
 
-        List<AverageDTO> averageDTOList = feedbackDAO.getaverageById(tab,id, from, to);
+        List<AverageDTO> averageDTOList = feedbackDAO.getaverageById(tab,id);
 
         for (com.barbeque.dto.request.AverageDTO averageDTO : averageDTOList) {
             AverageResponse averageResponse = new AverageResponse();
@@ -107,10 +108,10 @@ public class ReportRequestHandler {
         String to = DateUtil.getCurrentServerTimeByRemoteTimestamp(t1);
         String tab = DateUtil.format(t1,"MM-yyyy");
 
-        SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
-        Time archiveTime = settingRequestDTO.getArchiveTime();
+        /*SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
+        Time archiveTime = settingRequestDTO.getArchiveTime();*/
 
-        Calendar cal = Calendar.getInstance();
+       /* Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.SECOND, archiveTime.getSeconds());
         cal.set(Calendar.MINUTE, archiveTime.getMinutes());
@@ -118,8 +119,8 @@ public class ReportRequestHandler {
         Date date = cal.getTime();
         Timestamp t2 = new Timestamp(date.getTime());
         String from = DateUtil.getCurrentServerTimeByRemoteTimestamp(t2);
-
-        CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(tab,feedbackDAO.getcustomerByPhoneNo(tab,phoneNo, from, to));
+*/
+        CustomerReportResponseList customerReportResponseList = buildFeedbackCustomerFromDTO(tab,feedbackDAO.getcustomerByPhoneNo(tab,phoneNo));
         return customerReportResponseList;
     }
 
@@ -131,7 +132,7 @@ public class ReportRequestHandler {
         customerReportResponseList.setDob(customerReportDTO.getDob());
         customerReportResponseList.setDoa(customerReportDTO.getDoa());
         customerReportResponseList.setLocality(customerReportDTO.getLocality());
-        customerReportResponseList.setFeedback(FeedbackDAO.getcustomerFeedback(tab,customerReportResponseList.getName()));
+        customerReportResponseList.setFeedback(FeedbackDAO.getcustomerFeedback(tab,customerReportResponseList.getMobile()));
         return customerReportResponseList;
     }
 
@@ -166,9 +167,11 @@ public class ReportRequestHandler {
 
         LoginResponseDTO user = UsersDAO.getuserById(userId);
         String outlets = user.getOutletAccess();
+
         ReportDTO dailyReportDTO = feedbackDAO.getDailyReport(date,outlets, previousDate, currentDate);
         List<ReportData> dailyOutletReport = feedbackDAO.getOutletReport(date,outlets, previousDate, currentDate);
         dailyReportDTO.setOutlets(dailyOutletReport);
+
         ReportDTO monthlyReportDTO = feedbackDAO.getDailyReport(date,outlets, previousMonth, currentDate);
         List<ReportData> monthlyOutletReport = feedbackDAO.getOutletReport(date,outlets, previousMonth, currentDate);
         monthlyReportDTO.setOutlets(monthlyOutletReport);
@@ -188,9 +191,13 @@ public class ReportRequestHandler {
         summaryResponse.setAvgMonthlyUnaddressed(calAverage(monthlyReportDTO.getUnAddressedCount(), monthlyReportDTO.getNegativeCount()));
 
         List<OutletSummery> outletsdata = new ArrayList<OutletSummery>();
-        for (int i = 0; i < monthlyReportDTO.getOutlets().size(); i++) {
-            ReportData dailyData = dailyReportDTO.getOutlets().get(i);
-            ReportData monthlyData = monthlyReportDTO.getOutlets().get(i);
+        for (ReportData dailyData :  dailyReportDTO.getOutlets()){
+            ReportData monthlyData= new ReportData();
+            for(ReportData data : monthlyReportDTO.getOutlets()) {
+                if(dailyData.getStoreId().equals(data.getStoreId())) {
+                    monthlyData = data;
+                }
+            }
             OutletSummery outletSummery = new OutletSummery();
             outletSummery.setCity(dailyData.getCity());
             outletSummery.setOutletName(dailyData.getStoreId());

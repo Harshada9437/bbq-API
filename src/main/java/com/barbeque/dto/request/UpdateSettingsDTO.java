@@ -5,7 +5,8 @@ package com.barbeque.dto.request;
  */
 public class UpdateSettingsDTO {
     private int mobileNoLength;
-    private Integer smsGatewayId;
+    private int referType;
+    private int smsGatewayId;
     private String bannerUrl;
     private String tableNoRange;
     private String pocName;
@@ -14,6 +15,23 @@ public class UpdateSettingsDTO {
     private String mgrName;
     private String mgrMobile;
     private String mgrEmail;
+    private String programId;
+
+    public String getProgramId() {
+        return programId;
+    }
+
+    public void setProgramId(String programId) {
+        this.programId = programId;
+    }
+
+    public int getReferType() {
+        return referType;
+    }
+
+    public void setReferType(int referType) {
+        this.referType = referType;
+    }
 
     public Integer getSmsGatewayId() {
         return smsGatewayId;
@@ -99,6 +117,7 @@ public class UpdateSettingsDTO {
         UpdateSettingsDTO that = (UpdateSettingsDTO) o;
 
         if (mobileNoLength != that.mobileNoLength) return false;
+        if (referType != that.referType) return false;
         if (smsGatewayId != that.smsGatewayId) return false;
         if (bannerUrl != null ? !bannerUrl.equals(that.bannerUrl) : that.bannerUrl != null) return false;
         if (tableNoRange != null ? !tableNoRange.equals(that.tableNoRange) : that.tableNoRange != null) return false;
@@ -107,12 +126,14 @@ public class UpdateSettingsDTO {
         if (pocEmail != null ? !pocEmail.equals(that.pocEmail) : that.pocEmail != null) return false;
         if (mgrName != null ? !mgrName.equals(that.mgrName) : that.mgrName != null) return false;
         if (mgrMobile != null ? !mgrMobile.equals(that.mgrMobile) : that.mgrMobile != null) return false;
-        return mgrEmail != null ? mgrEmail.equals(that.mgrEmail) : that.mgrEmail == null;
+        if (mgrEmail != null ? !mgrEmail.equals(that.mgrEmail) : that.mgrEmail != null) return false;
+        return programId != null ? programId.equals(that.programId) : that.programId == null;
     }
 
     @Override
     public int hashCode() {
         int result = mobileNoLength;
+        result = 31 * result + referType;
         result = 31 * result + smsGatewayId;
         result = 31 * result + (bannerUrl != null ? bannerUrl.hashCode() : 0);
         result = 31 * result + (tableNoRange != null ? tableNoRange.hashCode() : 0);
@@ -122,6 +143,7 @@ public class UpdateSettingsDTO {
         result = 31 * result + (mgrName != null ? mgrName.hashCode() : 0);
         result = 31 * result + (mgrMobile != null ? mgrMobile.hashCode() : 0);
         result = 31 * result + (mgrEmail != null ? mgrEmail.hashCode() : 0);
+        result = 31 * result + (programId != null ? programId.hashCode() : 0);
         return result;
     }
 
@@ -129,6 +151,7 @@ public class UpdateSettingsDTO {
     public String toString() {
         return "UpdateSettingsDTO{" +
                 "mobileNoLength=" + mobileNoLength +
+                ", referType=" + referType +
                 ", smsGatewayId=" + smsGatewayId +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", tableNoRange='" + tableNoRange + '\'' +
@@ -138,6 +161,7 @@ public class UpdateSettingsDTO {
                 ", mgrName='" + mgrName + '\'' +
                 ", mgrMobile='" + mgrMobile + '\'' +
                 ", mgrEmail='" + mgrEmail + '\'' +
+                ", programId='" + programId + '\'' +
                 '}';
     }
 }

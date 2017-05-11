@@ -5,10 +5,19 @@ package com.barbeque.request.user;
  */
 public class UpdateUserRequest {
     private int id;
+    private int notifyEmail;
     private String email;
     private String name;
     private String status;
     private String role;
+
+    public int getNotifyEmail() {
+        return notifyEmail;
+    }
+
+    public void setNotifyEmail(int notifyEmail) {
+        this.notifyEmail = notifyEmail;
+    }
 
     public String getName() {
         return name;
@@ -58,6 +67,7 @@ public class UpdateUserRequest {
         UpdateUserRequest that = (UpdateUserRequest) o;
 
         if (id != that.id) return false;
+        if (notifyEmail != that.notifyEmail) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
@@ -67,6 +77,7 @@ public class UpdateUserRequest {
     @Override
     public int hashCode() {
         int result = id;
+        result = 31 * notifyEmail;
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
@@ -78,6 +89,7 @@ public class UpdateUserRequest {
     public String toString() {
         return "UpdateUserRequest{" +
                 "id=" + id +
+                ", notifyEmail=" + notifyEmail +
                 ", email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", status='" + status + '\'' +

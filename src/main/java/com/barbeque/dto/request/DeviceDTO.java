@@ -11,9 +11,27 @@ public class DeviceDTO {
     private String installationId;
     private String fingerprint;
     private String androidDeviceId;
+    private String regionName;
+    private String outletName;
     private String storeId;
     private String installationDate;
     private String status;
+
+    public String getRegionName() {
+        return regionName;
+    }
+
+    public void setRegionName(String regionName) {
+        this.regionName = regionName;
+    }
+
+    public String getOutletName() {
+        return outletName;
+    }
+
+    public void setOutletName(String outletName) {
+        this.outletName = outletName;
+    }
 
     public int getOtp() {
         return otp;
@@ -99,10 +117,14 @@ public class DeviceDTO {
         if (otp != deviceDTO.otp) return false;
         if (feedbackDate != null ? !feedbackDate.equals(deviceDTO.feedbackDate) : deviceDTO.feedbackDate != null)
             return false;
-        if (installationId != null ? !installationId.equals(deviceDTO.installationId) : deviceDTO.installationId != null) return false;
-        if (fingerprint != null ? !fingerprint.equals(deviceDTO.fingerprint) : deviceDTO.fingerprint != null) return false;
+        if (installationId != null ? !installationId.equals(deviceDTO.installationId) : deviceDTO.installationId != null)
+            return false;
+        if (fingerprint != null ? !fingerprint.equals(deviceDTO.fingerprint) : deviceDTO.fingerprint != null)
+            return false;
         if (androidDeviceId != null ? !androidDeviceId.equals(deviceDTO.androidDeviceId) : deviceDTO.androidDeviceId != null)
             return false;
+        if (regionName != null ? !regionName.equals(deviceDTO.regionName) : deviceDTO.regionName != null) return false;
+        if (outletName != null ? !outletName.equals(deviceDTO.outletName) : deviceDTO.outletName != null) return false;
         if (storeId != null ? !storeId.equals(deviceDTO.storeId) : deviceDTO.storeId != null) return false;
         if (installationDate != null ? !installationDate.equals(deviceDTO.installationDate) : deviceDTO.installationDate != null)
             return false;
@@ -118,6 +140,8 @@ public class DeviceDTO {
         result = 31 * result + (installationId != null ? installationId.hashCode() : 0);
         result = 31 * result + (fingerprint != null ? fingerprint.hashCode() : 0);
         result = 31 * result + (androidDeviceId != null ? androidDeviceId.hashCode() : 0);
+        result = 31 * result + (regionName != null ? regionName.hashCode() : 0);
+        result = 31 * result + (outletName != null ? outletName.hashCode() : 0);
         result = 31 * result + (storeId != null ? storeId.hashCode() : 0);
         result = 31 * result + (installationDate != null ? installationDate.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
@@ -134,6 +158,8 @@ public class DeviceDTO {
                 ", installationId='" + installationId + '\'' +
                 ", fingerprint='" + fingerprint + '\'' +
                 ", androidDeviceId='" + androidDeviceId + '\'' +
+                ", regionName='" + regionName + '\'' +
+                ", outletName='" + outletName + '\'' +
                 ", storeId='" + storeId + '\'' +
                 ", installationDate='" + installationDate + '\'' +
                 ", status='" + status + '\'' +

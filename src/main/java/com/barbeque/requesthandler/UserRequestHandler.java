@@ -1,15 +1,16 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.bo.*;
+import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dao.user.UsersDAO;
-import com.barbeque.dto.request.CreateUserDTO;
-import com.barbeque.dto.request.CreateRollDTO;
+import com.barbeque.dto.request.CreateRoleDTO;
 import com.barbeque.dto.request.MenuRequestDTO;
 import com.barbeque.dto.request.RoleRequestDTO;
 import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.RoleNotFoundException;
 import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.response.user.*;
+import com.barbeque.util.CommaSeparatedString;
 import com.barbeque.util.MD5Encode;
 
 
@@ -111,6 +112,7 @@ public class UserRequestHandler {
         userResponse.setStatus(loginResponseDTO.getStatus());
         userResponse.setMenuAccess(loginResponseDTO.getMenuAccess());
         userResponse.setRoleId(loginResponseDTO.getRoleId());
+        userResponse.setNotifyEmail(loginResponseDTO.getNotifyEmail());
 
         return userResponse;
     }
@@ -158,6 +160,7 @@ public class UserRequestHandler {
         loginResponseDTO.setEmail(updateUserRequestBO.getEmail());
         loginResponseDTO.setRoleId(Integer.parseInt(updateUserRequestBO.getRole()));
         loginResponseDTO.setStatus(updateUserRequestBO.getStatus());
+        loginResponseDTO.setNotifyEmail(updateUserRequestBO.getNotifyEmail());
 
         Boolean isCreate = UsersDAO.updateUser(loginResponseDTO);
 
@@ -183,6 +186,7 @@ public class UserRequestHandler {
 
         for (RoleRequestDTO roleRequestDTO : roleList) {
             RoleResponse roleResponse = new RoleResponse(roleRequestDTO.getRoleId(),
+                    roleRequestDTO.getIsAll(),
                     roleRequestDTO.getName(),
                     roleRequestDTO.getMenuAccess(),
                     roleRequestDTO.getOutletAccess()
@@ -205,22 +209,24 @@ public class UserRequestHandler {
         createUserDTO.setEmail(userRequestBO.getEmail());
         createUserDTO.setPassword(MD5Encode.Encode(userRequestBO.getPassword()));
         createUserDTO.setRoleId(userRequestBO.getRoleId());
+        createUserDTO.setNotifyEmail(userRequestBO.getNotifyEmail());
 
         return createUserDTO;
     }
 
 
-    public Integer createRoll(RollRequestBO rollRequestBO) throws SQLException {
+    public Integer createRoll(RoleRequestBO roleRequestBO) throws SQLException {
         UsersDAO usersDAO = new UsersDAO();
-        int id = usersDAO.createRoll(buildRollDTOFromBO(rollRequestBO));
+        int id = usersDAO.createRoll(buildRollDTOFromBO(roleRequestBO));
         return id;
     }
 
-    private CreateRollDTO buildRollDTOFromBO(RollRequestBO rollRequestBO) {
-        CreateRollDTO createUserDTO = new CreateRollDTO();
-        createUserDTO.setName(rollRequestBO.getName());
-        createUserDTO.setMenuAccess(rollRequestBO.getMenuAccess());
-        createUserDTO.setOutletAccess(rollRequestBO.getOutletAccess());
+    private CreateRoleDTO buildRollDTOFromBO(RoleRequestBO roleRequestBO) {
+        CreateRoleDTO createUserDTO = new CreateRoleDTO();
+        createUserDTO.setName(roleRequestBO.getName());
+        createUserDTO.setIsAll(roleRequestBO.getIsAll());
+        createUserDTO.setMenuAccess(roleRequestBO.getMenuAccess());
+        createUserDTO.setOutletAccess(roleRequestBO.getOutletAccess());
         return createUserDTO;
     }
 
@@ -234,6 +240,7 @@ public class UserRequestHandler {
     private RoleRequestDTO buildDTOFromBO(UpdateRollRequestBO updateRollRequestBO) {
         RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
         roleRequestDTO.setRoleId(updateRollRequestBO.getRoleId());
+        roleRequestDTO.setIsAll(updateRollRequestBO.getIsAll());
         roleRequestDTO.setName(updateRollRequestBO.getName());
         roleRequestDTO.setMenuAccess(updateRollRequestBO.getMenuAccess());
         roleRequestDTO.setOutletAccess(updateRollRequestBO.getOutletAccess());
@@ -268,6 +275,32 @@ public class UserRequestHandler {
         Boolean isProcessed = usersDAO.resetPassword(resetPasswordRequestBO);
 
         return isProcessed;
+    }
+
+    public List<RoleResponse> getRoleReportList() throws SQLException {
+        UsersDAO usersDAO = new UsersDAO();
+        List<RoleResponse> roleRequestDTOList = new ArrayList<RoleResponse>();
+        List<RoleRequestDTO> roleList = usersDAO.getRoleList();
+
+        for (RoleRequestDTO roleRequestDTO : roleList) {
+            RoleResponse roleResponse = new RoleResponse(roleRequestDTO.getRoleId(),
+                    roleRequestDTO.getIsAll(),
+                    roleRequestDTO.getName(),
+                    roleRequestDTO.getMenuAccess(),
+                    roleRequestDTO.getOutletAccess()
+            );
+            if(!roleRequestDTO.getMenuAccess().equals("")) {
+                roleResponse.setMenuAccessL(usersDAO.getMenus(roleRequestDTO.getMenuAccess()));
+            }else{
+                roleResponse.setMenuAccessL(new ArrayList<String>());
+            }  if(!roleRequestDTO.getOutletAccess().equals("")) {
+                roleResponse.setOutletAccessL(OutletDAO.getOutlets(roleRequestDTO.getOutletAccess()));
+            }else{
+                    roleResponse.setOutletAccessL(new ArrayList<String>());
+                }
+            roleRequestDTOList.add(roleResponse);
+        }
+        return roleRequestDTOList;
     }
 
 }

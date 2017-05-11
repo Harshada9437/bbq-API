@@ -73,18 +73,18 @@ public class QuestionRequest {
         if (parentAnswerId != that.parentAnswerId) return false;
         if (parentQuestionId != that.parentQuestionId) return false;
         if (answerSymbol != that.answerSymbol) return false;
-        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
-        return answerOption != null ? answerOption.equals(that.answerOption) : that.answerOption == null;
+        if (!questionDesc.equals(that.questionDesc)) return false;
+        return answerOption.equals(that.answerOption);
     }
 
     @Override
     public int hashCode() {
-        int result = questionDesc != null ? questionDesc.hashCode() : 0;
+        int result = questionDesc.hashCode();
         result = 31 * result + (int) questionType;
         result = 31 * result + parentAnswerId;
         result = 31 * result + parentQuestionId;
         result = 31 * result + answerSymbol;
-        result = 31 * result + (answerOption != null ? answerOption.hashCode() : 0);
+        result = 31 * result + answerOption.hashCode();
         return result;
     }
 

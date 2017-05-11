@@ -11,11 +11,15 @@ public class DeviceResponse {
     private String androidDeviceId;
     private String installationDate;
     private String storeId;
+    private String outletName;
+    private String regionName;
     private String status;
     private String feedbackDate;
 
-    public DeviceResponse(String storeId,int id, int feedbackId, String installationId, String fingerprint, String androidDeviceId, String installationDate, String status, String feedbackDate) {
+    public DeviceResponse(String storeId,String outletName,String regionName,int id, int feedbackId, String installationId, String fingerprint, String androidDeviceId, String installationDate, String status, String feedbackDate) {
         this.storeId = storeId;
+        this.outletName = outletName;
+        this.regionName = regionName;
         this.id = id;
         this.feedbackId = feedbackId;
         this.installationId = installationId;
@@ -24,6 +28,14 @@ public class DeviceResponse {
         this.installationDate = installationDate;
         this.status = status;
         this.feedbackDate = feedbackDate;
+    }
+
+    public String getOutletName() {
+        return outletName;
+    }
+
+    public String getRegionName() {
+        return regionName;
     }
 
     public String getStoreId() {
@@ -96,6 +108,8 @@ public class DeviceResponse {
                 "id=" + id +
                 ", feedbackId=" + feedbackId +
                 ", storeId='" + storeId + '\'' +
+                ", outletName='" + outletName + '\'' +
+                ", regionName='" + regionName + '\'' +
                 ", installationId='" + installationId + '\'' +
                 ", fingerprint='" + fingerprint + '\'' +
                 ", androidDeviceId='" + androidDeviceId + '\'' +

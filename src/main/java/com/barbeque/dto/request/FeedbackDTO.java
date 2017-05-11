@@ -10,6 +10,7 @@ public class FeedbackDTO {
     private int id;
     private int isNegative;
     private int answerId;
+    private int questionId;
     private int outletId;
     private String feedbackDate;
     private String viewDate;
@@ -34,6 +35,14 @@ public class FeedbackDTO {
     private String mgrName;
     private String mgrEmail;
     private String mgrMobile;
+
+    public int getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(int questionId) {
+        this.questionId = questionId;
+    }
 
     public int getOutletId() {
         return outletId;
@@ -268,6 +277,7 @@ public class FeedbackDTO {
 
         if (questionType != that.questionType) return false;
         if (id != that.id) return false;
+        if (questionId != that.questionId) return false;
         if (isNegative != that.isNegative) return false;
         if (answerId != that.answerId) return false;
         if (outletId != that.outletId) return false;
@@ -300,6 +310,7 @@ public class FeedbackDTO {
     public int hashCode() {
         int result = (int) questionType;
         result = 31 * result + id;
+        result = 31 * result + questionId;
         result = 31 * result + isNegative;
         result = 31 * result + answerId;
         result = 31 * result + outletId;
@@ -335,6 +346,7 @@ public class FeedbackDTO {
                 "questionType=" + questionType +
                 ", id=" + id +
                 ", isNegative=" + isNegative +
+                ", questionId=" + questionId +
                 ", answerId=" + answerId +
                 ", answerId=" + outletId +
                 ", ansRating=" + ansRating +

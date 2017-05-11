@@ -7,11 +7,20 @@ import com.barbeque.response.util.GenericResponse;
  */
 public class RoleByIdResponse implements GenericResponse {
     private int roleId;
+    private int isAll;
     private String name;
     private String menuAccess;
     private String outletAccess;
     private String message;
     private String messageType;
+
+    public int getIsAll() {
+        return isAll;
+    }
+
+    public void setIsAll(int isAll) {
+        this.isAll = isAll;
+    }
 
     public int getRoleId() {
         return roleId;
@@ -68,6 +77,7 @@ public class RoleByIdResponse implements GenericResponse {
     public String toString() {
         return "RoleByIdResponse{" +
                 "roleId=" + roleId +
+                ", isAll=" + isAll +
                 ", name='" + name + '\'' +
                 ", menuAccess='" + menuAccess + '\'' +
                 ", outletAccess='" + outletAccess + '\'' +

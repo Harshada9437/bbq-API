@@ -69,7 +69,11 @@ public class SyncService {
         SettingRequestBO settingRequestBO = new SettingRequestBO();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            settingRequestBO.setSmsTemplate(settingRequest.getSmsTemplate());
+            settingRequestBO.setNegativeSmsTemplate(settingRequest.getNegativeSmsTemplate());
+            settingRequestBO.setPositiveSmsTemplate(settingRequest.getPositiveSmsTemplate());
+            settingRequestBO.setArchiveTime(settingRequest.getArchiveTime());
+            settingRequestBO.setReportTime(settingRequest.getReportTime());
+
             if(syncRequestHandler.saveSetting(settingRequestBO)) {
                 return ResponseGenerator.generateSuccessResponse(messageResponse, "Saved successfully");
             }else{

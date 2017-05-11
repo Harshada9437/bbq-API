@@ -22,17 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExcelCreator {
-    public void getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs, String date) throws SQLException {
+    public static String getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs, String date) throws SQLException {
                     /*String filename = ConfigProperties.app_path + "/feedback/Feedbacks.xls";*/
         String filename = "D:/Feedbacks_" +date+".xls";
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("FirstSheet");
-
-
-        sheet.addMergedRegion(CellRangeAddress.valueOf("E1:J1"));
-        sheet.addMergedRegion(CellRangeAddress.valueOf("N1:P1"));
-        sheet.addMergedRegion(CellRangeAddress.valueOf("Q1:T1"));
-        sheet.addMergedRegion(CellRangeAddress.valueOf("K1:L1"));
+        sheet.addMergedRegion(CellRangeAddress.valueOf("S1:X1"));
+        sheet.addMergedRegion(CellRangeAddress.valueOf("Z1:AA1"));
 
         HSSFFont font = workbook.createFont();
         font.setColor(IndexedColors.WHITE.getIndex());
@@ -47,13 +43,13 @@ public class ExcelCreator {
         style.setFillForegroundColor(IndexedColors.TEAL.getIndex());
         style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
         style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        style.setBottomBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+        style.setLeftBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setRightBorderColor(IndexedColors.BLACK.getIndex());
+        style.setRightBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        style.setTopBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style.setFont(font);
 
         HSSFCellStyle style1 = workbook.createCellStyle();
@@ -62,13 +58,13 @@ public class ExcelCreator {
         style1.setFillForegroundColor(IndexedColors.TURQUOISE.getIndex());
         style1.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
         style1.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style1.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        style1.setBottomBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style1.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style1.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+        style1.setLeftBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style1.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style1.setRightBorderColor(IndexedColors.BLACK.getIndex());
+        style1.setRightBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style1.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style1.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        style1.setTopBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style1.setFont(font);
 
         HSSFCellStyle style2 = workbook.createCellStyle();
@@ -78,14 +74,14 @@ public class ExcelCreator {
         style.setVerticalAlignment(HSSFCellStyle.VERTICAL_JUSTIFY);
         style3.setFillForegroundColor(IndexedColors.RED.getIndex());
         style3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        style3.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style3.setBottomBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
+        style3.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style3.setLeftBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
+        style3.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        style3.setRightBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
+        style3.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style3.setTopBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
         style3.setFont(font);
 
         int k,m;
@@ -113,27 +109,32 @@ public class ExcelCreator {
         rowhead.createCell(1).setCellValue("Date");
         rowhead.createCell(2).setCellValue("Outlet");
         rowhead.createCell(3).setCellValue("Table No");
-        rowhead.createCell(4).setCellValue("Customer");
-        rowhead.createCell(5).setCellValue("");
-        rowhead.createCell(6).setCellValue("");
-        rowhead.createCell(7).setCellValue("");
-        rowhead.createCell(8).setCellValue("");
-        rowhead.createCell(9).setCellValue("");
-        rowhead.createCell(10).setCellValue("isAddressed Details");
-        rowhead.createCell(11).setCellValue("");
-        rowhead.createCell(12).setCellValue("isNegative");
-        k = 13;
-        m = 13;
+
+        k = 4;
+        m = 4;
         for (Que q : uniObj) {
             rowhead.createCell(k).setCellValue(q.getId());
             k++;
-            if (q.getType() == '3' || q.getType() == '2') {
+            if (q.getType() == '3') {
                 for (int l = 0; l < q.getAns().size() - 1; l++) {
                     rowhead.createCell(k).setCellValue("");
                     k++;
                 }
+                sheet.addMergedRegion(new CellRangeAddress(0, 0, m, k-1 ));
+                m=k;
             }
         }
+
+        rowhead.createCell(k++).setCellValue("Customer");
+        rowhead.createCell(k++).setCellValue("");
+        rowhead.createCell(k++).setCellValue("");
+        rowhead.createCell(k++).setCellValue("");
+        rowhead.createCell(k++).setCellValue("");
+        rowhead.createCell(k++).setCellValue("");
+        rowhead.createCell(k++).setCellValue("isNegative");
+        rowhead.createCell(k++).setCellValue("isAddressed Details");
+        rowhead.createCell(k++).setCellValue("");
+
         for (Cell cell : rowhead) {
             cell.setCellStyle(style);
         }
@@ -145,31 +146,30 @@ public class ExcelCreator {
         rowhead1.createCell(1).setCellValue("");
         rowhead1.createCell(2).setCellValue("");
         rowhead1.createCell(3).setCellValue("");
-        rowhead1.createCell(4).setCellValue("Name");
-        rowhead1.createCell(5).setCellValue("Email");
-        rowhead1.createCell(6).setCellValue("Phone");
-        rowhead1.createCell(7).setCellValue("Date of Birth");
-        rowhead1.createCell(8).setCellValue("Date of Anniversary");
-        rowhead1.createCell(9).setCellValue("Locality");
-        rowhead1.createCell(10).setCellValue("isAddressed?");
-        rowhead1.createCell(11).setCellValue("View Date");
-        rowhead1.createCell(12).setCellValue("");
 
-        k = 13;
+        k = 4;
         for (Que q : uniObj) {
             if (q.getType() == '3' || q.getType() == '2') {
                 for (AnswerDTO answerDTO : q.getAns()) {
                     rowhead1.createCell(k).setCellValue(answerDTO.getAnswerText());
                     k++;
                 }
-
             } else {
-                for (int l = 0; l < q.getAns().size(); l++) {
                     rowhead1.createCell(k).setCellValue("");
                     k++;
-                }
             }
         }
+
+        rowhead1.createCell(k++).setCellValue("Name");
+        rowhead1.createCell(k++).setCellValue("Email");
+        rowhead1.createCell(k++).setCellValue("Phone");
+        rowhead1.createCell(k++).setCellValue("Date of Birth");
+        rowhead1.createCell(k++).setCellValue("Date of Anniversary");
+        rowhead1.createCell(k++).setCellValue("Locality");
+        rowhead1.createCell(k++).setCellValue("");
+        rowhead1.createCell(k++).setCellValue("isAddressed?");
+        rowhead1.createCell(k++).setCellValue("View Date");
+
 
         for (Cell cell : rowhead1) {
             cell.setCellStyle(style1);
@@ -180,10 +180,8 @@ public class ExcelCreator {
 
 
         int i = 2, l;
-        for (
-                FeedbackResponse feedbackResponse : feedbackRequestDTOs)
-
-        {
+        for (FeedbackResponse feedbackResponse : feedbackRequestDTOs) {
+            List<String> ques = new ArrayList<String>();
             HSSFRow row = sheet.createRow((short) i);
             row.createCell(0).setCellValue(feedbackResponse.getId());
             row.getCell(0).setCellStyle(style);
@@ -192,41 +190,8 @@ public class ExcelCreator {
             row.createCell(2).setCellValue(feedbackResponse.getOutletDesc());
             workbook.getSheetAt(0).autoSizeColumn(2);
             row.createCell(3).setCellValue(feedbackResponse.getTableNo());
-            row.createCell(4).setCellValue(feedbackResponse.getCustomerName());
-            workbook.getSheetAt(0).autoSizeColumn(4);
-            row.createCell(5).setCellValue(feedbackResponse.getEmail());
-            workbook.getSheetAt(0).autoSizeColumn(5);
-            row.createCell(6).setCellValue(feedbackResponse.getMobileNo());
-            workbook.getSheetAt(0).autoSizeColumn(6);
-            if(feedbackResponse.getDob().equals("")){
-                row.createCell(7).setCellValue("-");
-            }else {
-                Timestamp dob = DateUtil.getTimeStampFromString(feedbackResponse.getDob());
-                row.createCell(7).setCellValue(DateUtil.format(dob, "dd-MMM"));
-            }
-            if(feedbackResponse.getDoa().equals("")){
-                row.createCell(7).setCellValue("-");
-            }else {
-                Timestamp doa = DateUtil.getTimeStampFromString(feedbackResponse.getDoa());
-                row.createCell(8).setCellValue(DateUtil.format(doa,"dd-MMM"));
-            }
 
-            row.createCell(9).setCellValue(feedbackResponse.getLocality());
-            workbook.getSheetAt(0).autoSizeColumn(9);
-            if (feedbackResponse.getIsAddressed() == 0) {
-                row.createCell(10).setCellValue("NO");
-                row.createCell(11).setCellValue("-");
-            } else {
-                row.createCell(10).setCellValue("YES");
-                row.createCell(11).setCellValue(feedbackResponse.getViewDate());
-                workbook.getSheetAt(0).autoSizeColumn(11);
-            }
-            if (feedbackResponse.getIsNegative() == 0) {
-                row.createCell(12).setCellValue("NO");
-            } else {
-                row.createCell(12).setCellValue("YES");
-            }
-            l = 13;
+            l = 4;
             List<FeedbackDetails> feedbacks = feedbackResponse.getFeedbacks();
             for (FeedbackDetails feedbackDetails : feedbacks) {
                 if (feedbackDetails.getQuestionType() == '3' || feedbackDetails.getQuestionType() == '2') {
@@ -242,15 +207,55 @@ public class ExcelCreator {
                     workbook.getSheetAt(0).autoSizeColumn(l);
                     l++;
                 } else if (feedbackDetails.getQuestionType() == '4') {
-                    if(feedbackDetails.getAnswerText().equals("")){
+                    if(feedbackDetails.getAnswerText() == null || feedbackDetails.getAnswerText().equals("")){
                         row.createCell(l).setCellValue("Skipped");
                     }else {
                         row.createCell(l).setCellValue(feedbackDetails.getAnswerText());
                         row.getCell(l).setCellStyle(style2);
                     }
                     l++;
-                } else {
-                    if(feedbackDetails.getAnswerDesc()==null){
+                }else if (feedbackDetails.getQuestionType() == '1') {
+                    if(feedbackDetails.getAnswerDesc()== null || feedbackDetails.getAnswerDesc().equals("")){
+                        row.createCell(l).setCellValue("Skipped");
+                    }else {
+                        row.createCell(l).setCellValue(feedbackDetails.getAnswerDesc());
+                        row.getCell(l).setCellStyle(style2);
+                    }
+                    l++;
+                }else if(feedbackDetails.getQuestionType()=='5') {
+                    if (feedbackDetails.getAnswerDesc() == null || feedbackDetails.getAnswerDesc().equals("")) {
+                        row.createCell(l).setCellValue("Skipped");
+                    } else {
+                        List<String> answers = new ArrayList<String>();
+                        String answer = "";
+                        if (!ques.contains(feedbackDetails.getQuestionDesc())) {
+                            for (FeedbackDetails detail : feedbacks) {
+                                if (detail.getQuestionDesc().equals(feedbackDetails.getQuestionDesc())) {
+                                    answers.add(detail.getAnswerDesc());
+                                }
+                            }
+                            int p=1;
+                            for (String ans : answers) {
+                                if(answers.size()==1){
+                                    answer=ans;
+                                }else{
+                                    if(p==answers.size()){
+                                        answer = answer + ans;
+                                    }
+                                    if(p!=answers.size()) {
+                                        answer = answer + ans + ",";
+                                    }
+                                }
+                                p++;
+                            }
+                            row.createCell(l).setCellValue(answer);
+                            row.getCell(l).setCellStyle(style2);
+                            ques.add(feedbackDetails.getQuestionDesc());
+                            l++;
+                        }
+                    }
+                }else {
+                    if(feedbackDetails.getAnswerDesc() == null || feedbackDetails.getAnswerDesc().equals("")){
                         row.createCell(l).setCellValue("Skipped");
                     }else {
                         row.createCell(l).setCellValue(feedbackDetails.getAnswerDesc());
@@ -261,6 +266,57 @@ public class ExcelCreator {
                     l++;
                 }
             }
+            if(feedbackResponse.getCustomerName() == null || feedbackResponse.getCustomerName().equals("")){
+                row.createCell(l++).setCellValue("-");
+            }else {
+                row.createCell(l++).setCellValue(feedbackResponse.getCustomerName());
+                workbook.getSheetAt(0).autoSizeColumn(l - 1);
+            }
+            if(feedbackResponse.getEmail() == null || feedbackResponse.getEmail().equals("")){
+                row.createCell(l++).setCellValue("-");
+            }else {
+                row.createCell(l++).setCellValue(feedbackResponse.getEmail());
+                workbook.getSheetAt(0).autoSizeColumn(l - 1);
+            }
+            if(feedbackResponse.getMobileNo() == null || feedbackResponse.getMobileNo().equals("")){
+                row.createCell(l++).setCellValue("-");
+            }else {
+                row.createCell(l++).setCellValue(feedbackResponse.getMobileNo());
+                workbook.getSheetAt(0).autoSizeColumn(l - 1);
+            }
+            if(feedbackResponse.getDob() == null || feedbackResponse.getDob().equals("")){
+                row.createCell(l++).setCellValue("-");
+            }else {
+                Timestamp dob = DateUtil.getTimeStampFromString(feedbackResponse.getDob());
+                row.createCell(l++).setCellValue(DateUtil.format(dob, "dd-MMM"));
+            }
+            if(feedbackResponse.getDoa() == null || feedbackResponse.getDoa().equals("")){
+                row.createCell(l++).setCellValue("-");
+            }else {
+                Timestamp doa = DateUtil.getTimeStampFromString(feedbackResponse.getDoa());
+                row.createCell(l++).setCellValue(DateUtil.format(doa,"dd-MMM"));
+            }
+            if(feedbackResponse.getLocality()== null || feedbackResponse.getLocality().equals("")){
+                row.createCell(l++).setCellValue("-");
+            }else {
+                row.createCell(l++).setCellValue(feedbackResponse.getLocality());
+                workbook.getSheetAt(0).autoSizeColumn(l-1);
+            }
+            if (feedbackResponse.getIsNegative() == 0) {
+                row.createCell(l++).setCellValue("NO");
+            } else {
+                row.createCell(l++).setCellValue("YES");
+            }
+            if (feedbackResponse.getViewDate() == null || feedbackResponse.getViewDate().equals("")) {
+                row.createCell(l++).setCellValue("NO");
+                row.createCell(l++).setCellValue("-");
+            } else {
+                row.createCell(l++).setCellValue("YES");
+                row.createCell(l++).setCellValue(feedbackResponse.getViewDate());
+                workbook.getSheetAt(0).autoSizeColumn(l-1);
+            }
+
+
             i++;
         }
 
@@ -296,7 +352,9 @@ public class ExcelCreator {
             e.printStackTrace();
         }
         System.out.println("Your excel file has been generated!");
-        EmailService.sendOtp("thakur.harshada.09@gmail.com","",1234);
+       // EmailService.sendOtp("thakur.harshada.09@gmail.com","",1234);
+
+        return filename;
     }
 
     public static String getReview(int rating) {

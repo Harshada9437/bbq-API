@@ -6,11 +6,13 @@ import com.barbeque.bo.UpdateSettingRequestBO;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.Sync.*;
 import com.barbeque.dao.outlet.OutletDAO;
+import com.barbeque.dao.user.UsersDAO;
 import com.barbeque.dto.request.*;
 import com.barbeque.response.user.SettingResponse;
 import com.barbeque.response.user.SmsSettingResponse;
 import com.barbeque.response.util.VersionInfoResponse;
 import com.barbeque.sync.*;
+import com.barbeque.util.CommaSeparatedString;
 import com.barbeque.util.DateUtil;
 
 import java.sql.SQLException;
@@ -83,11 +85,16 @@ public class SyncRequestHandler {
                 OutletDAO.createOutlet(outlet);
             }
         }
+        UsersDAO usersDAO = new UsersDAO();
+        usersDAO.updateAccess(CommaSeparatedString.generate(OutletDAO.getOutletIds()));
     }
 
     public Boolean saveSetting(SettingRequestBO settingRequestBO) throws SQLException {
         SettingRequestDTO settingRequestDTO = new SettingRequestDTO();
-        settingRequestDTO.setSmsTemplate(settingRequestBO.getSmsTemplate());
+        settingRequestDTO.setNegativeSmsTemplate(settingRequestBO.getNegativeSmsTemplate());
+        settingRequestDTO.setPositiveSmsTemplate(settingRequestBO.getPositiveSmsTemplate());
+        settingRequestDTO.setArchiveTime(settingRequestBO.getArchiveTime());
+        settingRequestDTO.setReportTime(settingRequestBO.getReportTime());
         Boolean isProcessed = SmsDAO.saveSetting(settingRequestDTO);
         return isProcessed;
     }
@@ -95,7 +102,10 @@ public class SyncRequestHandler {
     public SettingResponse fetchSettings() throws SQLException {
         SettingResponse settingResponse = new SettingResponse();
         SettingRequestDTO settingRequestDTO = SmsDAO.fetchSettings();
-        settingResponse.setSmsTemplate(settingRequestDTO.getSmsTemplate());
+        settingResponse.setNegativeSmsTemplate(settingRequestDTO.getNegativeSmsTemplate());
+        settingResponse.setPositiveSmsTemplate(settingRequestDTO.getPositiveSmsTemplate());
+        settingResponse.setReportTime(settingRequestDTO.getReportTime());
+        settingResponse.setArchiveTime(settingRequestDTO.getArchiveTime());
         return settingResponse;
     }
 
@@ -166,6 +176,7 @@ public class SyncRequestHandler {
             Timestamp t2 = new Timestamp(date2.getTime());
             previous = DateUtil.format(t2, "MM-yyyy");
             table = syncDAO.createArchive(previous);
+            current = previous;
         } else {
             current = DateUtil.format(timestamp1, "MM-yyyy");
             table = syncDAO.createArchive(current);

@@ -6,9 +6,18 @@ import java.sql.Time;
  * Created by System-2 on 2/6/2017.
  */
 public class SettingRequestDTO {
-    private String smsTemplate;
+    private String positiveSmsTemplate;
+    private String negativeSmsTemplate;
     private Time archiveTime;
     private Time reportTime;
+
+    public String getPositiveSmsTemplate() {
+        return positiveSmsTemplate;
+    }
+
+    public void setPositiveSmsTemplate(String positiveSmsTemplate) {
+        this.positiveSmsTemplate = positiveSmsTemplate;
+    }
 
     public Time getArchiveTime() {
         return archiveTime;
@@ -26,12 +35,12 @@ public class SettingRequestDTO {
         this.reportTime = reportTime;
     }
 
-    public String getSmsTemplate() {
-        return smsTemplate;
+    public String getNegativeSmsTemplate() {
+        return negativeSmsTemplate;
     }
 
-    public void setSmsTemplate(String smsTemplate) {
-        this.smsTemplate = smsTemplate;
+    public void setNegativeSmsTemplate(String negativeSmsTemplate) {
+        this.negativeSmsTemplate = negativeSmsTemplate;
     }
 
     @Override
@@ -41,14 +50,18 @@ public class SettingRequestDTO {
 
         SettingRequestDTO that = (SettingRequestDTO) o;
 
-        if (smsTemplate != null ? !smsTemplate.equals(that.smsTemplate) : that.smsTemplate != null) return false;
+        if (positiveSmsTemplate != null ? !positiveSmsTemplate.equals(that.positiveSmsTemplate) : that.positiveSmsTemplate != null)
+            return false;
+        if (negativeSmsTemplate != null ? !negativeSmsTemplate.equals(that.negativeSmsTemplate) : that.negativeSmsTemplate != null)
+            return false;
         if (archiveTime != null ? !archiveTime.equals(that.archiveTime) : that.archiveTime != null) return false;
         return reportTime != null ? reportTime.equals(that.reportTime) : that.reportTime == null;
     }
 
     @Override
     public int hashCode() {
-        int result = smsTemplate != null ? smsTemplate.hashCode() : 0;
+        int result = positiveSmsTemplate != null ? positiveSmsTemplate.hashCode() : 0;
+        result = 31 * result + (negativeSmsTemplate != null ? negativeSmsTemplate.hashCode() : 0);
         result = 31 * result + (archiveTime != null ? archiveTime.hashCode() : 0);
         result = 31 * result + (reportTime != null ? reportTime.hashCode() : 0);
         return result;
@@ -57,7 +70,8 @@ public class SettingRequestDTO {
     @Override
     public String toString() {
         return "SettingRequestDTO{" +
-                "smsTemplate='" + smsTemplate + '\'' +
+                "positiveSmsTemplate='" + positiveSmsTemplate + '\'' +
+                ", negativeSmsTemplate='" + negativeSmsTemplate + '\'' +
                 ", archiveTime=" + archiveTime +
                 ", reportTime=" + reportTime +
                 '}';

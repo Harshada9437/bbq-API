@@ -5,26 +5,10 @@ package com.barbeque.request.question;
  */
 public class UpdateOptionsList {
     private int answer_id;
-    private String answerDesc;
+        private String answerDesc;
     private String threshold;
     private int rating;
     private int weightage;
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
-    }
-
-    public int getWeightage() {
-        return weightage;
-    }
-
-    public void setWeightage(int weightage) {
-        this.weightage = weightage;
-    }
 
     public int getAnswer_id() {
         return answer_id;
@@ -42,12 +26,28 @@ public class UpdateOptionsList {
         this.answerDesc = answerDesc;
     }
 
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
+    }
+
     public int getRating() {
         return rating;
     }
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public int getWeightage() {
+        return weightage;
+    }
+
+    public void setWeightage(int weightage) {
+        this.weightage = weightage;
     }
 
     @Override

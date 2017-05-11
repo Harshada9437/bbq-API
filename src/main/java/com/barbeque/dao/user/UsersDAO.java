@@ -3,7 +3,7 @@ package com.barbeque.dao.user;
 import com.barbeque.bo.ChangePasswordBO;
 import com.barbeque.bo.ResetPasswordRequestBO;
 import com.barbeque.dao.ConnectionHandler;
-import com.barbeque.dto.request.CreateRollDTO;
+import com.barbeque.dto.request.CreateRoleDTO;
 import com.barbeque.dto.request.MenuRequestDTO;
 import com.barbeque.dto.request.RoleRequestDTO;
 import com.barbeque.exceptions.RoleNotFoundException;
@@ -40,6 +40,7 @@ public class UsersDAO {
                 loginResponseDTO.setMenuAccess(resultSet.getString("menu_access"));
                 loginResponseDTO.setPassword(resultSet.getString("password"));
                 loginResponseDTO.setOutletAccess(resultSet.getString("outlet_access"));
+                loginResponseDTO.setSessionId(resultSet.getString("session_id"));
                 rowCount++;
             }
             if (rowCount == 0) {
@@ -58,6 +59,40 @@ public class UsersDAO {
             }
         }
         return loginResponseDTO;
+    }
+
+    public Boolean updateAccess(String outlets) throws SQLException {
+        boolean isCreated = false;
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection
+                    .prepareStatement("UPDATE role SET outlet_access=? WHERE isAll=1");
+
+            preparedStatement.setString(parameterIndex++,outlets);
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+                isCreated = Boolean.TRUE;
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreated;
     }
 
     public Boolean getValidUserBySessionIdPasswordUsername(String userName, String password, String sessionId)
@@ -274,6 +309,7 @@ public class UsersDAO {
                 loginResponseDTO.setStatus(resultSet.getString("status"));
                 loginResponseDTO.setMenuAccess(resultSet.getString("menu_access"));
                 loginResponseDTO.setRoleId(resultSet.getInt("role_id"));
+                loginResponseDTO.setNotifyEmail(resultSet.getInt("notify_email"));
                 rowCount++;
             }
             if (rowCount == 0) {
@@ -293,6 +329,7 @@ public class UsersDAO {
         }
         return loginResponseDTO;
     }
+
     public List<MenuRequestDTO> getMenuList() throws SQLException {
         List<MenuRequestDTO> menuRequestDTOList = new ArrayList<MenuRequestDTO>();
         Connection connection = null;
@@ -326,7 +363,6 @@ public class UsersDAO {
         }
         return menuRequestDTOList;
     }
-
 
 
     public static RoleRequestDTO getroleById(int id) throws SQLException {
@@ -382,6 +418,7 @@ public class UsersDAO {
             while (resultSet.next()) {
                 RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
                 roleRequestDTO.setRoleId(resultSet.getInt("role_id"));
+                roleRequestDTO.setIsAll(resultSet.getInt("isAll"));
                 roleRequestDTO.setName(resultSet.getString("name"));
                 roleRequestDTO.setMenuAccess(resultSet.getString("menu_access"));
                 roleRequestDTO.setOutletAccess(resultSet.getString("outlet_access"));
@@ -404,7 +441,7 @@ public class UsersDAO {
     public Integer createUser(LoginResponseDTO createUserDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO user_details(name,user_name,email,password,role_id) values (?,?,?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO user_details(name,user_name,email,password,role_id,notify_email) values (?,?,?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -422,6 +459,8 @@ public class UsersDAO {
                     createUserDTO.getPassword());
             preparedStatement.setInt(parameterIndex++,
                     createUserDTO.getRoleId());
+            preparedStatement.setInt(parameterIndex++,
+                    createUserDTO.getNotifyEmail());
 
 
             int i = preparedStatement.executeUpdate();
@@ -459,7 +498,7 @@ public class UsersDAO {
         return id;
     }
 
-    public static Boolean getuser(String userName, String email,String name)
+    public static Boolean getuser(String userName, String email, String name)
             throws SQLException {
 
         boolean isCreated = false;
@@ -471,33 +510,31 @@ public class UsersDAO {
             statement = connection.createStatement();
             StringBuffer query = new StringBuffer(
                     "select * from user_details where user_name = \"").append(userName)
-                    .append("\" or email =\"").append(email).append("\" or name=\"").append(name+"\"");
+                    .append("\" or email =\"").append(email).append("\" or name=\"").append(name + "\"");
 
             ResultSet resultSet = statement.executeQuery(query.toString());
-                while (resultSet.next()) {
-                  isCreated = true;
-                }
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
-                throw sqlException;
-            } finally {
-                try {
-                    statement.close();
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+            while (resultSet.next()) {
+                isCreated = true;
             }
-            return isCreated;
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        return isCreated;
+    }
 
 
-
-
-    public Integer createRoll(CreateRollDTO createRollDTO) throws SQLException {
+    public Integer createRoll(CreateRoleDTO createRollDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO role(name,menu_access,outlet_access) values (?,?,?)");
+        StringBuilder query = new StringBuilder("INSERT INTO role(name,menu_access,outlet_access,isAll) values (?,?,?,?)");
         Integer id = 0;
         try {
             int parameterIndex = 1;
@@ -510,7 +547,9 @@ public class UsersDAO {
             preparedStatement.setString(parameterIndex++,
                     createRollDTO.getMenuAccess());
             preparedStatement.setString(parameterIndex++,
-                   createRollDTO.getOutletAccess());
+                    createRollDTO.getOutletAccess());
+            preparedStatement.setInt(parameterIndex++,
+                    createRollDTO.getIsAll());
 
 
             int i = preparedStatement.executeUpdate();
@@ -589,7 +628,7 @@ public class UsersDAO {
             connection.setAutoCommit(false);
             preparedStatement = connection
                     .prepareStatement("UPDATE user_details SET name=?, email =?," +
-                            "role_id = ?,status=? WHERE id =?");
+                            "role_id = ?,status=?,notify_email=? WHERE id =?");
 
             preparedStatement.setString(parameterIndex++, loginResponseDTO.getName());
 
@@ -598,6 +637,8 @@ public class UsersDAO {
             preparedStatement.setInt(parameterIndex++, loginResponseDTO.getRoleId());
 
             preparedStatement.setString(parameterIndex++, loginResponseDTO.getStatus());
+
+            preparedStatement.setInt(parameterIndex++, loginResponseDTO.getNotifyEmail());
 
             preparedStatement.setInt(parameterIndex++, loginResponseDTO.getId());
 
@@ -690,17 +731,18 @@ public class UsersDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection
-                    .prepareStatement("UPDATE role SET name=?,menu_access=?,outlet_access=? WHERE role_id =?");
+                    .prepareStatement("UPDATE role SET isAll=?,name=?,menu_access=?,outlet_access=? WHERE role_id =?");
 
 
-            preparedStatement.setString(parameterIndex++,roleRequestDTO.getName());
+            preparedStatement.setInt(parameterIndex++, roleRequestDTO.getIsAll());
 
-            preparedStatement.setString(parameterIndex++,roleRequestDTO.getMenuAccess());
+            preparedStatement.setString(parameterIndex++, roleRequestDTO.getName());
 
-            preparedStatement.setString(parameterIndex++,roleRequestDTO.getOutletAccess());
+            preparedStatement.setString(parameterIndex++, roleRequestDTO.getMenuAccess());
 
-            preparedStatement.setInt(parameterIndex++,roleRequestDTO.getRoleId());
+            preparedStatement.setString(parameterIndex++, roleRequestDTO.getOutletAccess());
 
+            preparedStatement.setInt(parameterIndex++, roleRequestDTO.getRoleId());
 
 
             int i = preparedStatement.executeUpdate();
@@ -750,6 +792,7 @@ public class UsersDAO {
                 loginResponseDTO.setStatus(resultSet.getString("status"));
                 loginResponseDTO.setMenuAccess(resultSet.getString("menu_access"));
                 loginResponseDTO.setRoleId(resultSet.getInt("role_id"));
+                loginResponseDTO.setNotifyEmail(resultSet.getInt("notify_email"));
                 userList.add(loginResponseDTO);
             }
 
@@ -777,9 +820,9 @@ public class UsersDAO {
             connection.setAutoCommit(false);
             statement = connection.prepareStatement("UPDATE user_details SET password=?  WHERE id=?");
 
-            statement.setString(parameterIndex++,resetPwdBO.getNewPassword());
+            statement.setString(parameterIndex++, resetPwdBO.getNewPassword());
 
-            statement.setInt(parameterIndex++,resetPwdBO.getId());
+            statement.setInt(parameterIndex++, resetPwdBO.getId());
 
             int i = statement.executeUpdate();
             if (i > 0) {
@@ -802,4 +845,35 @@ public class UsersDAO {
         return isProcessed;
     }
 
+    public List<String> getMenus(String menuAccess) throws SQLException {
+        List<String> menus = new ArrayList<String>();
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+
+            String query = "SELECT name from menu where id in("+menuAccess+")";
+
+            ResultSet resultSet = statement.executeQuery(query.toString());
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                menus.add(name);
+            }
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return menus;
+    }
 }

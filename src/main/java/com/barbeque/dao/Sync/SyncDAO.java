@@ -24,6 +24,8 @@ public class SyncDAO {
                     "`id` INT(11) NOT NULL AUTO_INCREMENT,\n" +
                     "`feedback_id` INT(11) NULL DEFAULT NULL,\n" +
                     "`outlet_id` INT(11) NULL DEFAULT NULL,\n" +
+                    "`answer_id` INT(11) NULL DEFAULT NULL,\n" +
+                    "`question_id` INT(11) NULL DEFAULT NULL,\n" +
                     "`date` VARCHAR(50) NULL DEFAULT NULL,\n" +
                     "`table_no` VARCHAR(50) NULL DEFAULT NULL,\n" +
                     "`outlet_name` VARCHAR(100) NULL DEFAULT NULL,\n" +
@@ -33,7 +35,6 @@ public class SyncDAO {
                     "`dob` VARCHAR(50) NULL DEFAULT NULL,\n" +
                     "`doa` VARCHAR(50) NULL DEFAULT NULL,\n" +
                     "`locality` VARCHAR(150) NULL DEFAULT NULL,\n" +
-                    "`isAddressed` INT(11) NULL DEFAULT NULL,\n" +
                     "`isNegative` INT(11) NULL DEFAULT NULL,\n" +
                     "`question_desc` VARCHAR(150) NULL DEFAULT NULL,\n" +
                     "`question_type` CHAR(50) NULL DEFAULT NULL,\n" +
@@ -74,8 +75,8 @@ public class SyncDAO {
                 int parameterIndex = 1;
 
                 StringBuilder query = new StringBuilder("INSERT INTO `" + table + "` ( feedback_id,outlet_id,date, table_no, outlet_name, customer_name, customer_email," +
-                        "customer_no,dob,doa,locality,isAddressed,isNegative,question_desc,question_type,answer_desc,rating,answer_text,is_poor)values (?,?,?,?,?,?,?,?,?,?,?,?,?,?" +
-                        ",?,?,?,?,?)");
+                        "customer_no,dob,doa,locality,isNegative,question_desc,question_type,answer_desc,rating,answer_text,is_poor,question_id,answer_id)values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?" +
+                        ",?,?,?,?)");
 
                 preparedStatement = connection.prepareStatement(query.toString());
 
@@ -101,8 +102,6 @@ public class SyncDAO {
 
                 preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getLocality());
 
-                preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getIsAddressed());
-
                 preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getIsNegative());
 
                 preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getQuestionDesc());
@@ -116,6 +115,10 @@ public class SyncDAO {
                 preparedStatement.setString(parameterIndex++, feedbackRequestDTO.getAnswerText());
 
                 preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getIsPoor());
+
+                preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getQuestionId());
+
+                preparedStatement.setInt(parameterIndex++, feedbackRequestDTO.getAnswerId());
 
                 int i = preparedStatement.executeUpdate();
 

@@ -11,13 +11,22 @@ public class FeedbackListRequest {
     private List<Integer> outletId;
     private String tableNo;
     private int userId;
+    private int clientId;
 
-    public int getUserId() {
-        return userId;
+    public String getFromDate() {
+        return fromDate;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public String getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(String toDate) {
+        this.toDate = toDate;
     }
 
     public List<Integer> getOutletId() {
@@ -36,20 +45,20 @@ public class FeedbackListRequest {
         this.tableNo = tableNo;
     }
 
-    public String getFromDate() {
-        return fromDate;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setFromDate(String fromDate) {
-        this.fromDate = fromDate;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public String getToDate() {
-        return toDate;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setToDate(String toDate) {
-        this.toDate = toDate;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
     @Override
@@ -60,19 +69,21 @@ public class FeedbackListRequest {
         FeedbackListRequest that = (FeedbackListRequest) o;
 
         if (userId != that.userId) return false;
-        if (fromDate != null ? !fromDate.equals(that.fromDate) : that.fromDate != null) return false;
-        if (toDate != null ? !toDate.equals(that.toDate) : that.toDate != null) return false;
-        if (outletId != null ? !outletId.equals(that.outletId) : that.outletId != null) return false;
-        return tableNo != null ? tableNo.equals(that.tableNo) : that.tableNo == null;
+        if (clientId != that.clientId) return false;
+        if (!fromDate.equals(that.fromDate)) return false;
+        if (!toDate.equals(that.toDate)) return false;
+        if (!outletId.equals(that.outletId)) return false;
+        return tableNo.equals(that.tableNo);
     }
 
     @Override
     public int hashCode() {
-        int result = fromDate != null ? fromDate.hashCode() : 0;
-        result = 31 * result + (toDate != null ? toDate.hashCode() : 0);
-        result = 31 * result + (outletId != null ? outletId.hashCode() : 0);
-        result = 31 * result + (tableNo != null ? tableNo.hashCode() : 0);
+        int result = fromDate.hashCode();
+        result = 31 * result + toDate.hashCode();
+        result = 31 * result + outletId.hashCode();
+        result = 31 * result + tableNo.hashCode();
         result = 31 * result + userId;
+        result = 31 * result + clientId;
         return result;
     }
 
@@ -84,6 +95,7 @@ public class FeedbackListRequest {
                 ", outletId=" + outletId +
                 ", tableNo='" + tableNo + '\'' +
                 ", userId=" + userId +
+                ", clientId=" + clientId +
                 '}';
     }
 }

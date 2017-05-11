@@ -1,12 +1,20 @@
 package com.barbeque.util;
 
 import com.barbeque.config.ConfigProperties;
+import com.barbeque.dao.user.UsersDAO;
+import com.barbeque.dto.request.CreateUserDTO;
 import com.barbeque.dto.request.ReportDTO;
+import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.request.report.ReportData;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.text.DecimalFormat;
 import java.util.Properties;
 
@@ -18,6 +26,7 @@ public class EmailService {
     private static final String PASSWORD = ConfigProperties.smtp_password;
     private static final String HOST = ConfigProperties.smtp_host;
     private static final String FROM = ConfigProperties.smtp_from;
+    private static final String PORT = ConfigProperties.smtp_port;
     private static final Session session = getSession();
 
     public static Boolean sendOtp(String to,String name, int otp) {
@@ -60,11 +69,12 @@ public class EmailService {
             props.put(MAIL_SMTP_WRITETIMEOUT, MAIL_SOCKET_TIMEOUT);
 
             props.put("mail.smtp.host", HOST);
-            props.put("mail.smtp.socketFactory.port", "465");
+            /*props.put("mail.smtp.socketFactory.port", PORT);
             props.put("mail.smtp.socketFactory.class",
-                    "javax.net.ssl.SSLSocketFactory");
+                    "javax.net.ssl.SSLSocketFactory");*/
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.port", "465");
+            props.put("mail.smtp.port", PORT);
+            props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
             //java.security.Security.setProperty("networkaddress.cache.ttl","10");
 
             Session session = Session.getInstance(props,
@@ -102,7 +112,7 @@ public class EmailService {
             message.setFrom(new InternetAddress(FROM));
 
             message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse("it@barbequenation.com"));
+                    InternetAddress.parse(to));
 
             message.setSubject("Daily feedback report update.");
             message.setContent(message, "text/html; charset=utf-8");
@@ -114,10 +124,13 @@ public class EmailService {
             float avgMUnadd= calAverage(monthlyReportDTO.getUnAddressedCount(),monthlyReportDTO.getNegativeCount());
 
             String table = "",row="";
-            for (int i = 0; i < monthlyReportDTO.getOutlets().size(); i++){
-                ReportData dailyData =  dailyReportDTO.getOutlets().get(i);
-                ReportData monthlyData = monthlyReportDTO.getOutlets().get(i);
-
+            for (ReportData dailyData:  dailyReportDTO.getOutlets()){
+                ReportData monthlyData= new ReportData();
+                for(ReportData data : monthlyReportDTO.getOutlets()) {
+                    if(dailyData.getStoreId().equals(data.getStoreId())) {
+                        monthlyData = data;
+                    }
+                }
                 float avgMtotal= calAverage(monthlyData.getTotalCount(),monthlyData.getMonthlyBillCount());
 
                 row = "<tr style=\"background-color: #eceaea; color:#7a7a7a\"> \n" +
@@ -473,4 +486,54 @@ public class EmailService {
         }
         return isProcessed;
     }
+
+    public static void sendEmail(String filename, int userId) throws Exception {
+        Boolean isProcessed = Boolean.FALSE;
+
+        try {
+        Message message = new MimeMessage(session);
+
+            LoginResponseDTO user = UsersDAO.getuserById(userId);
+
+        // Set From: header field of the header.
+        message.setFrom(new InternetAddress(FROM));
+
+        // Set To: header field of the header.
+        message.setRecipients(Message.RecipientType.TO,
+                InternetAddress.parse(user.getEmail()));
+
+        // Set Subject: header field
+        message.setSubject("Testing Subject");
+
+        // Create the message part
+        BodyPart messageBodyPart = new MimeBodyPart();
+
+        // Now set the actual message
+        messageBodyPart.setText("This is message body");
+
+        // Create a multipar message
+        Multipart multipart = new MimeMultipart();
+
+        // Set text message part
+        multipart.addBodyPart(messageBodyPart);
+
+        // Part two is attachment
+        messageBodyPart = new MimeBodyPart();
+        DataSource source = new FileDataSource(filename);
+        messageBodyPart.setDataHandler(new DataHandler(source));
+        messageBodyPart.setFileName(filename);
+        multipart.addBodyPart(messageBodyPart);
+
+        // Send the complete message parts
+        message.setContent(multipart);
+
+        // Send message
+        Transport.send(message);
+
+        System.out.println("Sent message successfully....");
+
+    } catch (MessagingException e) {
+        throw new RuntimeException(e);
+    }
+}
 }

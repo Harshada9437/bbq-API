@@ -6,6 +6,7 @@ package com.barbeque.request.device;
 public class DeviceStatusRequest {
     private String androidDeviceId;
     private String status;
+    private int clientId;
 
     public String getAndroidDeviceId() {
         return androidDeviceId;
@@ -23,6 +24,14 @@ public class DeviceStatusRequest {
         this.status = status;
     }
 
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -30,15 +39,16 @@ public class DeviceStatusRequest {
 
         DeviceStatusRequest that = (DeviceStatusRequest) o;
 
-        if (androidDeviceId != null ? !androidDeviceId.equals(that.androidDeviceId) : that.androidDeviceId != null)
-            return false;
-        return status != null ? status.equals(that.status) : that.status == null;
+        if (clientId != that.clientId) return false;
+        if (!androidDeviceId.equals(that.androidDeviceId)) return false;
+        return status.equals(that.status);
     }
 
     @Override
     public int hashCode() {
-        int result = androidDeviceId != null ? androidDeviceId.hashCode() : 0;
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        int result = androidDeviceId.hashCode();
+        result = 31 * result + status.hashCode();
+        result = 31 * result + clientId;
         return result;
     }
 
@@ -47,6 +57,7 @@ public class DeviceStatusRequest {
         return "DeviceStatusRequest{" +
                 "androidDeviceId='" + androidDeviceId + '\'' +
                 ", status='" + status + '\'' +
+                ", clientId=" + clientId +
                 '}';
     }
 }

@@ -1,9 +1,11 @@
 package com.barbeque.dao.template;
 
 import com.barbeque.dao.ConnectionHandler;
+import com.barbeque.dto.request.Outlets;
 import com.barbeque.dto.request.TempDTO;
 import com.barbeque.dto.request.TemplateDTO;
 import com.barbeque.exceptions.TemplateNotFoundException;
+import com.barbeque.sync.Outlet;
 import com.barbeque.util.DateUtil;
 
 import java.sql.*;
@@ -143,22 +145,15 @@ public class TemplateDAO {
 
             connection = new ConnectionHandler().getConnection();
             statement = connection.createStatement();
-            StringBuilder query = new StringBuilder("SELECT  t.template_id,ol.outlet_id,t.template_desc,t.status,o.outlet_desc, o.short_desc\n" +
-                    "from template t\n" +
-                    "left JOIN outlet_template_link ol ON\n" +
-                    "t.template_id=ol.template_id\n" +
-                    "left join outlet o\n" +
-                    "on ol.outlet_id=o.id;");
+            StringBuilder query = new StringBuilder("SELECT * from template");
             ResultSet resultSet = statement.executeQuery(query.toString());
 
             while (resultSet.next()) {
                 TemplateDTO templateDTO = new TemplateDTO();
                 templateDTO.setId(resultSet.getInt("template_id"));
-                templateDTO.setOutletId(resultSet.getInt("outlet_id"));
                 templateDTO.setTemplateDesc(resultSet.getString("template_desc"));
                 templateDTO.setStatus(resultSet.getString("status"));
-                templateDTO.setOutletDesc(resultSet.getString("outlet_desc"));
-                templateDTO.setShortDesc(resultSet.getString("short_desc"));
+                templateDTO.setOutlets(getOutlets(templateDTO.getId()));
                 templateDTOs.add(templateDTO);
 
             }
@@ -196,6 +191,34 @@ public class TemplateDAO {
                 tempDTO.setFromDate(fromDate);
                 tempDTO.setTemplateId(resultSet.getInt("template_id"));
                 tempDTOs.add(tempDTO);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return tempDTOs;
+    }
+
+    public static List<Outlets> getOutlets(int tempId) throws SQLException {
+        Statement statement = null;
+        List<Outlets> tempDTOs = new ArrayList<Outlets>();
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            statement = connection.createStatement();
+            StringBuilder query = new StringBuilder(
+                    "SELECT o.id,o.short_desc,o.outlet_desc FROM outlet_template_link m\n" +
+                            "join outlet o on o.id=m.outlet_id\n" +
+                            "join template t on t.template_id=m.template_id\n" +
+                            " where m.template_id =").append(tempId);
+            ResultSet resultSet = statement.executeQuery(query.toString()
+            );
+            while (resultSet.next()) {
+                Outlets outlet = new Outlets();
+                outlet.setId(resultSet.getInt("id"));
+                outlet.setDesc(resultSet.getString("outlet_desc"));
+                outlet.setShortDesc(resultSet.getString("short_desc"));
+                tempDTOs.add(outlet);
             }
         } catch (SQLException e) {
             e.printStackTrace();

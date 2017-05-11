@@ -15,8 +15,17 @@ public class UserResponse implements GenericResponse {
     private String outletAccess;
     private String menuAccess;
     private int roleId;
+    private int notifyEmail;
     private String message;
     private String messageType;
+
+    public int getNotifyEmail() {
+        return notifyEmail;
+    }
+
+    public void setNotifyEmail(int notifyEmail) {
+        this.notifyEmail = notifyEmail;
+    }
 
     public String getName() {
         return name;
@@ -111,6 +120,7 @@ public class UserResponse implements GenericResponse {
                 ", outletAccess='" + outletAccess + '\'' +
                 ", menuAccess='" + menuAccess + '\'' +
                 ", roleId=" + roleId +
+                ", notifyEmail=" + notifyEmail +
                 ", message='" + message + '\'' +
                 ", messageType='" + messageType + '\'' +
                 '}';

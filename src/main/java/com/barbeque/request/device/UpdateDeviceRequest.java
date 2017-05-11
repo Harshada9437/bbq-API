@@ -9,22 +9,8 @@ public class UpdateDeviceRequest {
     private String androidDeviceId;
     private String installationId;
     private String storeId;
+    private int clientId;
 
-    public String getInstallationId() {
-        return installationId;
-    }
-
-    public void setInstallationId(String installationId) {
-        this.installationId = installationId;
-    }
-
-    public String getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(String storeId) {
-        this.storeId = storeId;
-    }
 
     public int getOtp() {
         return otp;
@@ -50,6 +36,30 @@ public class UpdateDeviceRequest {
         this.androidDeviceId = androidDeviceId;
     }
 
+    public String getInstallationId() {
+        return installationId;
+    }
+
+    public void setInstallationId(String installationId) {
+        this.installationId = installationId;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,21 +68,21 @@ public class UpdateDeviceRequest {
         UpdateDeviceRequest that = (UpdateDeviceRequest) o;
 
         if (otp != that.otp) return false;
-        if (fingerprint != null ? !fingerprint.equals(that.fingerprint) : that.fingerprint != null) return false;
-        if (androidDeviceId != null ? !androidDeviceId.equals(that.androidDeviceId) : that.androidDeviceId != null)
-            return false;
-        if (installationId != null ? !installationId.equals(that.installationId) : that.installationId != null)
-            return false;
-        return storeId != null ? storeId.equals(that.storeId) : that.storeId == null;
+        if (clientId != that.clientId) return false;
+        if (!fingerprint.equals(that.fingerprint)) return false;
+        if (!androidDeviceId.equals(that.androidDeviceId)) return false;
+        if (!installationId.equals(that.installationId)) return false;
+        return storeId.equals(that.storeId);
     }
 
     @Override
     public int hashCode() {
         int result = otp;
-        result = 31 * result + (fingerprint != null ? fingerprint.hashCode() : 0);
-        result = 31 * result + (androidDeviceId != null ? androidDeviceId.hashCode() : 0);
-        result = 31 * result + (installationId != null ? installationId.hashCode() : 0);
-        result = 31 * result + (storeId != null ? storeId.hashCode() : 0);
+        result = 31 * result + fingerprint.hashCode();
+        result = 31 * result + androidDeviceId.hashCode();
+        result = 31 * result + installationId.hashCode();
+        result = 31 * result + storeId.hashCode();
+        result = 31 * result + clientId;
         return result;
     }
 
@@ -84,6 +94,7 @@ public class UpdateDeviceRequest {
                 ", androidDeviceId='" + androidDeviceId + '\'' +
                 ", installationId='" + installationId + '\'' +
                 ", storeId='" + storeId + '\'' +
+                ", clientId=" + clientId +
                 '}';
     }
 }

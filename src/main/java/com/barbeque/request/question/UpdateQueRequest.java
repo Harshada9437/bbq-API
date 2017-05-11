@@ -14,40 +14,60 @@ public class UpdateQueRequest {
     private int answerSymbol;
     public List<UpdateOptionsList> answerOption;
 
-    public List<UpdateOptionsList> getAnswerOption() {
-        return answerOption;
-    }
-
-    public void setAnswerOption(List<UpdateOptionsList> answerOption) {
-        this.answerOption = answerOption;
-    }
-
-    public String getQuestionDesc() {return questionDesc;}
-
-    public void setQuestionDesc(String questionDesc) {this.questionDesc = questionDesc;}
-
-    public char getQuestionType() {return questionType;}
-
-    public void setQuestionType(char questionType) {this.questionType = questionType;}
-
-    public int getParentAnswerId() {return parentAnswerId;}
-
-    public void setParentAnswerId(int parentAnswerId) {this.parentAnswerId = parentAnswerId;}
-
-    public int getParentQuestionId() {return parentQuestionId;}
-
-    public void setParentQuestionId(int parentQuestionId) {this.parentQuestionId = parentQuestionId;}
-
-    public int getAnswerSymbol() {return answerSymbol;}
-
-    public void setAnswerSymbol(int answerSymbol) {this.answerSymbol = answerSymbol;}
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getQuestionDesc() {
+        return questionDesc;
+    }
+
+    public void setQuestionDesc(String questionDesc) {
+        this.questionDesc = questionDesc;
+    }
+
+    public char getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(char questionType) {
+        this.questionType = questionType;
+    }
+
+    public int getParentAnswerId() {
+        return parentAnswerId;
+    }
+
+    public void setParentAnswerId(int parentAnswerId) {
+        this.parentAnswerId = parentAnswerId;
+    }
+
+    public int getParentQuestionId() {
+        return parentQuestionId;
+    }
+
+    public void setParentQuestionId(int parentQuestionId) {
+        this.parentQuestionId = parentQuestionId;
+    }
+
+    public int getAnswerSymbol() {
+        return answerSymbol;
+    }
+
+    public void setAnswerSymbol(int answerSymbol) {
+        this.answerSymbol = answerSymbol;
+    }
+
+    public List<UpdateOptionsList> getAnswerOption() {
+        return answerOption;
+    }
+
+    public void setAnswerOption(List<UpdateOptionsList> answerOption) {
+        this.answerOption = answerOption;
     }
 
     @Override
@@ -62,19 +82,19 @@ public class UpdateQueRequest {
         if (parentAnswerId != that.parentAnswerId) return false;
         if (parentQuestionId != that.parentQuestionId) return false;
         if (answerSymbol != that.answerSymbol) return false;
-        if (questionDesc != null ? !questionDesc.equals(that.questionDesc) : that.questionDesc != null) return false;
-        return answerOption != null ? answerOption.equals(that.answerOption) : that.answerOption == null;
+        if (!questionDesc.equals(that.questionDesc)) return false;
+        return answerOption.equals(that.answerOption);
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (questionDesc != null ? questionDesc.hashCode() : 0);
+        result = 31 * result + questionDesc.hashCode();
         result = 31 * result + (int) questionType;
         result = 31 * result + parentAnswerId;
         result = 31 * result + parentQuestionId;
         result = 31 * result + answerSymbol;
-        result = 31 * result + (answerOption != null ? answerOption.hashCode() : 0);
+        result = 31 * result + answerOption.hashCode();
         return result;
     }
 

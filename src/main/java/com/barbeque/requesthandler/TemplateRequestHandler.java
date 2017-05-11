@@ -124,9 +124,9 @@ public class TemplateRequestHandler {
         Iterator<TemplateDTO> templateDTOIterator = templateDTOs.iterator();
         while (templateDTOIterator.hasNext()) {
             TemplateDTO templateDTO = templateDTOIterator.next();
-            TemplateResponseList templateResponseList1 = new TemplateResponseList(templateDTO.getId(), templateDTO.getOutletId(),
+            TemplateResponseList templateResponseList1 = new TemplateResponseList(templateDTO.getId(), templateDTO.getOutlets(),
                     templateDTO.getTemplateDesc(),
-                    templateDTO.getStatus(), templateDTO.getOutletDesc(), templateDTO.getShortDesc());
+                    templateDTO.getStatus());
             templateResponseList.add(templateResponseList1);
         }
         return templateResponseList;

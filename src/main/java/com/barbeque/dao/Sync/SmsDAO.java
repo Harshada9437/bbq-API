@@ -21,13 +21,15 @@ public class SmsDAO {
 
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            statement = connection.prepareStatement("UPDATE global_settings SET archive_time=?,report_time=?, sms_template=? ");
-
-            statement.setString(parameterIndex++,settingRequestDTO.getSmsTemplate());
+            statement = connection.prepareStatement("UPDATE global_settings SET archive_time=?,report_time=?, negative_sms_template=? ,positive_sms_template=? ");
 
             statement.setTime(parameterIndex++,settingRequestDTO.getArchiveTime());
 
             statement.setTime(parameterIndex++,settingRequestDTO.getReportTime());
+
+            statement.setString(parameterIndex++,settingRequestDTO.getNegativeSmsTemplate());
+
+            statement.setString(parameterIndex++,settingRequestDTO.getPositiveSmsTemplate());
 
             int i = statement.executeUpdate();
             if (i > 0) {
@@ -65,7 +67,8 @@ public class SmsDAO {
             int index = 1;
             while (resultSet.next()) {
 
-                settingRequestDTO.setSmsTemplate(resultSet.getString("sms_template"));
+                settingRequestDTO.setNegativeSmsTemplate(resultSet.getString("negative_sms_template"));
+                settingRequestDTO.setPositiveSmsTemplate(resultSet.getString("positive_sms_template"));
                 settingRequestDTO.setArchiveTime(resultSet.getTime("archive_time"));
                 settingRequestDTO.setReportTime(resultSet.getTime("report_time"));
 

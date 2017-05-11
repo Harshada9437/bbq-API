@@ -5,6 +5,7 @@ package com.barbeque.request.outlet;
  */
 public class UpdateSettingsRequest {
     private int mobileNoLength;
+    private int referType;
     private int smsGatewayId;
     private String bannerUrl;
     private String tableNoRange;
@@ -14,6 +15,31 @@ public class UpdateSettingsRequest {
     private String mgrName;
     private String mgrMobile;
     private String mgrEmail;
+    private String programmeId;
+
+    public int getReferType() {
+        return referType;
+    }
+
+    public void setReferType(int referType) {
+        this.referType = referType;
+    }
+
+    public String getProgrammeId() {
+        return programmeId;
+    }
+
+    public void setProgrammeId(String programmeId) {
+        this.programmeId = programmeId;
+    }
+
+    public int getMobileNoLength() {
+        return mobileNoLength;
+    }
+
+    public void setMobileNoLength(int mobileNoLength) {
+        this.mobileNoLength = mobileNoLength;
+    }
 
     public int getSmsGatewayId() {
         return smsGatewayId;
@@ -23,28 +49,20 @@ public class UpdateSettingsRequest {
         this.smsGatewayId = smsGatewayId;
     }
 
-    public String getMgrName() {
-        return mgrName;
+    public String getBannerUrl() {
+        return bannerUrl;
     }
 
-    public void setMgrName(String mgrName) {
-        this.mgrName = mgrName;
+    public void setBannerUrl(String bannerUrl) {
+        this.bannerUrl = bannerUrl;
     }
 
-    public String getMgrMobile() {
-        return mgrMobile;
+    public String getTableNoRange() {
+        return tableNoRange;
     }
 
-    public void setMgrMobile(String mgrMobile) {
-        this.mgrMobile = mgrMobile;
-    }
-
-    public String getMgrEmail() {
-        return mgrEmail;
-    }
-
-    public void setMgrEmail(String mgrEmail) {
-        this.mgrEmail = mgrEmail;
+    public void setTableNoRange(String tableNoRange) {
+        this.tableNoRange = tableNoRange;
     }
 
     public String getPocName() {
@@ -71,24 +89,28 @@ public class UpdateSettingsRequest {
         this.pocEmail = pocEmail;
     }
 
-    public String getTableNoRange() {return tableNoRange;}
-
-    public void setTableNoRange(String tableNoRange) {this.tableNoRange = tableNoRange;}
-
-    public int getMobileNoLength() {
-        return mobileNoLength;
+    public String getMgrName() {
+        return mgrName;
     }
 
-    public void setMobileNoLength(int mobileNoLength) {
-        this.mobileNoLength = mobileNoLength;
+    public void setMgrName(String mgrName) {
+        this.mgrName = mgrName;
     }
 
-    public String getBannerUrl() {
-        return bannerUrl;
+    public String getMgrMobile() {
+        return mgrMobile;
     }
 
-    public void setBannerUrl(String bannerUrl) {
-        this.bannerUrl = bannerUrl;
+    public void setMgrMobile(String mgrMobile) {
+        this.mgrMobile = mgrMobile;
+    }
+
+    public String getMgrEmail() {
+        return mgrEmail;
+    }
+
+    public void setMgrEmail(String mgrEmail) {
+        this.mgrEmail = mgrEmail;
     }
 
     @Override
@@ -99,6 +121,7 @@ public class UpdateSettingsRequest {
         UpdateSettingsRequest that = (UpdateSettingsRequest) o;
 
         if (mobileNoLength != that.mobileNoLength) return false;
+        if (referType != that.referType) return false;
         if (smsGatewayId != that.smsGatewayId) return false;
         if (bannerUrl != null ? !bannerUrl.equals(that.bannerUrl) : that.bannerUrl != null) return false;
         if (tableNoRange != null ? !tableNoRange.equals(that.tableNoRange) : that.tableNoRange != null) return false;
@@ -107,12 +130,14 @@ public class UpdateSettingsRequest {
         if (pocEmail != null ? !pocEmail.equals(that.pocEmail) : that.pocEmail != null) return false;
         if (mgrName != null ? !mgrName.equals(that.mgrName) : that.mgrName != null) return false;
         if (mgrMobile != null ? !mgrMobile.equals(that.mgrMobile) : that.mgrMobile != null) return false;
-        return mgrEmail != null ? mgrEmail.equals(that.mgrEmail) : that.mgrEmail == null;
+        if (mgrEmail != null ? !mgrEmail.equals(that.mgrEmail) : that.mgrEmail != null) return false;
+        return programmeId != null ? programmeId.equals(that.programmeId) : that.programmeId == null;
     }
 
     @Override
     public int hashCode() {
         int result = mobileNoLength;
+        result = 31 * result + referType;
         result = 31 * result + smsGatewayId;
         result = 31 * result + (bannerUrl != null ? bannerUrl.hashCode() : 0);
         result = 31 * result + (tableNoRange != null ? tableNoRange.hashCode() : 0);
@@ -122,6 +147,7 @@ public class UpdateSettingsRequest {
         result = 31 * result + (mgrName != null ? mgrName.hashCode() : 0);
         result = 31 * result + (mgrMobile != null ? mgrMobile.hashCode() : 0);
         result = 31 * result + (mgrEmail != null ? mgrEmail.hashCode() : 0);
+        result = 31 * result + (programmeId != null ? programmeId.hashCode() : 0);
         return result;
     }
 
@@ -129,6 +155,7 @@ public class UpdateSettingsRequest {
     public String toString() {
         return "UpdateSettingsRequest{" +
                 "mobileNoLength=" + mobileNoLength +
+                ", referType=" + referType +
                 ", smsGatewayId=" + smsGatewayId +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", tableNoRange='" + tableNoRange + '\'' +
@@ -138,6 +165,7 @@ public class UpdateSettingsRequest {
                 ", mgrName='" + mgrName + '\'' +
                 ", mgrMobile='" + mgrMobile + '\'' +
                 ", mgrEmail='" + mgrEmail + '\'' +
+                ", programmeId='" + programmeId + '\'' +
                 '}';
     }
 }

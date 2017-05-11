@@ -4,6 +4,7 @@ import com.barbeque.bo.AssignTemplateRequestBO;
 import com.barbeque.bo.OutletListRequestBO;
 import com.barbeque.bo.UpdateSettingsRequestBO;
 import com.barbeque.dao.outlet.OutletDAO;
+import com.barbeque.dao.template.TemplateDAO;
 import com.barbeque.dto.request.UpdateSettingsDTO;
 import com.barbeque.dto.request.OutletDTO;
 import com.barbeque.dto.request.TempDTO;
@@ -21,7 +22,13 @@ import java.util.*;
 public class OutletRequestHandler {
     public Boolean assignTemplate(AssignTemplateRequestBO assignTemplateRequestBO, int outletId) throws SQLException {
         OutletDAO outletDAO = new OutletDAO();
-        Boolean isCreated = outletDAO.assignTemplate(buildOutletDTOFromBO(assignTemplateRequestBO), outletId);
+        Boolean isCreated;
+        List<TempDTO> tempDTOs = TemplateDAO.getTemplateByOutletId(outletId);
+        if (tempDTOs.size() == 0) {
+             isCreated = outletDAO.assignTemplate(buildOutletDTOFromBO(assignTemplateRequestBO), outletId);
+        }else{
+            isCreated = outletDAO.updateAssignTemplate(buildOutletDTOFromBO(assignTemplateRequestBO), outletId);
+        }
         return isCreated;
     }
 
@@ -96,6 +103,8 @@ public class OutletRequestHandler {
         outletResponse.setMgrName(outletDTO.getMgrName());
         outletResponse.setMgrMobile(outletDTO.getMgrMobile());
         outletResponse.setMgrEmail(outletDTO.getMgrEmail());
+        outletResponse.setProgrammeId(outletDTO.getProgrammeId());
+        outletResponse.setReferType(outletDTO.getReferType());
 
         return outletResponse;
     }
@@ -130,6 +139,8 @@ public class OutletRequestHandler {
         updateSettingsDTO.setMgrMobile(updateSettingsRequestBO.getMgrMobile());
         updateSettingsDTO.setMgrName(updateSettingsRequestBO.getMgrName());
         updateSettingsDTO.setSmsGatewayId(updateSettingsRequestBO.getSmsGatewayId());
+        updateSettingsDTO.setProgramId(updateSettingsRequestBO.getProgrammeId());
+        updateSettingsDTO.setReferType(updateSettingsRequestBO.getReferType());
         return updateSettingsDTO;
     }
 }

@@ -3,9 +3,14 @@ package com.barbeque.service;
 import com.barbeque.bo.UpdateCustomerRequestBO;
 import com.barbeque.request.customer.UpdateCustomerRequest;
 import com.barbeque.requesthandler.CustomerRequestHandler;
+import com.barbeque.requesthandler.SyncRequestHandler;
 import com.barbeque.response.customer.CustomerResponseList;
 import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.response.util.MessageResponse;
+import com.barbeque.sync.Data;
+import com.barbeque.sync.Synchronize;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -22,7 +27,7 @@ public class CustomerService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/update")
-    public Response updateCustomer(UpdateCustomerRequest updateCustomerRequest){
+    public Response updateCustomer(UpdateCustomerRequest updateCustomerRequest) {
 
         UpdateCustomerRequestBO updateCustomerRequestBO = new UpdateCustomerRequestBO();
         updateCustomerRequestBO.setId(updateCustomerRequest.getId());
@@ -50,7 +55,7 @@ public class CustomerService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list")
-    public Response getCustomerList(){
+    public Response getCustomerList() {
         CustomerRequestHandler customerRequestHandler = new CustomerRequestHandler();
         CustomerResponseList customerResponseList = new CustomerResponseList();
         try {
@@ -60,5 +65,19 @@ public class CustomerService {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(customerResponseList, "failed to retrieve.");
         }
+    }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/info/{number}")
+    public Response getCustomer(@PathParam("number") String number) {
+        JSONObject object = null ;
+        try {
+            object = Synchronize.callCustomer("http://crm.bnhl.in/CRMProfile/Service1.svc/GetCustomerProfile/"+number);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ResponseGenerator.generateResponse(object);
     }
 }

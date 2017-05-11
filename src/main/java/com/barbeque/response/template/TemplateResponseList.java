@@ -1,25 +1,27 @@
 package com.barbeque.response.template;
 
+import com.barbeque.dto.request.Outlets;
+
+import java.util.List;
+
+
 /**
  * Created by System-2 on 12/19/2016.
  */
 public class TemplateResponseList
 {
     private int templateId;
-    private int outletId;
+    private List<Outlets> outlets;
     private String templateDesc;
     private String status;
-    private String outletDesc;
-    private String shortDesc;
 
 
-    public TemplateResponseList(int templateId, int outletId, String templateDesc, String status, String outletDesc, String shortDesc) {
+
+    public TemplateResponseList(int templateId, List<Outlets> outlets, String templateDesc, String status) {
         this.templateId = templateId;
-        this.outletId = outletId;
+        this.outlets=outlets;
         this.templateDesc = templateDesc;
         this.status = status;
-        this.outletDesc = outletDesc;
-        this.shortDesc = shortDesc;
     }
 
     public int getTemplateId() {
@@ -28,14 +30,6 @@ public class TemplateResponseList
 
     public void setTemplateId(int templateId) {
         this.templateId = templateId;
-    }
-
-    public int getOutletId() {
-        return outletId;
-    }
-
-    public void setOutletId(int outletId) {
-        this.outletId = outletId;
     }
 
     public String getTemplateDesc() {
@@ -54,31 +48,17 @@ public class TemplateResponseList
         this.status = status;
     }
 
-    public String getOutletDesc() {
-        return outletDesc;
-    }
-
-    public void setOutletDesc(String outletDesc) {
-        this.outletDesc = outletDesc;
-    }
-
-    public String getShortDesc() {
-        return shortDesc;
-    }
-
-    public void setShortDesc(String shortDesc) {
-        this.shortDesc = shortDesc;
+    public List<Outlets> getOutlets() {
+        return outlets;
     }
 
     @Override
     public String toString() {
         return "TemplateResponseList{" +
                 "templateId=" + templateId +
-                ", outletId=" + outletId +
+                ", outlets=" + outlets +
                 ", templateDesc='" + templateDesc + '\'' +
                 ", status='" + status + '\'' +
-                ", outletDesc='" + outletDesc + '\'' +
-                ", shortDesc='" + shortDesc + '\'' +
                 '}';
     }
 }

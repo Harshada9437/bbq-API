@@ -16,6 +16,13 @@ public class FeedbackRequest {
     private String billNo;
     public CreateCustomer customer;
 
+    public int getOutletId() {
+        return outletId;
+    }
+
+    public void setOutletId(int outletId) {
+        this.outletId = outletId;
+    }
 
     public int getDeviceId() {
         return deviceId;
@@ -23,14 +30,6 @@ public class FeedbackRequest {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public int getOutletId() {
-        return outletId;
-    }
-
-    public void setOutletId(int outletId) {
-        this.outletId = outletId;
     }
 
     public String getDate() {
@@ -82,22 +81,22 @@ public class FeedbackRequest {
 
         if (outletId != that.outletId) return false;
         if (deviceId != that.deviceId) return false;
-        if (date != null ? !date.equals(that.date) : that.date != null) return false;
-        if (feedbacks != null ? !feedbacks.equals(that.feedbacks) : that.feedbacks != null) return false;
-        if (tableNo != null ? !tableNo.equals(that.tableNo) : that.tableNo != null) return false;
-        if (billNo != null ? !billNo.equals(that.billNo) : that.billNo != null) return false;
-        return customer != null ? customer.equals(that.customer) : that.customer == null;
+        if (!date.equals(that.date)) return false;
+        if (!feedbacks.equals(that.feedbacks)) return false;
+        if (!tableNo.equals(that.tableNo)) return false;
+        if (!billNo.equals(that.billNo)) return false;
+        return customer.equals(that.customer);
     }
 
     @Override
     public int hashCode() {
         int result = outletId;
         result = 31 * result + deviceId;
-        result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + (feedbacks != null ? feedbacks.hashCode() : 0);
-        result = 31 * result + (tableNo != null ? tableNo.hashCode() : 0);
-        result = 31 * result + (billNo != null ? billNo.hashCode() : 0);
-        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + date.hashCode();
+        result = 31 * result + feedbacks.hashCode();
+        result = 31 * result + tableNo.hashCode();
+        result = 31 * result + billNo.hashCode();
+        result = 31 * result + customer.hashCode();
         return result;
     }
 

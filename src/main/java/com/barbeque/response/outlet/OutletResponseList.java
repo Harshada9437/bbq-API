@@ -10,6 +10,7 @@ public class OutletResponseList implements GenericResponse
     private int id;
     private int smsGatewayId;
     private String outletDesc;
+    private String programmeId;
     private String mgrName;
     private String mgrMobile;
     private String mgrEmail;
@@ -33,6 +34,23 @@ public class OutletResponseList implements GenericResponse
     private String  bannerUrl;
     private String posStoreId;
     private int templateId;
+    private int referType;
+
+    public int getReferType() {
+        return referType;
+    }
+
+    public void setReferType(int referType) {
+        this.referType = referType;
+    }
+
+    public String getProgrammeId() {
+        return programmeId;
+    }
+
+    public void setProgrammeId(String programmeId) {
+        this.programmeId = programmeId;
+    }
 
     public int getSmsGatewayId() {
         return smsGatewayId;
@@ -221,6 +239,7 @@ public class OutletResponseList implements GenericResponse
         return "OutletResponseList{" +
                 "id=" + id +
                 ", smsGatewayId=" + smsGatewayId +
+                ", referType=" + referType +
                 ", outletDesc='" + outletDesc + '\'' +
                 ", mgrName='" + mgrName + '\'' +
                 ", mgrMobile='" + mgrMobile + '\'' +
@@ -242,6 +261,7 @@ public class OutletResponseList implements GenericResponse
                 ", message='" + message + '\'' +
                 ", messageType='" + messageType + '\'' +
                 ", templateName='" + templateName + '\'' +
+                ", programmeId='" + programmeId + '\'' +
                 ", bannerUrl='" + bannerUrl + '\'' +
                 ", posStoreId='" + posStoreId + '\'' +
                 ", templateId=" + templateId +

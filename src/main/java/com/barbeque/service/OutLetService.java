@@ -40,13 +40,8 @@ public class OutLetService {
         MessageResponse assignoutletResponse = new MessageResponse();
         OutletRequestHandler outletRequestHandler = new OutletRequestHandler();
         try {
-            List<TempDTO> tempDTOs = TemplateDAO.getTemplateByOutletId(outletId);
-            if (tempDTOs.size() == 0) {
-                outletRequestHandler.assignTemplate(assignTemplateRequestBO, outletId);
-                return ResponseGenerator.generateSuccessResponse(assignoutletResponse, "Templates are assigned");
-            } else {
-                return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template is already assigned to this outlet.");
-            }
+            outletRequestHandler.assignTemplate(assignTemplateRequestBO, outletId);
+            return ResponseGenerator.generateSuccessResponse(assignoutletResponse, "Templates are assigned");
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             return ResponseGenerator.generateFailureResponse(assignoutletResponse, "Template assignment Failed");
@@ -61,6 +56,8 @@ public class OutLetService {
         UpdateSettingsRequestBO updateSettingsRequestBO = new UpdateSettingsRequestBO();
 
         updateSettingsRequestBO.setMobileNoLength(updateSettingsRequest.getMobileNoLength());
+        updateSettingsRequestBO.setProgrammeId(updateSettingsRequest.getProgrammeId());
+        updateSettingsRequestBO.setReferType(updateSettingsRequest.getReferType());
         updateSettingsRequestBO.setBannerUrl(updateSettingsRequest.getBannerUrl());
         updateSettingsRequestBO.setTableNoRange(updateSettingsRequest.getTableNoRange());
         updateSettingsRequestBO.setPocName(updateSettingsRequest.getPocName());

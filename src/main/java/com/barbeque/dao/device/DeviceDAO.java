@@ -113,8 +113,10 @@ public class DeviceDAO {
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            String query = "select d.*, f.id as feedback_id,f.created_on\n" +
+            String query = "select d.*,o.outlet_desc,r.region_desc, f.id as feedback_id,f.created_on\n" +
                     "from devices d\n" +
+                    "left join outlet o on o.pos_store_id=d.store_id\n" +
+                    "left join region r on o.region_id=r.id\n" +
                     "left join feedback_head f\n" +
                     "on f.device_id=d.id and f.id = (select max(id) from feedback_head where device_id=d.id)" ;
             ResultSet resultSet = statement.executeQuery(query);
@@ -127,6 +129,8 @@ public class DeviceDAO {
                 deviceDTO.setFingerprint(resultSet.getString("fingerprint"));
                 deviceDTO.setInstallationId(resultSet.getString("installation_id"));
                 deviceDTO.setStoreId(resultSet.getString("store_id"));
+                deviceDTO.setOutletName(resultSet.getString("outlet_desc"));
+                deviceDTO.setRegionName(resultSet.getString("region_desc"));
                 deviceDTO.setStatus(resultSet.getString("status"));
                 if(resultSet.getTimestamp("created_on") != null){
                      date = DateUtil.getDateStringFromTimeStamp(resultSet.getTimestamp("created_on"));

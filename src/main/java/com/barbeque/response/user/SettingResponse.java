@@ -2,20 +2,49 @@ package com.barbeque.response.user;
 
 import com.barbeque.response.util.GenericResponse;
 
+import java.sql.Time;
+
 /**
  * Created by System-2 on 2/6/2017.
  */
 public class SettingResponse implements GenericResponse{
-    private String smsTemplate;
+    private String positiveSmsTemplate;
+    private Time archiveTime;
+    private Time reportTime;
+    private String negativeSmsTemplate;
     private String message;
     private String messageType;
 
-    public String getSmsTemplate() {
-        return smsTemplate;
+    public String getPositiveSmsTemplate() {
+        return positiveSmsTemplate;
     }
 
-    public void setSmsTemplate(String smsTemplate) {
-        this.smsTemplate = smsTemplate;
+    public void setPositiveSmsTemplate(String positiveSmsTemplate) {
+        this.positiveSmsTemplate = positiveSmsTemplate;
+    }
+
+    public Time getArchiveTime() {
+        return archiveTime;
+    }
+
+    public void setArchiveTime(Time archiveTime) {
+        this.archiveTime = archiveTime;
+    }
+
+    public Time getReportTime() {
+        return reportTime;
+    }
+
+    public void setReportTime(Time reportTime) {
+        this.reportTime = reportTime;
+    }
+
+    public String getNegativeSmsTemplate() {
+        return negativeSmsTemplate;
+    }
+
+    public void setNegativeSmsTemplate(String negativeSmsTemplate) {
+        this.negativeSmsTemplate = negativeSmsTemplate;
     }
 
     public String getMessage() {
@@ -39,7 +68,10 @@ public class SettingResponse implements GenericResponse{
     @Override
     public String toString() {
         return "SettingResponse{" +
-                "smsTemplate='" + smsTemplate + '\'' +
+                "positiveSmsTemplate='" + positiveSmsTemplate + '\'' +
+                ", archiveTime=" + archiveTime +
+                ", reportTime=" + reportTime +
+                ", negativeSmsTemplate='" + negativeSmsTemplate + '\'' +
                 ", message='" + message + '\'' +
                 ", messageType='" + messageType + '\'' +
                 '}';

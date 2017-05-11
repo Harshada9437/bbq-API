@@ -8,6 +8,7 @@ public class AssignTemplateRequest
     private int templateId;
     private String fromDate;
     private String toDate;
+    private int clientId;
 
     public int getTemplateId() {
         return templateId;
@@ -33,6 +34,14 @@ public class AssignTemplateRequest
         this.toDate = toDate;
     }
 
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -41,16 +50,17 @@ public class AssignTemplateRequest
         AssignTemplateRequest that = (AssignTemplateRequest) o;
 
         if (templateId != that.templateId) return false;
-        if (fromDate != null ? !fromDate.equals(that.fromDate) : that.fromDate != null) return false;
-        return toDate != null ? toDate.equals(that.toDate) : that.toDate == null;
-
+        if (clientId != that.clientId) return false;
+        if (!fromDate.equals(that.fromDate)) return false;
+        return toDate.equals(that.toDate);
     }
 
     @Override
     public int hashCode() {
         int result = templateId;
-        result = 31 * result + (fromDate != null ? fromDate.hashCode() : 0);
-        result = 31 * result + (toDate != null ? toDate.hashCode() : 0);
+        result = 31 * result + fromDate.hashCode();
+        result = 31 * result + toDate.hashCode();
+        result = 31 * result + clientId;
         return result;
     }
 
@@ -60,6 +70,7 @@ public class AssignTemplateRequest
                 "templateId=" + templateId +
                 ", fromDate='" + fromDate + '\'' +
                 ", toDate='" + toDate + '\'' +
+                ", clientId=" + clientId +
                 '}';
     }
 }

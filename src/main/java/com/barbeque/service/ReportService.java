@@ -5,10 +5,7 @@ package com.barbeque.service;
  */
 
 import com.barbeque.exceptions.CustomerNotFoundException;
-
 import com.barbeque.exceptions.QuestionNotFoundException;
-import com.barbeque.request.report.BillData;
-import com.barbeque.requesthandler.FeedbackRequestHandler;
 import com.barbeque.requesthandler.ReportRequestHandler;
 import com.barbeque.response.report.AverageResponseList;
 import com.barbeque.response.report.CountResponseList;
@@ -16,13 +13,11 @@ import com.barbeque.response.report.CustomerReportResponseList;
 import com.barbeque.response.report.SummaryResponse;
 import com.barbeque.response.util.MessageResponse;
 import com.barbeque.response.util.ResponseGenerator;
-import com.barbeque.sync.Synchronize;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
-
 
 @Path("/report")
 public class ReportService {
@@ -38,7 +33,7 @@ public class ReportService {
             countResponseList.setCount(reportRequestHandler.getcountById(id));
             return ResponseGenerator.generateSuccessResponse(countResponseList, "List of counts.");
         } catch (QuestionNotFoundException e) {
-            return ResponseGenerator.generateFailureResponse(messageResponse, "INVALID Question Id ");
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid Question Id ");
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failure.");
@@ -95,13 +90,31 @@ public class ReportService {
         MessageResponse messageResponse = new MessageResponse();
         try {
             SummaryResponse isProcessed = reportRequestHandler.getReport(userId);
-            return ResponseGenerator.generateSuccessResponse(isProcessed, "Mails are sent to all users.");
+            return ResponseGenerator.generateSuccessResponse(isProcessed, "Outlet's feedback summery.");
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
         }
     }
+
+   /* @GET
+    @Path("/deviceReport/{user_id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public Response deviceReport(@PathParam("user_id") int userId) {
+        ReportRequestHandler reportRequestHandler = new ReportRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            DeviceSummaryResponse isProcessed = reportRequestHandler.deviceReport(userId);
+            return ResponseGenerator.generateSuccessResponse(isProcessed, "Device wise feedback summery.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
+        }
+    }*/
 }
 
 

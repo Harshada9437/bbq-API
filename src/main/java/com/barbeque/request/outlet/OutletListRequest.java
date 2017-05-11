@@ -31,13 +31,13 @@ public class OutletListRequest {
         OutletListRequest that = (OutletListRequest) o;
 
         if (userId != that.userId) return false;
-        return outletId != null ? outletId.equals(that.outletId) : that.outletId == null;
+        return outletId.equals(that.outletId);
     }
 
     @Override
     public int hashCode() {
         int result = userId;
-        result = 31 * result + (outletId != null ? outletId.hashCode() : 0);
+        result = 31 * result + outletId.hashCode();
         return result;
     }
 
@@ -45,7 +45,7 @@ public class OutletListRequest {
     public String toString() {
         return "OutletListRequest{" +
                 "userId=" + userId +
-                ", outletId='" + outletId + "\'" +
+                ", outletId='" + outletId + '\'' +
                 '}';
     }
 }

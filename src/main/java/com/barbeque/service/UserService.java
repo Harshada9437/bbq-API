@@ -33,8 +33,7 @@ public class UserService {
         LoginResponse loginResponse = new LoginResponse();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            LoginResponseBO loginResponseBO = userRequestHandler
-                    .login(loginRequestBO);
+            LoginResponseBO loginResponseBO = userRequestHandler.login(loginRequestBO);
             loginResponse.setRoleId(loginResponseBO.getRoleId());
             loginResponse.setUserName(loginResponseBO.getUserName());
             loginResponse.setName(loginResponseBO.getName());
@@ -45,8 +44,7 @@ public class UserService {
             loginResponse.setMenuAccess(loginResponseBO.getMenuAccess());
             loginResponse.setOutletAccess(loginResponseBO.getOutletAccess());
             if (loginResponseBO.getSessionId() != null && loginResponseBO.getStatus().equals("A")) {
-                return ResponseGenerator.generateSuccessResponse(loginResponse, String.valueOf(loginResponseBO
-                        .getSessionId()));
+                return ResponseGenerator.generateSuccessResponse(loginResponse, String.valueOf(loginResponseBO.getSessionId()));
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Invalid password or inactive user.");
             }
@@ -96,6 +94,7 @@ public class UserService {
             updateUserRequestBO.setRole(updateUserRequest.getRole());
             updateUserRequestBO.setStatus(updateUserRequest.getStatus());
             updateUserRequestBO.setId(updateUserRequest.getId());
+            updateUserRequestBO.setNotifyEmail(updateUserRequest.getNotifyEmail());
             Boolean isLoggedOut = userRequestHandler.updateUser(updateUserRequestBO);
 
             if (isLoggedOut) {
@@ -170,7 +169,7 @@ public class UserService {
     }
 
 
-    @GET
+    /*@GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/roleList")
@@ -180,6 +179,23 @@ public class UserService {
         MessageResponse messageResponse = new MessageResponse();
         try {
             roleResponseList.setRoles(userRequestHandler.getRoleList());
+            return ResponseGenerator.generateSuccessResponse(roleResponseList, "List of roles.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve.");
+        }
+    }*/
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/roleList")
+    public Response getRoleReportList() {
+        UserRequestHandler userRequestHandler = new UserRequestHandler();
+        RoleResponseList roleResponseList = new RoleResponseList();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            roleResponseList.setRoles(userRequestHandler.getRoleReportList());
             return ResponseGenerator.generateSuccessResponse(roleResponseList, "List of roles.");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -215,6 +231,7 @@ public class UserService {
         userRequestBO.setEmail(userRequest.getEmail());
         userRequestBO.setPassword(userRequest.getPassword());
         userRequestBO.setRoleId(userRequest.getRoleId());
+        userRequestBO.setNotifyEmail(userRequest.getNotifyEmail());
 
         MessageResponse createUserResponse = new MessageResponse();
         UserRequestHandler userRequestHandler = new UserRequestHandler();
@@ -222,7 +239,6 @@ public class UserService {
             if (!UsersDAO.getuser(userRequest.getUserName(), userRequest.getEmail(), userRequest.getName())) {
                 int userId = userRequestHandler.createUser(userRequestBO);
                 return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
-
             } else {
                 return ResponseGenerator.generateFailureResponse(createUserResponse, "Username or email address already exists.");
             }
@@ -237,17 +253,17 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/createRole")
     public Response createRoll(RollRequest rollRequest) {
-        RollRequestBO rollRequestBO = new RollRequestBO();
-        rollRequestBO.setName(rollRequest.getName());
-        rollRequestBO.setMenuAccess(rollRequest.getMenuAccess());
-        rollRequestBO.setOutletAccess(rollRequest.getOutletAccess());
-
+        RoleRequestBO roleRequestBO = new RoleRequestBO();
+        roleRequestBO.setName(rollRequest.getName());
+        roleRequestBO.setMenuAccess(rollRequest.getMenuAccess());
+        roleRequestBO.setOutletAccess(rollRequest.getOutletAccess());
+        roleRequestBO.setIsAll(rollRequest.getIsAll());
 
         MessageResponse createUserResponse = new MessageResponse();
         UserRequestHandler userRequestHandler = new UserRequestHandler();
         try {
             if (!UsersDAO.getRole(rollRequest.getName())) {
-                int userId = userRequestHandler.createRoll(rollRequestBO);
+                int userId = userRequestHandler.createRoll(roleRequestBO);
                 return ResponseGenerator.generateSuccessResponse(createUserResponse, String.valueOf(userId));
             } else {
                 return ResponseGenerator.generateFailureResponse(createUserResponse, "Role already exists.");
@@ -267,6 +283,7 @@ public class UserService {
 
         UpdateRollRequestBO updateFeedbackRequestBO = new UpdateRollRequestBO();
         updateFeedbackRequestBO.setRoleId(updateRollRequest.getRoleId());
+        updateFeedbackRequestBO.setIsAll(updateRollRequest.getIsAll());
         updateFeedbackRequestBO.setName(updateRollRequest.getName());
         updateFeedbackRequestBO.setMenuAccess(updateRollRequest.getMenuAccess());
         updateFeedbackRequestBO.setOutletAccess(updateRollRequest.getOutletAccess());
@@ -323,7 +340,7 @@ public class UserService {
             return ResponseGenerator.generateSuccessResponse(messageResponse, "Password has been reset successfully.");
         } else {
             return ResponseGenerator.generateFailureResponse(messageResponse, "Reset password failed.");
-        }
+       }
         } else {
             return ResponseGenerator.generateResponse(UserRequestValidation.getUnautheticatedResponse());
         }

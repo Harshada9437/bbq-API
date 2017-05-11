@@ -6,7 +6,9 @@ package com.barbeque.dto.request;
 public class OutletDTO
 {
     private int id;
+    private int referType;
     private String outletDesc;
+    private String programmeId;
     private String shortDesc;
     private int clusterId;
     private String clusterName;
@@ -29,6 +31,22 @@ public class OutletDTO
     private String mgrName;
     private String mgrMobile;
     private int smsGatewayId;
+
+    public int getReferType() {
+        return referType;
+    }
+
+    public void setReferType(int referType) {
+        this.referType = referType;
+    }
+
+    public String getProgrammeId() {
+        return programmeId;
+    }
+
+    public void setProgrammeId(String programmeId) {
+        this.programmeId = programmeId;
+    }
 
     public String getMgrEmail() {
         return mgrEmail;
@@ -203,6 +221,7 @@ public class OutletDTO
 
         if (id != outletDTO.id) return false;
         if (clusterId != outletDTO.clusterId) return false;
+        if (referType != outletDTO.referType) return false;
         if (regionId != outletDTO.regionId) return false;
         if (companyId != outletDTO.companyId) return false;
         if (groupId != outletDTO.groupId) return false;
@@ -210,6 +229,8 @@ public class OutletDTO
         if (templateId != outletDTO.templateId) return false;
         if (smsGatewayId != outletDTO.smsGatewayId) return false;
         if (outletDesc != null ? !outletDesc.equals(outletDTO.outletDesc) : outletDTO.outletDesc != null) return false;
+        if (programmeId != null ? !programmeId.equals(outletDTO.programmeId) : outletDTO.programmeId != null)
+            return false;
         if (shortDesc != null ? !shortDesc.equals(outletDTO.shortDesc) : outletDTO.shortDesc != null) return false;
         if (clusterName != null ? !clusterName.equals(outletDTO.clusterName) : outletDTO.clusterName != null)
             return false;
@@ -235,8 +256,10 @@ public class OutletDTO
     public int hashCode() {
         int result = id;
         result = 31 * result + (outletDesc != null ? outletDesc.hashCode() : 0);
+        result = 31 * result + (programmeId != null ? programmeId.hashCode() : 0);
         result = 31 * result + (shortDesc != null ? shortDesc.hashCode() : 0);
         result = 31 * result + clusterId;
+        result = 31 * result + referType;
         result = 31 * result + (clusterName != null ? clusterName.hashCode() : 0);
         result = 31 * result + regionId;
         result = 31 * result + (regionName != null ? regionName.hashCode() : 0);
@@ -265,8 +288,10 @@ public class OutletDTO
         return "OutletDTO{" +
                 "id=" + id +
                 ", outletDesc='" + outletDesc + '\'' +
+                ", programmeId='" + programmeId + '\'' +
                 ", shortDesc='" + shortDesc + '\'' +
                 ", clusterId=" + clusterId +
+                ", referType=" + referType +
                 ", clusterName='" + clusterName + '\'' +
                 ", regionId=" + regionId +
                 ", regionName='" + regionName + '\'' +

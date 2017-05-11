@@ -28,8 +28,10 @@ public class DeviceRequestHandler {
         DeviceDAO deviceDAO = new DeviceDAO();
         List<DeviceDTO> deviceDTOs = deviceDAO.getDeviceList();
         List<DeviceResponse> deviceList = new ArrayList<DeviceResponse>();
-        for (DeviceDTO deviceDTO : deviceDTOs){
+        for (DeviceDTO deviceDTO : deviceDTOs) {
             DeviceResponse deviceResponse = new DeviceResponse(deviceDTO.getStoreId(),
+                    deviceDTO.getOutletName(),
+                    deviceDTO.getRegionName(),
                     deviceDTO.getId(),
                     deviceDTO.getFeedbackId(),
                     deviceDTO.getInstallationId(),
@@ -46,10 +48,10 @@ public class DeviceRequestHandler {
     public Boolean getValidDevice(RegisterRequestBO registerRequestBO, int outletId) throws SQLException {
         DeviceDAO deviceDAO = new DeviceDAO();
         int otp = Integer.parseInt(random(6));
-        Boolean isCreate = deviceDAO.getValidDevice(biuildDTOFromBO(registerRequestBO),otp);
-        if(isCreate){
+        Boolean isCreate = deviceDAO.getValidDevice(biuildDTOFromBO(registerRequestBO), otp);
+        if (isCreate) {
             UpdateSettingsDTO updateSettingsDTO = OutletDAO.getSetting(outletId);
-            EmailService.sendOtp(updateSettingsDTO.getPocEmail(),updateSettingsDTO.getPocName(),otp);
+            EmailService.sendOtp(updateSettingsDTO.getPocEmail(), updateSettingsDTO.getPocName(), otp);
         }
         return isCreate;
     }
@@ -81,10 +83,10 @@ public class DeviceRequestHandler {
     }
 
     public Integer verifyDevice(UpdateDeviceRequestBO deviceRequestBO) throws SQLException, DeviceNotFoundException {
-        DeviceDAO deviceDAO=new DeviceDAO();
+        DeviceDAO deviceDAO = new DeviceDAO();
         DeviceDTO deviceDTO = deviceDAO.getDeviceByInstallationId(deviceRequestBO.getInstallationId());
         int id;
-        if(deviceDTO.getId() > 0){
+        if (deviceDTO.getId() > 0) {
             id = deviceDTO.getId();
             deviceDTO.setFingerprint(deviceRequestBO.getFingerprint());
             deviceDTO.setAndroidDeviceId(deviceRequestBO.getAndroidDeviceId());
@@ -110,7 +112,7 @@ public class DeviceRequestHandler {
     }
 
     public Boolean updateDevice(DeviceStatusRequestBO deviceRequestBO) throws SQLException, DeviceNotFoundException {
-        DeviceDAO deviceDAO=new DeviceDAO();
+        DeviceDAO deviceDAO = new DeviceDAO();
         Boolean isCreate = deviceDAO.updateDevice(buildStatusDtofromBo(deviceRequestBO));
         return isCreate;
     }

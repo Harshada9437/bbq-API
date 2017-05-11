@@ -10,18 +10,6 @@ public class OptionsList
     private int weightage;
     private String threshold;
 
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
-    }
-
-    public int getWeightage() {return weightage;}
-
-    public void setWeightage(int weightage) {this.weightage = weightage;}
-
     public String getLabel() {
         return label;
     }
@@ -36,6 +24,22 @@ public class OptionsList
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public int getWeightage() {
+        return weightage;
+    }
+
+    public void setWeightage(int weightage) {
+        this.weightage = weightage;
+    }
+
+    public String getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
     }
 
     @Override
