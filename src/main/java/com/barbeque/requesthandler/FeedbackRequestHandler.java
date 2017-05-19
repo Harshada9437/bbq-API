@@ -1,6 +1,7 @@
 package com.barbeque.requesthandler;
 
 import com.barbeque.bo.*;
+import com.barbeque.config.ConfigProperties;
 import com.barbeque.dao.ConnectionHandler;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.Sync.SmsDAO;
@@ -9,6 +10,7 @@ import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dao.question.QuestionDAO;
+import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.dao.user.UsersDAO;
 import com.barbeque.dto.request.*;
 import com.barbeque.dto.response.LoginResponseDTO;
@@ -23,7 +25,7 @@ import com.barbeque.response.feedback.FeedbackByIdResponse;
 import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackTrackingResponse;
 
-import java.io.FileWriter;
+import java.io.*;
 import java.sql.Connection;
 import java.util.Date;
 
@@ -34,6 +36,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.codehaus.jettison.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -147,10 +151,12 @@ public class FeedbackRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<FeedbackDTO> feedbackRequestDTOS;
         String limit, where1 = "", ids;
-        int threshold = 100000, base = 100000, length;
+        int threshold = 10000, base = 10000;
 
         Timestamp t1 = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
         String date = DateUtil.format(t1, "MM-yyyy");
+
+        Connection connection = null;
 
         if (feedbackListRequestBO.getTableNo() != null && !feedbackListRequestBO.getTableNo().equals("")) {
             where1 = " and f.table_no=\"" + feedbackListRequestBO.getTableNo() + "\"\n";
@@ -168,32 +174,29 @@ public class FeedbackRequestHandler {
         SyncDAO syncDAO = new SyncDAO();
         int max = syncDAO.getCount(where1, date, feedbackListRequestBO.getFromDate(), feedbackListRequestBO.getToDate());
 
-        if (max < threshold) {
-            length = 1;
-        } else {
-            length = max / threshold;
-            if (max % threshold > 0) {
-                length = length + 1;
-            }
+        int length = max / threshold;
+        if (max % threshold > 0) {
+            length = length + 1;
         }
 
         List<FeedbackResponse> uniqueList = new ArrayList<FeedbackResponse>(max);
 
         try {
+            connection = new ConnectionHandler().getConnection();
 
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < length - 1; i++) {
 
                 if (i == 0) {
-                    limit = "limit 100000";
+                    limit = "limit 10000";
                 } else {
                     limit = "limit " + base + "," + threshold;
                 }
 
                 if (i == length - 1) {
-                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, buildFeedbackDTO
+                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, connection, buildFeedbackDTO
                             (feedbackListRequestBO), date, limit);
                 } else {
-                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, buildFeedbackDTO
+                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, connection, buildFeedbackDTO
                             (feedbackListRequestBO), date, limit);
                 }
 
@@ -220,12 +223,13 @@ public class FeedbackRequestHandler {
                         List<FeedbackDetails> newAnswerList = new ArrayList<FeedbackDetails>();
                         FeedbackDetails answer = new FeedbackDetails();
                         answer.setAnswerDesc(feedbackRequestDTOS.get(j).getAnswerDesc());
+                        answer.setQuestionId(feedbackRequestDTOS.get(j).getQuestionId());
+                        answer.setAnswerId(feedbackRequestDTOS.get(j).getAnswerId());
                         answer.setAnswerText(feedbackRequestDTOS.get(j).getAnswerText());
                         answer.setQuestionDesc(feedbackRequestDTOS.get(j).getQuestionDesc());
                         answer.setRating(feedbackRequestDTOS.get(j).getRating());
                         answer.setIsNegative(feedbackRequestDTOS.get(j).getIsPoor());
                         answer.setQuestionType(feedbackRequestDTOS.get(j).getQuestionType());
-                        answer.setQuestionId(feedbackRequestDTOS.get(j).getQuestionId());
                         newAnswerList.add(answer);
                         feedbackResp.setFeedbacks(newAnswerList);
                         uniqueIds.add(feedbackRequestDTOS.get(j).getId());
@@ -242,6 +246,7 @@ public class FeedbackRequestHandler {
                             answer.setIsNegative(feedbackRequestDTOS.get(j).getIsPoor());
                             answer.setQuestionType(feedbackRequestDTOS.get(j).getQuestionType());
                             answer.setQuestionId(feedbackRequestDTOS.get(j).getQuestionId());
+                            answer.setAnswerId(feedbackRequestDTOS.get(j).getAnswerId());
                             curAnswerList.add(answer);
                         }
                     }
@@ -252,6 +257,8 @@ public class FeedbackRequestHandler {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
         return uniqueList;
     }
@@ -436,7 +443,7 @@ public class FeedbackRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<FeedbackTrackingResponseDTO> trackingList;
         String limit, where1 = "", ids;
-        int threshold = 100000, base = 100000, length;
+        int threshold = 1000, base = 1000, length;
 
         Timestamp t1 = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
         String date = DateUtil.format(t1, "MM-yyyy");
@@ -476,7 +483,7 @@ public class FeedbackRequestHandler {
             for (int i = 0; i < length; i++) {
 
                 if (i == 0) {
-                    limit = "limit 100000";
+                    limit = "limit 1000";
                 } else {
                     limit = "limit " + base + "," + threshold;
                 }
@@ -525,6 +532,7 @@ public class FeedbackRequestHandler {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         OutletDAO outletDAO = new OutletDAO();
 
+
         for (ReportData reportData : data.getOutlets()) {
             outletDAO.updateBillCount(reportData);
         }
@@ -569,23 +577,21 @@ public class FeedbackRequestHandler {
         List<RequestDto> requestDtos = feedbackDAO.getRequests();
         for (RequestDto request : requestDtos) {
             if (!UsersDAO.getuserById(request.getUserId()).getOutletAccess().equals("")) {
-                System.out.println("data" + DateUtil.getDateStringFromTimeStamp(new Timestamp(System.currentTimeMillis())));
-                String uniqueList = getfeedbackList12(request);
-                System.out.println("sheet" + DateUtil.getDateStringFromTimeStamp(new Timestamp(System.currentTimeMillis())));
-                // String filename = ExcelCreator.getExcelSheet(uniqueList, String.valueOf(request.getId()));
-                System.out.println("end" + DateUtil.getDateStringFromTimeStamp(new Timestamp(System.currentTimeMillis())));
-                EmailService.sendEmail(uniqueList, request.getUserId());
+                List<FeedbackResponse> uniqueList = getfeedbackList12(request);
+                String filename = ExcelCreator.getExcelSheet(uniqueList, String.valueOf(request.getId()));
+                EmailService.sendEmail(filename, request.getUserId());
+                feedbackDAO.updateRequest(request.getId());
             }
         }
         isProcessed = Boolean.TRUE;
         return isProcessed;
     }
 
-    public String getfeedbackList12(RequestDto feedbackListRequestBO) throws Exception {
+    public List<FeedbackResponse> getfeedbackList12(RequestDto feedbackListRequestBO) throws Exception {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
-        List<FeedbackDTO> feedbackRequestDTOS;
+        List<FeedbackDTO> feedbackRequestDTOS = null;
         String limit, where1 = "";
-        int threshold = 100000, base = 100000, length, i = 2, l = 0;
+        int threshold = 1000, base = 1000, length;
 
         Timestamp t1 = DateUtil.getTimeStampFromString(feedbackListRequestBO.getFromDate());
         String date = DateUtil.format(t1, "MM-yyyy");
@@ -619,130 +625,22 @@ public class FeedbackRequestHandler {
         FeedbackListDTO dto = new FeedbackListDTO();
         dto.setFromDate(feedbackListRequestBO.getFromDate());
         dto.setToDate(feedbackListRequestBO.getToDate());
-
-        /////////////////////////
-
-        String filename = "D:/Feedbacks_" + date + ".xls";
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("FirstSheet");
-        sheet.addMergedRegion(CellRangeAddress.valueOf("S1:X1"));
-        sheet.addMergedRegion(CellRangeAddress.valueOf("Z1:AA1"));
-
-        HSSFFont font = workbook.createFont();
-        font.setColor(IndexedColors.WHITE.getIndex());
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        font.setFontHeightInPoints((short) 10);
-        font.setFontName("Verdana");
-
-        HSSFRow row = null;
-
-
-        HSSFCellStyle style = workbook.createCellStyle();
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_JUSTIFY);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setFillForegroundColor(IndexedColors.TEAL.getIndex());
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style.setBottomBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setLeftBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setRightBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setTopBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style.setFont(font);
-
-        HSSFCellStyle style1 = workbook.createCellStyle();
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_JUSTIFY);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style1.setFillForegroundColor(IndexedColors.TURQUOISE.getIndex());
-        style1.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style1.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style1.setBottomBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style1.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style1.setLeftBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style1.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style1.setRightBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style1.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style1.setTopBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style1.setFont(font);
-
-        HSSFCellStyle style2 = workbook.createCellStyle();
-        style2.setVerticalAlignment(HSSFCellStyle.VERTICAL_JUSTIFY);
-
-        HSSFCellStyle style3 = workbook.createCellStyle();
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_JUSTIFY);
-        style3.setFillForegroundColor(IndexedColors.RED.getIndex());
-        style3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style3.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style3.setBottomBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style3.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style3.setLeftBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style3.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style3.setRightBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style3.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style3.setTopBorderColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style3.setFont(font);
-
-        HSSFRow rowhead = sheet.createRow((short) 0);
-
-        rowhead.createCell(0).setCellValue("Response No.");
-        rowhead.createCell(1).setCellValue("Date");
-        rowhead.createCell(2).setCellValue("Outlet");
-        rowhead.createCell(3).setCellValue("Table No");
-        rowhead.createCell(4).setCellValue("Customer");
-        rowhead.createCell(5).setCellValue("");
-        rowhead.createCell(6).setCellValue("");
-        rowhead.createCell(7).setCellValue("");
-        rowhead.createCell(8).setCellValue("");
-        rowhead.createCell(9).setCellValue("");
-        rowhead.createCell(10).setCellValue("isNegative");
-        rowhead.createCell(11).setCellValue("isAddressed Details");
-        rowhead.createCell(12).setCellValue("");
-
-        for (Cell cell : rowhead) {
-            cell.setCellStyle(style);
-        }
-
-
-        HSSFRow rowhead1 = sheet.createRow((short) 1);
-
-        rowhead1.createCell(0).setCellValue("");
-        rowhead1.createCell(1).setCellValue("");
-        rowhead1.createCell(2).setCellValue("");
-        rowhead1.createCell(3).setCellValue("");
-        rowhead1.createCell(4).setCellValue("Name");
-        rowhead1.createCell(5).setCellValue("Email");
-        rowhead1.createCell(6).setCellValue("Phone");
-        rowhead1.createCell(7).setCellValue("Date of Birth");
-        rowhead1.createCell(8).setCellValue("Date of Anniversary");
-        rowhead1.createCell(9).setCellValue("Locality");
-        rowhead1.createCell(10).setCellValue("");
-        rowhead1.createCell(11).setCellValue("isAddressed?");
-        rowhead1.createCell(12).setCellValue("View Date");
-
-        for (Cell cell : rowhead1) {
-            cell.setCellStyle(style1);
-            workbook.getSheetAt(0).autoSizeColumn(cell.getColumnIndex());
-        }
-
-        rowhead1.getCell(0).setCellStyle(style);
-
-        /////////////////////////
-
+        Connection connection = null;
         try {
-            for (int o = 0; o < length; o++) {
+            connection = new ConnectionHandler().getConnection();
 
-                if (o == 0) {
-                    limit = "limit 100000";
+            for (int i = 0; i < length; i++) {
+
+                if (i == 0) {
+                    limit = "limit 1000";
                 } else {
                     limit = "limit " + base + "," + threshold;
                 }
 
-                if (o == length - 1) {
-                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, dto, date, limit);
+                if (i == length - 1) {
+                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, connection, dto, date, limit);
                 } else {
-                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, dto, date, limit);
+                    feedbackRequestDTOS = feedbackDAO.getfeedbackList1(where1, connection, dto, date, limit);
                 }
 
                 List<Integer> uniqueIds = new ArrayList<Integer>();
@@ -777,201 +675,42 @@ public class FeedbackRequestHandler {
                         newAnswerList.add(answer);
                         feedbackResp.setFeedbacks(newAnswerList);
                         uniqueIds.add(feedbackRequestDTOS.get(j).getId());
-                        /*uniqueList.add(feedbackResp);*/
-                        row = sheet.createRow((short) i);
-                        row.createCell(0).setCellValue(feedbackResp.getId());
-                        row.getCell(0).setCellStyle(style);
-                        row.createCell(1).setCellValue(feedbackResp.getFeedbackDate());
-                        workbook.getSheetAt(0).autoSizeColumn(1);
-                        row.createCell(2).setCellValue(feedbackResp.getOutletDesc());
-                        workbook.getSheetAt(0).autoSizeColumn(2);
-                        row.createCell(3).setCellValue(feedbackResp.getTableNo());
-                        if (feedbackResp.getCustomerName() == null || feedbackResp.getCustomerName().equals("")) {
-                            row.createCell(4).setCellValue("-");
-                        } else {
-                            row.createCell(4).setCellValue(feedbackResp.getCustomerName());
-                            workbook.getSheetAt(0).autoSizeColumn(4);
-                        }
-                        if (feedbackResp.getEmail() == null || feedbackResp.getEmail().equals("")) {
-                            row.createCell(5).setCellValue("-");
-                        } else {
-                            row.createCell(5).setCellValue(feedbackResp.getEmail());
-                            workbook.getSheetAt(0).autoSizeColumn(5);
-                        }
-                        if (feedbackResp.getMobileNo() == null || feedbackResp.getMobileNo().equals("")) {
-                            row.createCell(6).setCellValue("-");
-                        } else {
-                            row.createCell(6).setCellValue(feedbackResp.getMobileNo());
-                            workbook.getSheetAt(0).autoSizeColumn(6);
-                        }
-                        if (feedbackResp.getDob() == null || feedbackResp.getDob().equals("")) {
-                            row.createCell(7).setCellValue("-");
-                        } else {
-                            Timestamp dob = DateUtil.getTimeStampFromString(feedbackResp.getDob());
-                            row.createCell(7).setCellValue(DateUtil.format(dob, "dd-MMM"));
-                        }
-                        if (feedbackResp.getDoa() == null || feedbackResp.getDoa().equals("")) {
-                            row.createCell(8).setCellValue("-");
-                        } else {
-                            Timestamp doa = DateUtil.getTimeStampFromString(feedbackResp.getDoa());
-                            row.createCell(8).setCellValue(DateUtil.format(doa, "dd-MMM"));
-                        }
-                        if (feedbackResp.getLocality() == null || feedbackResp.getLocality().equals("")) {
-                            row.createCell(9).setCellValue("-");
-                        } else {
-                            row.createCell(9).setCellValue(feedbackResp.getLocality());
-                            workbook.getSheetAt(0).autoSizeColumn(9);
-                        }
-                        if (feedbackResp.getIsNegative() == 0) {
-                            row.createCell(10).setCellValue("NO");
-                        } else {
-                            row.createCell(10).setCellValue("YES");
-                        }
-                        if (feedbackResp.getViewDate() == null || feedbackResp.getViewDate().equals("")) {
-                            row.createCell(11).setCellValue("NO");
-                            row.createCell(12).setCellValue("-");
-                        } else {
-                            row.createCell(11).setCellValue("YES");
-                            row.createCell(12).setCellValue(feedbackResp.getViewDate());
-                            workbook.getSheetAt(0).autoSizeColumn(12);
-                        }
-                        l = 13;
-                        if (answer.getQuestionType() == '3' || answer.getQuestionType() == '2') {
-                            if (answer.getRating() == 0) {
-                                row.createCell(l).setCellValue("Skipped");
-                            } else {
-                                row.createCell(l).setCellValue(getReview(answer.getRating()));
-                            }
-                            if (answer.getIsNegative() == 1) {
-                                row.getCell(l).setCellStyle(style3);
-                            }
-                            l++;
-                        } else if (answer.getQuestionType() == '4') {
-                            if (answer.getAnswerText() == null || answer.getAnswerText().equals("")) {
-                                row.createCell(l).setCellValue("Skipped");
-                            } else {
-                                row.createCell(l).setCellValue(answer.getAnswerText());
-                                row.getCell(l).setCellStyle(style2);
-                            }
-                            l++;
-                        } else if (answer.getQuestionType() == '1') {
-                            if (answer.getAnswerDesc() == null || answer.getAnswerDesc().equals("")) {
-                                row.createCell(l).setCellValue("Skipped");
-                            } else {
-                                row.createCell(l).setCellValue(answer.getAnswerDesc());
-                                row.getCell(l).setCellStyle(style2);
-                            }
-                            l++;
-                        } else if (answer.getQuestionType() == '5') {
-                            if (answer.getAnswerDesc() == null || answer.getAnswerDesc().equals("")) {
-                                row.createCell(l).setCellValue("Skipped");
-                            } else {
-                                row.createCell(l).setCellValue(answer.getAnswerDesc());
-                            }
-                            row.getCell(l).setCellStyle(style2);
-                            i++;
-
-                            ////////////////////////////////////
-                        }
+                        uniqueList.add(feedbackResp);
                     } else {
                         FeedbackResponse existingResp = getResponseFromList(uniqueList, feedbackRequestDTOS.get(j).getId());
                         if (existingResp != null) {
                             List<FeedbackDetails> curAnswerList = existingResp.getFeedbacks();
-                            FeedbackDetails answer1 = new FeedbackDetails();
-                            answer1.setAnswerDesc(feedbackRequestDTOS.get(j).getAnswerDesc());
-                            answer1.setAnswerText(feedbackRequestDTOS.get(j).getAnswerText());
-                            answer1.setQuestionDesc(feedbackRequestDTOS.get(j).getQuestionDesc());
-                            answer1.setRating(feedbackRequestDTOS.get(j).getRating());
-                            answer1.setIsNegative(feedbackRequestDTOS.get(j).getIsPoor());
-                            answer1.setQuestionType(feedbackRequestDTOS.get(j).getQuestionType());
-                            answer1.setQuestionId(feedbackRequestDTOS.get(j).getQuestionId());
-                            curAnswerList.add(answer1);
-
-                            //////////////////////////////////////
-
-                            if (answer1.getQuestionType() == '3' || answer1.getQuestionType() == '2') {
-                                if (answer1.getRating() == 0) {
-                                    row.createCell(l).setCellValue("Skipped");
-                                } else {
-                                    row.createCell(l).setCellValue(getReview(answer1.getRating()));
-                                }
-                                if (answer1.getIsNegative() == 1) {
-                                    row.getCell(l).setCellStyle(style3);
-                                }
-                                workbook.getSheetAt(0).autoSizeColumn(l);
-                                l++;
-                            } else if (answer1.getQuestionType() == '4') {
-                                if (answer1.getAnswerText() == null || answer1.getAnswerText().equals("")) {
-                                    row.createCell(l).setCellValue("Skipped");
-                                } else {
-                                    row.createCell(l).setCellValue(answer1.getAnswerText());
-                                    row.getCell(l).setCellStyle(style2);
-                                }
-                                l++;
-                            } else if (answer1.getQuestionType() == '1') {
-                                if (answer1.getAnswerDesc() == null || answer1.getAnswerDesc().equals("")) {
-                                    row.createCell(l).setCellValue("Skipped");
-                                } else {
-                                    row.createCell(l).setCellValue(answer1.getAnswerDesc());
-                                    row.getCell(l).setCellStyle(style2);
-                                }
-                                l++;
-                            } else if (answer1.getQuestionType() == '5') {
-                                if (answer1.getAnswerDesc() == null || answer1.getAnswerDesc().equals("")) {
-                                    row.createCell(l).setCellValue("Skipped");
-                                } else {
-                                    row.createCell(l).setCellValue(answer1.getAnswerDesc());
-                                }
-                                row.getCell(l).setCellStyle(style2);
-
-                                //////////////////////////////////////////
-                            }
+                            FeedbackDetails answer = new FeedbackDetails();
+                            answer.setAnswerDesc(feedbackRequestDTOS.get(j).getAnswerDesc());
+                            answer.setAnswerText(feedbackRequestDTOS.get(j).getAnswerText());
+                            answer.setQuestionDesc(feedbackRequestDTOS.get(j).getQuestionDesc());
+                            answer.setRating(feedbackRequestDTOS.get(j).getRating());
+                            answer.setIsNegative(feedbackRequestDTOS.get(j).getIsPoor());
+                            answer.setQuestionType(feedbackRequestDTOS.get(j).getQuestionType());
+                            answer.setQuestionId(feedbackRequestDTOS.get(j).getQuestionId());
+                            curAnswerList.add(answer);
                         }
                     }
-                    if (o > 0) {
-                        base = base + threshold;
-                    }
+                }
+                if (i > 0) {
+                    base = base + threshold;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
-        return filename;
+        return uniqueList;
     }
 
     public Boolean getRequest(FeedbackListRequestBO feedbackListRequestBO) throws Exception {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
-
         Gson gson = new Gson();
-        // gson.toJson(feedbackListRequestBO, new FileWriter("D:\\file1.json"));
         String jsonInString = gson.toJson(feedbackListRequestBO);
         JSONObject jsonObject = new JSONObject(jsonInString);
         Boolean isCreate = feedbackDAO.createRequest(jsonObject);
         return isCreate;
-    }
-
-    public static String getReview(int rating) {
-        String review = "";
-        if (rating <= 20) {
-            review = "Poor";
-        } else if (rating <= 40) {
-            review = "Average";
-        } else if (rating <= 60) {
-            review = "Good";
-        } else if (rating <= 80) {
-            review = "Very Good";
-        } else if (rating <= 100) {
-            review = "Excellent";
-        }
-        return review;
-    }
-
-    public static AnswerDTO getAnswer(FeedbackDetails feedbackDetails) {
-        AnswerDTO answerDTO = new AnswerDTO();
-        answerDTO.setAnswerDesc(feedbackDetails.getAnswerDesc());
-        answerDTO.setRating(feedbackDetails.getRating());
-        answerDTO.setIsPoor(feedbackDetails.getIsNegative());
-        return answerDTO;
     }
 
 }

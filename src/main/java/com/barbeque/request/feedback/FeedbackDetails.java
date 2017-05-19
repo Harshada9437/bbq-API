@@ -15,7 +15,6 @@ public class FeedbackDetails {
     private String questionDesc;
     private int rating;
     private int isNegative;
-    private int clientId;
 
     public int getQuestionId() {
         return questionId;
@@ -105,15 +104,6 @@ public class FeedbackDetails {
         this.isNegative = isNegative;
     }
 
-    public int getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
-    }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -128,7 +118,6 @@ public class FeedbackDetails {
         if (answerId != that.answerId) return false;
         if (rating != that.rating) return false;
         if (isNegative != that.isNegative) return false;
-        if (clientId != that.clientId) return false;
         if (!answerText.equals(that.answerText)) return false;
         if (!threshold.equals(that.threshold)) return false;
         if (!answerDesc.equals(that.answerDesc)) return false;
@@ -148,7 +137,6 @@ public class FeedbackDetails {
         result = 31 * result + questionDesc.hashCode();
         result = 31 * result + rating;
         result = 31 * result + isNegative;
-        result = 31 * result + clientId;
         return result;
     }
 
@@ -166,7 +154,6 @@ public class FeedbackDetails {
                 ", questionDesc='" + questionDesc + '\'' +
                 ", rating=" + rating +
                 ", isNegative=" + isNegative +
-                ", clientId=" + clientId +
                 '}';
     }
 }

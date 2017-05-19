@@ -503,13 +503,16 @@ public class EmailService {
                 InternetAddress.parse(user.getEmail()));
 
         // Set Subject: header field
-        message.setSubject("Testing Subject");
+        message.setSubject("Feedback report.");
 
         // Create the message part
         BodyPart messageBodyPart = new MimeBodyPart();
 
         // Now set the actual message
-        messageBodyPart.setText("This is message body");
+        messageBodyPart.setText("Hello " + user.getName()+",\n"+
+        "Kindly check the attachment for your requested feedback report.\n\n"+
+        "Regards,\n"+
+        "Barbeque Nation");
 
         // Create a multipar message
         Multipart multipart = new MimeMultipart();
@@ -530,7 +533,6 @@ public class EmailService {
         // Send message
         Transport.send(message);
 
-        System.out.println("Sent message successfully....");
 
     } catch (MessagingException e) {
         throw new RuntimeException(e);

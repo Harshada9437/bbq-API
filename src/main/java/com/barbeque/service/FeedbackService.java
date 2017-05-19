@@ -3,6 +3,7 @@ package com.barbeque.service;
 import com.barbeque.bo.FeedbackListRequestBO;
 import com.barbeque.bo.FeedbackRequestBO;
 import com.barbeque.bo.FeedbackTrackingRequestBO;
+import com.barbeque.config.ConfigProperties;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.device.DeviceDAO;
 import com.barbeque.dto.request.DeviceDTO;
@@ -16,11 +17,15 @@ import com.barbeque.response.util.ResponseGenerator;
 import com.barbeque.sync.Synchronize;
 import com.barbeque.util.DateUtil;
 import com.google.gson.Gson;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -75,7 +80,6 @@ public class FeedbackService {
             feedbackListRequestBO.setTableNo(feedbackListRequest.getTableNo());
             feedbackListRequestBO.setUserId(feedbackListRequest.getUserId());
             FeedbackResponseList feedbackResponse = new FeedbackResponseList();
-
             feedbackResponse.setFeedbacks(feedbackRequestHandler.getfeedbackList1(feedbackListRequestBO));
             return ResponseGenerator.generateSuccessResponse(feedbackResponse, "Successfully retrieved.");
         } catch (Exception e) {
@@ -89,7 +93,7 @@ public class FeedbackService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/list1")
+    @Path("/reportRequest")
     public Response getfeedbackList1(FeedbackListRequest feedbackListRequest) {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         FeedbackListRequestBO feedbackListRequestBO = new FeedbackListRequestBO();
@@ -102,10 +106,8 @@ public class FeedbackService {
             feedbackListRequestBO.setUserId(feedbackListRequest.getUserId());
 
             Gson gson = new Gson();
-            // gson.toJson(feedbackListRequestBO, new FileWriter("D:\\file1.json"));
             String jsonInString = gson.toJson(feedbackListRequestBO);
             if(!FeedbackDAO.getRequest(jsonInString)) {
-
                 feedbackRequestHandler.getRequest(feedbackListRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, "Request is accepted.");
             }else{
@@ -208,7 +210,7 @@ public class FeedbackService {
     }
 
     @GET
-    @Path("/heavyReport")
+    @Path("/heavyReportGeneration")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
@@ -216,7 +218,6 @@ public class FeedbackService {
         FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
         MessageResponse messageResponse = new MessageResponse();
         try {
-            System.out.println("start" + DateUtil.getDateStringFromTimeStamp(new Timestamp(System.currentTimeMillis())));
             Boolean isProcessed = feedbackRequestHandler.getHeavyReport();
             if (isProcessed) {
                 return ResponseGenerator.generateSuccessResponse(messageResponse, "Mails are sent to all users.");

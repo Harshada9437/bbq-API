@@ -115,20 +115,20 @@ public class FeedbackDAO {
         }
     }
 
-    public List<FeedbackDTO> getfeedbackList1(String where1, FeedbackListDTO feedbackListDTO, String date, String limit) throws Exception {
+    public List<FeedbackDTO> getfeedbackList1(String where1,Connection connection, FeedbackListDTO feedbackListDTO, String date, String limit) throws Exception {
         List<FeedbackDTO> feedbackList;
         Statement statement = null;
-        Connection connection = null;
+        //Connection connection = null;
         String table = "feedbacks_" + date;
 
         try {
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
+           // connection = new ConnectionHandler().getConnection();
+            ///connection.setAutoCommit(false);
             statement = connection.createStatement();
 
             feedbackList = new ArrayList<FeedbackDTO>();
 
-            String query = "select f.feedback_id,f.is_poor,f.date,f.customer_name,f.customer_no,f.customer_email" +
+            String query = "select f.answer_id,f.feedback_id,f.is_poor,f.date,f.customer_name,f.customer_no,f.customer_email" +
                     ",f.dob,f.doa,f.locality,f.table_no,f.outlet_name,f.rating,f.answer_text,f.question_desc,f.question_type" +
                     ",f.question_id,f.answer_desc,f.isNegative,t.feedback_id as isAddressed,t.first_view_date,t.view_count,t.manager_name,t.manager_mobile" +
                     ",t.manager_email from `" + table + "` f\n" +
@@ -142,6 +142,7 @@ public class FeedbackDAO {
                 FeedbackDTO feedbackRequestDTO = new FeedbackDTO();
                 feedbackRequestDTO.setId(resultSet.getInt("feedback_id"));
                 feedbackRequestDTO.setQuestionId(resultSet.getInt("question_id"));
+                feedbackRequestDTO.setAnswerId(resultSet.getInt("answer_id"));
                 feedbackRequestDTO.setViewCount(resultSet.getInt("view_count"));
                 feedbackRequestDTO.setIsPoor(resultSet.getInt("is_poor"));
                 feedbackRequestDTO.setFeedbackDate(resultSet.getString("date"));
@@ -178,7 +179,7 @@ public class FeedbackDAO {
         } finally {
             try {
                 statement.close();
-                connection.close();
+               // connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -958,45 +959,6 @@ public class FeedbackDAO {
         return requests;
     }
 
-    /*public Boolean createRequest(RequestDto feedbackListDTO) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO requests(from,to,outlets,table,user_id) values (?,?,?,?,?)");
-        Boolean isCreate = Boolean.FALSE;
-        try {
-            int parameterIndex = 1;
-            connection = new ConnectionHandler().getConnection();
-            connection.setAutoCommit(false);
-            preparedStatement = connection.prepareStatement(query.toString());
-            preparedStatement.setString(parameterIndex++, feedbackListDTO.getFromDate());
-            preparedStatement.setString(parameterIndex++, feedbackListDTO.getToDate());
-            preparedStatement.setString(parameterIndex++, feedbackListDTO.getOutlets());
-            preparedStatement.setInt(parameterIndex++, feedbackListDTO.getTable());
-            preparedStatement.setInt(parameterIndex++, feedbackListDTO.getUserId());
-
-
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                isCreate = Boolean.TRUE;
-                connection.commit();
-            } else {
-                connection.rollback();
-            }
-
-        } catch (SQLException sqlException) {
-            connection.rollback();
-            sqlException.printStackTrace();
-            throw sqlException;
-        } finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return isCreate;
-    }*/
 
     public Boolean createRequest(JSONObject feedbackListDTO) throws SQLException {
         PreparedStatement preparedStatement = null;
@@ -1031,5 +993,36 @@ public class FeedbackDAO {
             }
         }
         return isCreate;
+    }
+
+    public void updateRequest(int id) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        try {
+            int parameterIndex = 1;
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement("UPDATE request SET status ='I' WHERE id =?");
+
+            preparedStatement.setInt(parameterIndex++, id);
+
+
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                connection.commit();
+            } else {
+                connection.rollback();
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
