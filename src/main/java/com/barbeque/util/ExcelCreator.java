@@ -9,11 +9,11 @@ import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dto.request.AnswerDTO;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.response.feedback.FeedbackResponse;
-import jxl.CellView;
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
+import jxl.format.VerticalAlignment;
 import jxl.write.*;
 import jxl.write.Colour;
 
@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExcelCreator {
+    public static VerticalAlignment CENTRE = VerticalAlignment.getAlignment(1);
     public static String getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs, String date) throws Exception {
         String filename = ConfigProperties.app_path + "/feedback/Feedback_"+date+".xls";
       /*  String filename = "D:/Feed_" +date+".xls";*/
         int sheetNo = 1,i = 2, l;
         Label label = null;
+
         WritableWorkbook workbook = Workbook.createWorkbook(new File(filename));
         WritableSheet sheet = workbook.createSheet("FirstSheet", 0);
 
@@ -43,27 +45,34 @@ public class ExcelCreator {
         WritableCellFormat style = new WritableCellFormat();
         style.setBackground(jxl.format.Colour.GREEN);
         style.setAlignment(Alignment.CENTRE);
-        style.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.BLACK);
+        style.setVerticalAlignment(CENTRE);
+        style.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.GRAY_25);
         style.setFont(wf);
         style.setWrap(Boolean.TRUE);
 
         WritableCellFormat style1 = new WritableCellFormat();
         style1.setBackground(jxl.format.Colour.SKY_BLUE);
         style1.setAlignment(Alignment.CENTRE);
-        style1.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.BLACK);
+        style1.setVerticalAlignment(CENTRE);
+        style1.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.GRAY_25);
         style1.setFont(wf);
         style1.setWrap(Boolean.TRUE);
 
         WritableCellFormat style2 = new WritableCellFormat();
         style2.setWrap(Boolean.TRUE);
+       // style.setVerticalAlignment(CENTRE);
 
         WritableCellFormat style3 = new WritableCellFormat();
         style3.setBackground(jxl.format.Colour.RED);
-        style3.setAlignment(Alignment.CENTRE);
-        style3.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.BLACK);
+        //style.setVerticalAlignment(CENTRE);
+        //style3.setAlignment(Alignment.CENTRE);
+        style3.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.GRAY_25);
         style3.setFont(wf);
-        style3.setWrap(Boolean.TRUE);
+        //style3.setWrap(Boolean.TRUE);
 
+        /*sheet.getSettings().setDefaultColumnWidth(60);
+        sheet.getSettings().setDefaultRowHeight(28 * 20);
+*/
         int k, m;
         List<String> uniqIds = new ArrayList<String>();
         List<Que> uniObj = new ArrayList<Que>();
@@ -84,11 +93,13 @@ public class ExcelCreator {
 
 
         label= new Label(0, 0, "Response No.", style);
-        sheet.setColumnView(0, 300);
+        sheet.setColumnView(0, 18);
         sheet.addCell(label);
         label = new Label(1, 0, "Date", style);
+        sheet.setColumnView(1, 18);
         sheet.addCell(label);
         label = new Label(2, 0, "Outlet", style);
+        sheet.setColumnView(2, 25);
         sheet.addCell(label);
         label = new Label(3, 0, "Table No", style);
         sheet.addCell(label);
@@ -111,10 +122,13 @@ public class ExcelCreator {
         }
         m=k;
         label = new Label(k++, 0, "Customer", style);
+        sheet.setColumnView(k-1, 30);
         sheet.addCell(label);
         label = new Label(k++, 0, "", style);
+        sheet.setColumnView(k-1, 25);
         sheet.addCell(label);
         label = new Label(k++, 0, "", style);
+        sheet.setColumnView(k-1, 13);
         sheet.addCell(label);
         label = new Label(k++, 0, "", style);
         sheet.addCell(label);
@@ -124,6 +138,7 @@ public class ExcelCreator {
         sheet.addCell(label);
         sheet.mergeCells(m, 0, k-1, 0 );
         label = new Label(k++, 0, "isNegative", style);
+        sheet.setColumnView(k-1, 18);
         sheet.addCell(label);
         m=k;
         label = new Label(k++, 0, "isAddressed Details", style);
@@ -135,10 +150,13 @@ public class ExcelCreator {
         sheet.mergeCells(0, 0, 0, 1 );
 
         label = new Label(0, 1, "", style);
+        sheet.setColumnView(0, 18);
         sheet.addCell(label);
         label = new Label(1, 1, "", style1);
+        sheet.setColumnView(1, 18);
         sheet.addCell(label);
         label = new Label(2, 1, "", style1);
+        sheet.setColumnView(2, 18);
         sheet.addCell(label);
         label = new Label(3, 1, "", style1);
         sheet.addCell(label);
@@ -147,6 +165,7 @@ public class ExcelCreator {
             if (q.getType() == '3' || q.getType() == '2') {
                 for (AnswerDTO answerDTO : q.getAns()) {
                     label = new Label(k, 1, answerDTO.getAnswerText(), style1);
+                    sheet.setColumnView(k, 18);
                     sheet.addCell(label);
                     k++;
                 }
@@ -164,16 +183,20 @@ public class ExcelCreator {
         label = new Label(k++, 1, "Phone", style1);
         sheet.addCell(label);
         label = new Label(k++, 1, "Date of Birth", style1);
+        sheet.setColumnView(k-1, 18);
         sheet.addCell(label);
         label = new Label(k++, 1, "Date of Anniversary", style1);
+        sheet.setColumnView(k-1, 18);
         sheet.addCell(label);
         label = new Label(k++, 1, "Locality", style1);
         sheet.addCell(label);
         label = new Label(k++, 1, "", style1);
         sheet.addCell(label);
         label = new Label(k++, 1, "isAddressed?", style1);
+        sheet.setColumnView(k-1, 18);
         sheet.addCell(label);
         label = new Label(k++, 1, "View Date", style1);
+        sheet.setColumnView(k-1, 18);
         sheet.addCell(label);
 
 
@@ -183,6 +206,7 @@ public class ExcelCreator {
             label = new Label(0, i, String.valueOf(feedbackResponse.getId()), style);
             sheet.addCell(label);
             label = new Label(1, i, feedbackResponse.getFeedbackDate());
+            sheet.setColumnView(1, 18);
             sheet.addCell(label);
             label = new Label(2, i,feedbackResponse.getOutletDesc());
             sheet.addCell(label);
