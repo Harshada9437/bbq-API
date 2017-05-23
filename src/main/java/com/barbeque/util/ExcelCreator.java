@@ -27,14 +27,12 @@ public class ExcelCreator {
     public static VerticalAlignment CENTRE = VerticalAlignment.getAlignment(1);
     public static String getExcelSheet(List<FeedbackResponse> feedbackRequestDTOs, String date) throws Exception {
         String filename = ConfigProperties.app_path + "/feedback/Feedback_"+date+".xls";
-      /*  String filename = "D:/Feed_" +date+".xls";*/
+       /* String filename = "D:/Feed_" +date+".xls";*/
         int sheetNo = 1,i = 2, l;
         Label label = null;
 
         WritableWorkbook workbook = Workbook.createWorkbook(new File(filename));
-        WritableSheet sheet = workbook.createSheet("FirstSheet", 0);
-
-        /*sheet.getSettings().setDefaultColumnWidth(12); */
+        WritableSheet sheet = workbook.createSheet("Feedbacks", 0);
 
         WritableFont wf = new WritableFont(WritableFont.createFont("Verdana"));
         wf.setBoldStyle(wf.BOLD);
@@ -60,19 +58,12 @@ public class ExcelCreator {
 
         WritableCellFormat style2 = new WritableCellFormat();
         style2.setWrap(Boolean.TRUE);
-       // style.setVerticalAlignment(CENTRE);
 
         WritableCellFormat style3 = new WritableCellFormat();
         style3.setBackground(jxl.format.Colour.RED);
-        //style.setVerticalAlignment(CENTRE);
-        //style3.setAlignment(Alignment.CENTRE);
         style3.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.GRAY_25);
         style3.setFont(wf);
-        //style3.setWrap(Boolean.TRUE);
 
-        /*sheet.getSettings().setDefaultColumnWidth(60);
-        sheet.getSettings().setDefaultRowHeight(28 * 20);
-*/
         int k, m;
         List<String> uniqIds = new ArrayList<String>();
         List<Que> uniObj = new ArrayList<Que>();
@@ -125,7 +116,7 @@ public class ExcelCreator {
         sheet.setColumnView(k-1, 30);
         sheet.addCell(label);
         label = new Label(k++, 0, "", style);
-        sheet.setColumnView(k-1, 25);
+        sheet.setColumnView(k-1, 30);
         sheet.addCell(label);
         label = new Label(k++, 0, "", style);
         sheet.setColumnView(k-1, 13);
@@ -135,6 +126,7 @@ public class ExcelCreator {
         label = new Label(k++, 0, "", style);
         sheet.addCell(label);
         label = new Label(k++, 0, "", style);
+        sheet.setColumnView(k-1, 30);
         sheet.addCell(label);
         sheet.mergeCells(m, 0, k-1, 0 );
         label = new Label(k++, 0, "isNegative", style);
@@ -355,7 +347,6 @@ public class ExcelCreator {
             if (i == 50000) {
                 String sheetName = "Document-" + sheetNo;
                 sheet = workbook.createSheet(sheetName,sheetNo);
-                /*sheet.getSettings().setDefaultColumnWidth(12);*/
                 sheetNo++;
                 i = 0;
             }
