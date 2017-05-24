@@ -107,10 +107,10 @@ public class FeedbackService {
 
             Gson gson = new Gson();
             String jsonInString = gson.toJson(feedbackListRequestBO);
-            if(!FeedbackDAO.getRequest(jsonInString)) {
+            if (!FeedbackDAO.getRequest(jsonInString)) {
                 feedbackRequestHandler.getRequest(feedbackListRequestBO);
                 return ResponseGenerator.generateSuccessResponse(messageResponse, "Request is accepted.");
-            }else{
+            } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Request is already inprogress.");
             }
         } catch (Exception e) {
@@ -224,6 +224,44 @@ public class FeedbackService {
             } else {
                 return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to send the mails. ");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
+        }
+    }
+
+    @GET
+    @Path("/deleteReports")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public Response deleteFiles() {
+        FeedbackRequestHandler feedbackRequestHandler = new FeedbackRequestHandler();
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            feedbackRequestHandler.deleteFiles();
+            return ResponseGenerator.generateSuccessResponse(messageResponse, "Mails are sent to all users.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");
+        }
+    }
+
+    @GET
+    @Path("/downloadBulkReport/{request_id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("application/xls")
+
+    public Response download(@PathParam("request_id") String token) {
+        MessageResponse messageResponse = new MessageResponse();
+        try {
+            FeedbackDAO feedbackDAO = new FeedbackDAO();
+            int reqId = feedbackDAO.getReqByToken(token);
+            File file = new File( ConfigProperties.app_path + "/feedback/Feedback_"+reqId+".xls");
+            Response.ResponseBuilder response = Response.ok(file);
+            response.header("Content-Disposition",
+                    "attachment; filename=Feedback_"+reqId+".xls");
+            return response.build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseGenerator.generateFailureResponse(messageResponse, "Failed to retrieve. ");

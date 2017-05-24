@@ -7,10 +7,12 @@ package com.barbeque.util;
 import com.barbeque.config.ConfigProperties;
 import com.barbeque.dao.FeedbackDAO;
 import com.barbeque.dao.outlet.OutletDAO;
+import com.barbeque.dto.request.OutletDTO;
 import com.barbeque.dto.request.UpdateSettingsDTO;
 import com.barbeque.dto.request.FeedbackRequestDTO;
 import com.barbeque.dto.request.SmsSettingDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
+import com.barbeque.exceptions.OutletNotFoundException;
 
 
 import java.io.BufferedReader;
@@ -19,6 +21,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -104,7 +107,7 @@ public class SendSms {
         return dateFormatter.format(value.getTime());
     }
 
-    public Boolean sendReferSms(int id, String positiveSmsTemplate, SmsSettingDTO smsSettingDTO) throws FeedbackNotFoundException {
+    public Boolean sendReferSms(int id, String positiveSmsTemplate, SmsSettingDTO smsSettingDTO) throws FeedbackNotFoundException, OutletNotFoundException, SQLException {
         Boolean isProcessed = Boolean.FALSE;
 
         String authkey = smsSettingDTO.getApi();
@@ -115,8 +118,10 @@ public class SendSms {
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         FeedbackRequestDTO feedback = feedbackDAO.getfeedbackById(id);
         UpdateSettingsDTO dto = OutletDAO.getSetting(feedback.getOutletId());
+        OutletDTO outletDTO = OutletDAO.getOutletById(feedback.getOutletId());
 
-        String url = UrlFormatter.shortenUrl(ConfigProperties.referurl + "&mobileno=" + feedback.getMobileNo() + "&name=" + feedback.getCustomerName()+ "&programmeId=" + dto.getProgramId()) ;
+
+        String url = UrlFormatter.shortenUrl(ConfigProperties.referurl + "&storeid="+outletDTO.getPosStoreId()+"&mobileno=" + feedback.getMobileNo() + "&name=" + feedback.getCustomerName()+ "&programmeId=" + dto.getProgramId()) ;
 
         //Your message to send, Add URL encoding here.
 

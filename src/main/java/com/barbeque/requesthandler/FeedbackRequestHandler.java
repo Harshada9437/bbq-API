@@ -10,8 +10,8 @@ import com.barbeque.dao.answer.AnswerDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dao.outlet.OutletDAO;
 import com.barbeque.dao.question.QuestionDAO;
-import com.barbeque.dao.template.QueTempDAO;
 import com.barbeque.dao.user.UsersDAO;
+import com.barbeque.dto.RequestDto;
 import com.barbeque.dto.request.*;
 import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.FeedbackNotFoundException;
@@ -26,18 +26,14 @@ import com.barbeque.response.feedback.FeedbackResponse;
 import com.barbeque.response.feedback.FeedbackTrackingResponse;
 
 import java.io.*;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.util.Date;
 
 import com.barbeque.util.*;
 import com.google.gson.Gson;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.codehaus.jettison.json.JSONObject;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -579,8 +575,11 @@ public class FeedbackRequestHandler {
             if (!UsersDAO.getuserById(request.getUserId()).getOutletAccess().equals("")) {
                 List<FeedbackResponse> uniqueList = getfeedbackList12(request);
                 String filename = ExcelCreator.getExcelSheet(uniqueList, String.valueOf(request.getId()));
-                EmailService.sendEmail(filename, request.getUserId());
-                feedbackDAO.updateRequest(request.getId());
+                EmailService.sendEmail(request.getUserId(),request.getToken());
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE,7);
+                String date = DateUtil.format(new Timestamp(calendar.getTime().getTime()),"dd-MM-yyyy");
+                feedbackDAO.updateRequest(request.getId(),date);
             }
         }
         isProcessed = Boolean.TRUE;
@@ -709,8 +708,22 @@ public class FeedbackRequestHandler {
         Gson gson = new Gson();
         String jsonInString = gson.toJson(feedbackListRequestBO);
         JSONObject jsonObject = new JSONObject(jsonInString);
-        Boolean isCreate = feedbackDAO.createRequest(jsonObject);
+        SecureRandom random = new SecureRandom();
+        String token = new BigInteger(20, random).toString(32);
+        Boolean isCreate = feedbackDAO.createRequest(jsonObject,token);
         return isCreate;
     }
 
+    public void deleteFiles() throws SQLException {
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        String currentDate = DateUtil.format(new Timestamp(new Date().getTime()),"dd-MM-yyyy");
+        System.out.println(":::::::::::::::::::"+currentDate);
+        List<Integer> ids= feedbackDAO.getExpiredRequests(currentDate);
+        for(int  id : ids) {
+            System.out.println(":::::::::::::::::::id "+id);
+            System.out.println(":::::::::::::::::::id "+id);
+            File file = new File(ConfigProperties.app_path + "/feedback/Feedback_" + id+".xls");
+            file.delete();
+        }
+    }
 }

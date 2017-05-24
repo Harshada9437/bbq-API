@@ -487,55 +487,39 @@ public class EmailService {
         return isProcessed;
     }
 
-    public static void sendEmail(String filename, int userId) throws Exception {
+    public static void sendEmail(int userId,String id) throws Exception {
         Boolean isProcessed = Boolean.FALSE;
 
         try {
-        Message message = new MimeMessage(session);
+            Message message = new MimeMessage(session);
 
             LoginResponseDTO user = UsersDAO.getuserById(userId);
 
-        // Set From: header field of the header.
-        message.setFrom(new InternetAddress(FROM));
+            // Set From: header field of the header.
+            message.setFrom(new InternetAddress(FROM));
 
-        // Set To: header field of the header.
-        message.setRecipients(Message.RecipientType.TO,
-                InternetAddress.parse(user.getEmail()));
+            // Set To: header field of the header.
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(user.getEmail()));
 
-        // Set Subject: header field
-        message.setSubject("Feedback report.");
+            // Set Subject: header field
+            message.setSubject("Feedback report.");
 
-        // Create the message part
-        BodyPart messageBodyPart = new MimeBodyPart();
+            message.setText("Hello " + user.getName() + ",\n\n"+
+                            "Your requested feedback report has been generated.\n" +
+                    "Please click on the below link to download the report:\n"+
+                    "http://barbeque.theuniquemedia.in/rest/feedback/downloadBulkReport/"+id+"\n\n"+
+                    "Please make a note that above link will be expired after 7 days.\n"+
+                            "Regards,\n"+
+                            "Barbeque Nation");
 
-        // Now set the actual message
-        messageBodyPart.setText("Hello " + user.getName()+",\n"+
-        "Kindly check the attachment for your requested feedback report.\n\n"+
-        "Regards,\n"+
-        "Barbeque Nation");
+            Transport.send(message);
 
-        // Create a multipar message
-        Multipart multipart = new MimeMultipart();
+            isProcessed = Boolean.TRUE;
 
-        // Set text message part
-        multipart.addBodyPart(messageBodyPart);
-
-        // Part two is attachment
-        messageBodyPart = new MimeBodyPart();
-        DataSource source = new FileDataSource(filename);
-        messageBodyPart.setDataHandler(new DataHandler(source));
-        messageBodyPart.setFileName(filename);
-        multipart.addBodyPart(messageBodyPart);
-
-        // Send the complete message parts
-        message.setContent(multipart);
-
-        // Send message
-        Transport.send(message);
-
-
-    } catch (MessagingException e) {
-        throw new RuntimeException(e);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
-}
+
 }

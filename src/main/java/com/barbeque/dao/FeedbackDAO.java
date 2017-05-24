@@ -1,12 +1,9 @@
 package com.barbeque.dao;
 
 import com.barbeque.bo.FeedbackListRequestBO;
-import com.barbeque.dao.Sync.SyncDAO;
 import com.barbeque.dao.customer.CustomerDAO;
 import com.barbeque.dao.question.QuestionDAO;
-import com.barbeque.dao.user.UsersDAO;
 import com.barbeque.dto.request.*;
-import com.barbeque.dto.response.LoginResponseDTO;
 import com.barbeque.exceptions.CustomerNotFoundException;
 import com.barbeque.exceptions.FeedbackNotFoundException;
 
@@ -15,7 +12,7 @@ import com.barbeque.exceptions.UserNotFoundException;
 import com.barbeque.request.feedback.FeedbackDetails;
 import com.barbeque.request.report.Feedback;
 import com.barbeque.request.report.ReportData;
-import com.barbeque.requesthandler.RequestDto;
+import com.barbeque.dto.RequestDto;
 import com.barbeque.util.CommaSeparatedString;
 import com.barbeque.util.DateUtil;
 import org.codehaus.jettison.json.JSONArray;
@@ -23,7 +20,6 @@ import org.codehaus.jettison.json.JSONObject;
 
 import java.sql.*;
 import java.util.*;
-import java.util.Date;
 
 /**
  * Created by System-2 on 12/13/2016.
@@ -943,6 +939,7 @@ public class FeedbackDAO {
                 requestDto.setOutlets(CommaSeparatedString.generate(nums));
                 requestDto.setTable(jsonObject.getString("tableNo"));
                 requestDto.setUserId(jsonObject.getInt("userId"));
+                requestDto.setToken(resultSet.getString("token"));
                 requests.add(requestDto);
             }
         } catch (SQLException sqlException) {
@@ -960,17 +957,18 @@ public class FeedbackDAO {
     }
 
 
-    public Boolean createRequest(JSONObject feedbackListDTO) throws SQLException {
+    public Boolean createRequest(JSONObject json,String token) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
-        StringBuilder query = new StringBuilder("INSERT INTO request(json) values (?)");
+        StringBuilder query = new StringBuilder("INSERT INTO request(json,token) values (?,?)");
         Boolean isCreate = Boolean.FALSE;
         try {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(query.toString());
-            preparedStatement.setString(parameterIndex++, feedbackListDTO.toString());
+            preparedStatement.setString(parameterIndex++, json.toString());
+            preparedStatement.setString(parameterIndex++, token);
 
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -995,15 +993,17 @@ public class FeedbackDAO {
         return isCreate;
     }
 
-    public void updateRequest(int id) throws SQLException {
+    public void updateRequest(int id,String date) throws SQLException {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
             int parameterIndex = 1;
             connection = new ConnectionHandler().getConnection();
             connection.setAutoCommit(false);
-            preparedStatement = connection.prepareStatement("UPDATE request SET status ='I' WHERE id =?");
+            preparedStatement = connection.prepareStatement("UPDATE request SET status ='I',expire_date=? WHERE id =?");
 
+
+            preparedStatement.setString(parameterIndex++,date);
             preparedStatement.setInt(parameterIndex++, id);
 
 
@@ -1024,5 +1024,62 @@ public class FeedbackDAO {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<Integer> getExpiredRequests(String currentDate) throws SQLException {
+        List<Integer> ids = new ArrayList<Integer>();
+        Statement statement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuffer query = new StringBuffer("select id from request where expire_date='"+currentDate+"'");
+
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                Integer id = resultSet.getInt("id");
+                ids.add(id);
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return ids;
+    }
+
+    public int getReqByToken(String token) throws SQLException {
+        int id=0;
+        Statement statement = null;
+        Connection connection = null;
+        try {
+            connection = new ConnectionHandler().getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            StringBuffer query = new StringBuffer("select id from request where token='"+token+"'");
+
+            ResultSet resultSet = statement.executeQuery(query.toString());
+            while (resultSet.next()) {
+                 id = resultSet.getInt("id");
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            throw sqlException;
+        } finally {
+            try {
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return id;
     }
 }
